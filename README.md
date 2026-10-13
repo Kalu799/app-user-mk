@@ -1,38 +1,33 @@
-# app-user-mk
+# 🎬 Application Vue 3 - Movie King (MK)
 
-This template should help get you started developing with Vue 3 in Vite.
+Bienvenue sur le dépôt du projet Movie King. Ce projet est développé avec **Vue 3**, **Vite** (bundler), **Vue Router** (routage) et **Pinia** (gestion d'état).
 
-## Recommended IDE Setup
+## 🚀 Démarrage Rapide
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Prérequis
+* **Node.js** (version 18+ recommandée)
+* **npm** (inclus avec Node.js)
 
-## Recommended Browser Setup
+### Installation
+1. Cloner le dépôt sur votre machine :
+   \`\`\`bash
+   git clone <url-du-repo>
+   cd app-user-mk
+   \`\`\`
+2. Installer les dépendances du projet :
+   \`\`\`bash
+   npm install
+   \`\`\`
+3. Lancer le serveur de développement :
+   \`\`\`bash
+   npm run dev
+   \`\`\`
+4. Ouvrez votre navigateur sur `http://localhost:5173` (le port par défaut de Vite).
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## 📚 Documentation pour les Développeurs
+Pour comprendre comment le projet est structuré et comment y contribuer, lisez attentivement les documents suivants dans le dossier `/docs` :
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+* [01 - Architecture et Configuration Globale](./docs/01-architecture-config.md)
+* [02 - Cœur de l'application (Dossier SRC)](./docs/02-coeur-application.md)
+* [03 - Outils et Bonnes Pratiques](./docs/03-outils-et-pratiques.md)
+* [04 - Composants, Pages et Flux de Données](./docs/04-composants-et-flux-de-donnees.md)
