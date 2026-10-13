@@ -11,7 +11,7 @@ const handleRegister = async (userData) => {
   isLoading.value = true
   errorMsg.value = ''
   successMsg.value = ''
-  
+
   try {
     // Appel direct à ton API Nitro (d'après ta doc serveur)
     const response = await fetch('/api/auth/register', {
@@ -28,11 +28,11 @@ const handleRegister = async (userData) => {
       // Si on a une erreur HTTP (comme la 409 pour doublon que tu as prévue)
       throw new Error(data.statusMessage || 'Erreur lors de la création du compte')
     }
-    
+
     // Succès !
     successMsg.value = "Compte créé avec succès !"
     console.log("ID du nouvel utilisateur :", data.userId)
-    
+
     // Ici tu pourras gérer la suite, par exemple changer une variable pour 
     // afficher le composant LoginForm.vue à la place du RegisterForm.vue
 
@@ -48,15 +48,15 @@ const handleRegister = async (userData) => {
 <template>
   <div class="auth-layout">
     <header class="header">
-      <img src="/Property 1=king.png" alt="Movie King Logo" class="logo" />
+      <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
     </header>
 
     <main class="main-content">
       <h1 class="page-title">Créer un compte</h1>
-      
+
       <!-- Écoute de l'emit et appel direct de notre fonction locale -->
       <RegisterForm @dataFormRegister="handleRegister" />
-      
+
       <!-- Messages de feedback gérés directement par la page -->
       <p v-if="isLoading" class="msg info">Chargement en cours...</p>
       <p v-if="errorMsg" class="msg error">{{ errorMsg }}</p>
@@ -112,9 +112,21 @@ const handleRegister = async (userData) => {
   width: 100%;
   max-width: 300px;
 }
-.info { background-color: #e3f2fd; color: #0d47a1; }
-.error { background-color: #ffebee; color: #c62828; }
-.success { background-color: #e8f5e9; color: #2e7d32; }
+
+.info {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
 
 @media (min-width: 768px) {
   .main-content {
