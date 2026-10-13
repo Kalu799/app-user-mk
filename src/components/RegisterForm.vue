@@ -5,7 +5,7 @@ import { ref } from 'vue'
 // valeurs de base vide pour le form
 const initialRegisterState = () => ({
   pseudo: "",
-  email: "",
+  mail: "",
   password: ""
 })
 
@@ -33,15 +33,17 @@ const sendData = () => {
     <form action="" @submit.prevent="sendData">
       <label for="pseudo">Pseudo : </label>
       <input type="text" name="pseudo" v-model.lazy.trim="newRegister.pseudo">
-
-      <label for="email">Mail : </label>
-      <input type="email" name="email" v-model.lazy.trim="newRegister.email">
-
+      <br>
+      <label for="mail">Mail : </label>
+      <input type="email" name="mail" v-model.lazy.trim="newRegister.mail">
+      <br>
       <label for="password">Password : </label>
       <input type="password" name="password" v-model.lazy.trim="newRegister.password">
-
+      <br>
       <button>Register</button>
     </form>
   </div>
 
 </template>
+
+<style scoped></style>
