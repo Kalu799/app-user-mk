@@ -46,7 +46,7 @@ const sendData = () => {
 
 </template>
 
-<<style scoped>
+<style scoped>
 :where(*, *::before, *::after) {
   box-sizing: border-box;
 }

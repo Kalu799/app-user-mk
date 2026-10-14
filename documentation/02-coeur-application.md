@@ -10,8 +10,8 @@ src/
 ├── router/
 │   └── index.js          # Définition des routes
 ├── stores/
-│   └── counter.js        # Store d'exemple (à remplacer par auth.js, etc.)
-├── pages/                # Pages « intelligentes » (suffixe Page) : GuestHomePage.vue, AuthPage.vue
+│   └── counter.js        # Store d'exemple
+├── pages/                # Pages : GuestHomePage.vue, AuthPage.vue, HomePage.vue
 └── components/           # Composants « bêtes » : RegisterForm.vue, LoginForm.vue
 ```
 
@@ -40,4 +40,4 @@ Nous utilisons **Vue Router 4**.
 Nous utilisons **Pinia** (le successeur officiel de Vuex) pour gérer les données globales de l'application (l'utilisateur connecté, le panier, etc.).
 * **`counter.js`** : Un store d'exemple généré par défaut. Il montre comment utiliser la Composition API (`ref`, `computed`, `function`) au sein d'un store Pinia.
 * **Architecture :** Créez un fichier par thématique (ex: `auth.js` pour l'authentification, `movies.js` pour les films).
-* **État actuel :** aucun store métier n'existe encore. L'utilisateur connecté n'est pas conservé après la connexion ; le futur store `auth.js` est décrit dans [05 - Authentification](./05-authentification.md#-ce-qui-reste-à-faire).
+* **Authentification :** le flux d'authentification appelle l'API directement depuis les pages, sans Pinia ; voir [05 - Authentification](./05-authentification.md).
