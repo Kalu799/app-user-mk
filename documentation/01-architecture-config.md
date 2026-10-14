@@ -26,7 +26,7 @@ Contrairement à d'anciens frameworks Vue (CLI), **Vite utilise `index.html` com
 ### `vite.config.js`
 C'est la configuration du serveur de développement et du build de production.
 * Il inclut le plugin Vue (`@vitejs/plugin-vue`) pour compiler les fichiers `.vue`.
-* C'est ici que vous définirez vos proxy d'API si vous avez un backend local pour éviter les problèmes de CORS. Le front appelle des routes relatives (`/api/auth/register`, `/api/auth/login`) : en développement, ces appels doivent donc être redirigés vers le serveur backend (voir [05 - Authentification](./05-authentification.md#-contrat-api-attendu-par-le-front)).
+* Le proxy de développement redirige les routes relatives `/api/*` vers le CMS `https://nuxt-app-mk.vercel.app`. En production, c'est la règle `/api/:path*` de `vercel.json` qui relaie les appels au CMS avant le fallback vers `index.html`. Voir [05 - Authentification](./05-authentification.md).
 
 ### `jsconfig.json`
 Ce fichier aide votre éditeur de code (VS Code) à comprendre les **alias de chemins**. Par exemple, il permet à l'IDE de comprendre que l'import `@/components/RegisterForm.vue` pointe vers `src/components/RegisterForm.vue`. C'est la forme d'import utilisée dans les pages (ex : `AuthPage.vue`).

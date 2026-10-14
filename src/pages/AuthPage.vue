@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
 
-// URL de base de l'API (définie dans .env / variables Vercel)
-const API_BASE = import.meta.env.VITE_API_BASE_URL
+const router = useRouter()
+const API_URL = '/api/auth'
+const TOKEN_KEY = 'movie-king-auth-token'
 
 // État de l'affichage
 const isLoginMode = ref(false)
@@ -23,34 +25,21 @@ const handleRegister = async (userData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_BASE}/auth/register`, {
+    const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
     })
-
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(
-        data.statusMessage ||
-        'Erreur lors de la création du compte'
-      )
+      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
     }
 
-    successMsg.value =
-      'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
-
-    console.log('Nouvel utilisateur :', data)
-
-    // Affiche automatiquement le formulaire de connexion
+    successMsg.value = 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
     isLoginMode.value = true
-
   } catch (error) {
-    console.error("Erreur d'inscription :", error)
-    errorMsg.value = error.message
+    errorMsg.value = error.message || "Erreur lors de la création du compte"
   } finally {
     isLoading.value = false
   }
@@ -65,36 +54,24 @@ const handleLogin = async (loginData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_BASE}/auth/login`, {
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(loginData)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginData),
     })
-
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(
-        data.statusMessage ||
-        'Erreur lors de la connexion'
-      )
+      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
+    }
+    if (!data.token || !data.user) {
+      throw new Error('Réponse invalide du serveur d’authentification')
     }
 
-    successMsg.value = 'Connexion réussie !'
-
-    console.log('Utilisateur connecté :', data)
-
-    // Exemple si ton API renvoie un token
-    // localStorage.setItem('token', data.token)
-
-    // Exemple de redirection
-    // await navigateTo('/profile')
-
+    window.sessionStorage.setItem(TOKEN_KEY, data.token)
+    await router.push('/homepage')
   } catch (error) {
-    console.error('Erreur de connexion :', error)
-    errorMsg.value = error.message
+    errorMsg.value = error.message || 'Erreur lors de la connexion'
   } finally {
     isLoading.value = false
   }
@@ -109,14 +86,6 @@ const switchMode = () => {
   successMsg.value = ''
 }
 </script>
-
-<template>
-  <!-- inchangé -->
-</template>
-
-<style scoped>
-/* inchangé */
-</style>
 
 <template>
   <div class="auth-layout">
