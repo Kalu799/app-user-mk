@@ -1,66 +1,170 @@
 <script setup>
 import { ref } from 'vue'
 import RegisterForm from '@/components/RegisterForm.vue'
+import LoginForm from '@/components/LoginForm.vue'
 
-// Variables réactives pour gérer l'état de la requête dans la page
+// État de l'affichage
+const isLoginMode = ref(false)
+
+// États de feedback
 const isLoading = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
 
+/**
+ * Inscription
+ */
 const handleRegister = async (userData) => {
   isLoading.value = true
   errorMsg.value = ''
   successMsg.value = ''
 
   try {
-    // Appel direct à ton API Nitro (d'après ta doc serveur)
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(userData) // userData contient pseudo, email et password envoyés par l'emit
+      body: JSON.stringify(userData)
     })
 
     const data = await response.json()
 
     if (!response.ok) {
-      // Si on a une erreur HTTP (comme la 409 pour doublon que tu as prévue)
-      throw new Error(data.statusMessage || 'Erreur lors de la création du compte')
+      throw new Error(
+        data.statusMessage ||
+        'Erreur lors de la création du compte'
+      )
     }
 
-    // Succès !
-    successMsg.value = "Compte créé avec succès !"
-    console.log("ID du nouvel utilisateur :", data.userId)
+    successMsg.value =
+      'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
 
-    // Ici tu pourras gérer la suite, par exemple changer une variable pour 
-    // afficher le composant LoginForm.vue à la place du RegisterForm.vue
+    console.log('Nouvel utilisateur :', data)
+
+    // Affiche automatiquement le formulaire de connexion
+    isLoginMode.value = true
 
   } catch (error) {
-    console.error("Erreur d'inscription:", error)
+    console.error("Erreur d'inscription :", error)
     errorMsg.value = error.message
   } finally {
     isLoading.value = false
   }
+}
+
+/**
+ * Connexion
+ */
+const handleLogin = async (loginData) => {
+  isLoading.value = true
+  errorMsg.value = ''
+  successMsg.value = ''
+
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(loginData)
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        data.statusMessage ||
+        'Erreur lors de la connexion'
+      )
+    }
+
+    successMsg.value = 'Connexion réussie !'
+
+    console.log('Utilisateur connecté :', data)
+
+    // Exemple si ton API renvoie un token
+    // localStorage.setItem('token', data.token)
+
+    // Exemple de redirection
+    // await navigateTo('/profile')
+
+  } catch (error) {
+    console.error('Erreur de connexion :', error)
+    errorMsg.value = error.message
+  } finally {
+    isLoading.value = false
+  }
+}
+
+/**
+ * Changement de mode
+ */
+const switchMode = () => {
+  isLoginMode.value = !isLoginMode.value
+  errorMsg.value = ''
+  successMsg.value = ''
 }
 </script>
 
 <template>
   <div class="auth-layout">
     <header class="header">
-      <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
+      <RouterLink to="/">
+        <img
+          src="/Property 1=king.png"
+          alt="Movie King Logo"
+          class="logo"
+        >
+      </RouterLink>
     </header>
 
     <main class="main-content">
-      <h1 class="page-title">Créer un compte</h1>
+      <h1 class="page-title">
+        {{ isLoginMode ? 'Connexion' : 'Créer un compte' }}
+      </h1>
 
-      <!-- Écoute de l'emit et appel direct de notre fonction locale -->
-      <RegisterForm @dataFormRegister="handleRegister" />
+      <RegisterForm
+        v-if="!isLoginMode"
+        @dataFormRegister="handleRegister"
+      />
 
-      <!-- Messages de feedback gérés directement par la page -->
-      <p v-if="isLoading" class="msg info">Chargement en cours...</p>
-      <p v-if="errorMsg" class="msg error">{{ errorMsg }}</p>
-      <p v-if="successMsg" class="msg success">{{ successMsg }}</p>
+      <LoginForm
+        v-else
+        @dataFormLogin="handleLogin"
+      />
+
+       <button
+        class="switch-btn"
+        @click="switchMode"
+      >
+        {{
+          isLoginMode
+            ? 'Je n’ai pas encore de compte'
+            : 'J’ai déjà un compte'
+        }}
+      </button>
+
+      <p
+        v-if="isLoading"
+        class="msg info"
+      >
+        Chargement en cours...
+      </p>
+
+      <p
+        v-if="errorMsg"
+        class="msg error"
+      >
+        {{ errorMsg }}
+      </p>
+
+      <p
+        v-if="successMsg"
+        class="msg success"
+      >
+        {{ successMsg }}
+      </p>
     </main>
   </div>
 </template>
@@ -97,20 +201,40 @@ const handleRegister = async (userData) => {
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.8rem;
+  font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-/* Styles pour les messages de feedback */
+.switch-btn {
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 20px;
+  padding: 12px;
+
+  background-color: #555;
+  color: white;
+
+  border: none;
+  border-radius: 25px;
+
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.switch-btn:hover {
+  background-color: #333;
+}
+
 .msg {
   margin-top: 16px;
   padding: 10px;
   border-radius: 4px;
   text-align: center;
   width: 100%;
-  max-width: 300px;
+  max-width: 400px;
 }
 
 .info {
