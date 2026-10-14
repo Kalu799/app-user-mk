@@ -79,6 +79,23 @@ const selectAnswer = (answer) => {
 
     </main>
 
+    <footer class="footer">
+      <div class="footer-content">
+        <nav class="footer-links" aria-label="Réseaux sociaux">
+          <a href="#" @click.prevent>Instagram</a>
+          <a href="#" @click.prevent>TikTok</a>
+          <a href="#" @click.prevent>YouTube</a>
+          <a href="#" @click.prevent>Discord</a>
+        </nav>
+
+        <div class="footer-bottom">
+          <img src="/Property 1=king.png" alt="Movie Kings" class="footer-logo" />
+
+          <p>© 2027 Movie Kings</p>
+        </div>
+      </div>
+    </footer>
+
   </div>
 
 </template>
@@ -156,7 +173,7 @@ main p {
   max-width: 320px;
   margin-bottom: 15px;
 
-  font-size: clamp(2.5rem, 10vw, 4rem);
+  font-size: clamp(2.8rem, 11vw, 4.5rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -1px;
@@ -167,13 +184,15 @@ main p {
 
 .hero p {
   color: #173c37;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
+  line-height: 1.5;
   font-weight: 500;
 }
 
 .hero span {
   color: #ffdd66;
   font-weight: 800;
+  font-size: 1.2em;
 }
 
 /* TUTORIEL */
@@ -226,13 +245,13 @@ main p {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 15px;
 }
 
 .tuto-answer {
   flex: 1;
-  min-height: 55px;
-  padding: 10px;
+  min-height: 75px;
+  padding: 15px 12px;
 
   background-color: #e9dfca;
   color: #1c1c1c;
@@ -241,7 +260,8 @@ main p {
   border-radius: 5px;
 
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
   font-weight: 700;
 
   cursor: pointer;
@@ -302,7 +322,7 @@ main p {
 }
 
 .reward-wrapper h2 {
-  font-size: 2.5rem;
+  font-size: clamp(2.7rem, 9vw, 3.8rem);
   font-weight: 800;
   line-height: 1;
 }
@@ -319,12 +339,13 @@ main p {
 }
 
 .reward-wrapper>p {
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 .reward-wrapper>p:nth-of-type(2) {
-  font-size: 0.85rem;
+  font-size: 1rem;
+  line-height: 1.5;
   color: #ffe0e4;
 }
 
@@ -436,6 +457,82 @@ main p {
   .partners-wrapper {
     width: 100%;
     align-self: center;
+  }
+}
+
+/* FOOTER */
+
+.footer {
+  width: 100%;
+  margin-top: auto;
+  background-color: #181818;
+  color: #e9dfca;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 35px 25px 25px;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-links a {
+  display: block;
+  padding: 20px 0;
+
+  color: #e9dfca;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 700;
+
+  border-bottom: 1px dashed #444;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #ff626b;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 65px;
+  text-align: center;
+}
+
+.footer-logo {
+  width: 85px;
+  height: auto;
+  object-fit: contain;
+}
+
+.footer-bottom p {
+  margin: 0;
+  color: #c9c1b5;
+  font-size: 0.8rem;
+}
+
+/* TABLETTE ET DESKTOP */
+
+@media (min-width: 768px) {
+  .footer-content {
+    padding: 45px 50px 30px;
+  }
+
+  .footer-links a {
+    font-size: 1.1rem;
+  }
+
+  .footer-bottom {
+    margin-top: 80px;
   }
 }
 </style>
