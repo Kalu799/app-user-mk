@@ -31,3 +31,4 @@ Pour comprendre comment le projet est structuré et comment y contribuer, lisez 
 * [02 - Cœur de l'application (Dossier SRC)](./docs/02-coeur-application.md)
 * [03 - Outils et Bonnes Pratiques](./docs/03-outils-et-pratiques.md)
 * [04 - Composants, Pages et Flux de Données](./docs/04-composants-et-flux-de-donnees.md)
+* [05 - Authentification](./docs/05-authentification.md)
