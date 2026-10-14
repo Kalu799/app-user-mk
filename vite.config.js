@@ -19,7 +19,7 @@ export default defineConfig({
     proxy: {
       // Toutes les requêtes commençant par /api seront redirigées vers ton serveur Nuxt
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://nuxt-app-mk-hn2m.vercel.app/',
         changeOrigin: true
       }
     }
