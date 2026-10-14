@@ -84,6 +84,8 @@ const selectAnswer = (answer) => {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700;800&display=swap');
+
 :where(*, *::before, *::after) {
   box-sizing: border-box;
 }
@@ -92,23 +94,24 @@ const selectAnswer = (answer) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  font-family: sans-serif;
+  background-color: #1c1c1c;
+  color: #f5efe3;
+  font-family: 'Inter', sans-serif;
 }
 
 /* HEADER */
 
 .header {
-  background-color: #dcdcdc;
+  background-color: #f5efe3;
   width: 100%;
-  padding-block: 1rem;
+  padding-block: .5rem;
 }
 
 .nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-inline: 2rem;
+  margin-inline: 1rem;
 }
 
 .logo {
@@ -117,21 +120,17 @@ const selectAnswer = (answer) => {
 }
 
 /* MAIN */
+
 main {
   width: 100%;
   max-width: 1100px;
   margin-inline: auto;
-  padding: 15px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
-main h2 {
+main h2,
+main h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 400;
 }
 
 main p {
@@ -141,169 +140,210 @@ main p {
 /* HERO */
 
 .hero {
-  background-color: #d9d9d9;
-  border-radius: 8px;
-  padding: 10px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.hero p {
-  padding-left: 5px;
-  font-size: 0.9rem;
-}
-
-.hero span {
-  color: red;
-  text-transform: lowercase;
-}
-
-/* TUTORIEL */
-
-.tuto-wrapper {
-  background-color: #d9d9d9;
-  border-radius: 8px;
-  padding: 13px;
+  background-color: #64a69d;
+  padding: 55px 25px;
+  border-bottom: 6px solid #e9dfca;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 15px;
+
+  text-align: center;
+}
+
+.hero h2 {
+  max-width: 320px;
+  margin-bottom: 15px;
+
+  font-size: clamp(2.5rem, 10vw, 4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: #fff5df;
+
+  text-shadow: 3px 4px 0 #344b43;
+}
+
+.hero p {
+  color: #173c37;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.hero span {
+  color: #ffdd66;
+  font-weight: 800;
+}
+
+/* TUTORIEL */
+
+.tuto-wrapper {
+  padding: 45px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .tuto-wrapper h2 {
-  align-self: flex-start;
+  width: 100%;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .tuto-question {
   width: 100%;
-  min-height: 65px;
-  padding: 15px;
+  padding: 25px 15px;
 
-  background-color: #000;
-  border-radius: 10px;
-  color: white;
+  background-color: #2b2b2b;
+  border-left: 5px solid #ff626b;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
   text-align: center;
 }
 
 .tuto-question p {
-  font-size: 1.1rem;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .tuto-quote {
+  width: 100%;
+  padding: 20px 10px;
+
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #e9dfca;
 }
+
+/* REPONSES */
 
 .tuto-answers-wrapper {
   width: 100%;
-
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
 }
 
 .tuto-answer {
-  width: 45%;
-  min-height: 45px;
-  padding: 8px;
+  flex: 1;
+  min-height: 55px;
+  padding: 10px;
 
-  background-color: #b8b8b8;
-  border: 2px solid transparent;
-  border-radius: 12px;
+  background-color: #e9dfca;
+  color: #1c1c1c;
 
-  color: black;
-  font-size: 1rem;
+  border: 3px solid transparent;
+  border-radius: 5px;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+
   cursor: pointer;
-
-  transition: border-color 0.2s, background-color 0.2s;
+  transition: border-color 0.2s,
+    background-color 0.2s;
 }
 
 .tuto-answer:hover {
-  background-color: #a5a5a5;
+  background-color: #fff5df;
 }
 
 .tuto-answer.selected {
-  border-color: red;
-  background-color: #c9c9c9;
+  border-color: #ff626b;
+  background-color: #fff5df;
 }
 
+/* BOUTON JOUER */
+
 .btn-play {
-  width: 50%;
-  max-width: 180px;
+  width: 70%;
+  max-width: 250px;
   min-height: 55px;
-  margin-top: 5px;
+  margin-top: 15px;
+  padding: 12px 20px;
 
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 15px;
+  background-color: #ffb900;
+  color: #111;
 
-  font-size: 0.9rem;
+  border: 3px solid #111;
+  border-radius: 2px;
+  box-shadow: 5px 5px 0 #000;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+
   cursor: pointer;
+  transition: transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .btn-play:hover {
-  background-color: #d60000;
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 #000;
 }
 
 /* RECOMPENSES */
 
 .reward-wrapper {
-  background-color: #d9d9d9;
-  border-radius: 8px;
-  padding: 13px;
+  padding: 35px 20px;
+  background-color: #ef5369;
+  color: #fff5df;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .reward-wrapper h2 {
-  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .reward-wrapper>img {
   display: block;
   width: 100%;
-  height: 130px;
+  height: 180px;
 
-  background-color: #000;
-  border-radius: 10px;
+  background-color: #d9475c;
+  border: 3px solid #1c1c1c;
   object-fit: cover;
   color: white;
 }
 
 .reward-wrapper>p {
-  font-size: 0.9rem;
-  line-height: 1.3;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .reward-wrapper>p:nth-of-type(2) {
-  color: #555;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  color: #ffe0e4;
 }
 
 /* PARTENAIRES */
 
 .partners-wrapper {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
+  margin-top: 10px;
 }
 
 .partner-img {
-  width: calc(50% - 10px);
-  height: 130px;
+  width: calc(50% - 7.5px);
+  height: 120px;
 
-  background-color: black;
-  border-radius: 12px;
+  background-color: #1c1c1c;
+  border: 2px solid #f5efe3;
+  border-radius: 5px;
+
   object-fit: contain;
   color: white;
 }
@@ -311,89 +351,90 @@ main p {
 /* CLASSEMENT */
 
 .leaderboard-wrapper {
-  background-color: #d9d9d9;
-  border-radius: 8px;
-  padding: 13px;
+  padding: 45px 20px;
 
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+
+  background-color: #1c1c1c;
 }
 
 .leaderboard-wrapper h2 {
-  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
 }
 
 .leaderboard-wrapper p {
-  background-color: #b8b8b8;
-  border-radius: 10px;
-  padding: 20px;
+  padding: 25px 15px;
+  background-color: #292929;
+  border-left: 5px solid #ff626b;
+
+  color: #ddd;
   text-align: center;
 }
 
 /* TABLETTE */
 
 @media (min-width: 768px) {
-  main {
-    padding: 25px;
-    gap: 25px;
+  .hero {
+    padding: 80px 40px;
   }
 
-  .hero,
   .tuto-wrapper,
-  .reward-wrapper,
   .leaderboard-wrapper {
-    padding: 25px;
-  }
-
-  .tuto-question {
-    min-height: 90px;
+    padding: 60px 50px;
   }
 
   .tuto-answers-wrapper {
-    max-width: 500px;
-    justify-content: center;
+    max-width: 550px;
   }
 
-  .tuto-answer {
-    width: 200px;
+  .tuto-question,
+  .tuto-quote {
+    max-width: 650px;
+  }
+
+  .reward-wrapper {
+    padding: 60px 50px;
   }
 
   .reward-wrapper>img {
-    height: 250px;
+    height: 280px;
   }
 
   .partners-wrapper {
-    justify-content: center;
+    max-width: 550px;
   }
 
   .partner-img {
-    width: 200px;
-    height: 150px;
+    height: 160px;
   }
 }
 
 /* DESKTOP */
 
 @media (min-width: 1024px) {
-  main {
-    padding: 30px;
-  }
-
-  main h2 {
-    font-size: 1.4rem;
-  }
-
   .hero {
-    gap: 15px;
+    padding: 100px 50px;
   }
 
-  .tuto-question {
-    max-width: 700px;
+  .tuto-wrapper,
+  .leaderboard-wrapper {
+    padding: 80px;
+  }
+
+  .reward-wrapper {
+    padding: 70px 80px;
   }
 
   .reward-wrapper>img {
     max-width: 700px;
+    align-self: center;
+  }
+
+  .partners-wrapper {
+    width: 100%;
     align-self: center;
   }
 }
