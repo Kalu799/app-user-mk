@@ -3,6 +3,9 @@ import { ref } from 'vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
 
+// URL de base de l'API (définie dans .env / variables Vercel)
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+
 // État de l'affichage
 const isLoginMode = ref(false)
 
@@ -20,7 +23,7 @@ const handleRegister = async (userData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -62,7 +65,7 @@ const handleLogin = async (loginData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -106,6 +109,14 @@ const switchMode = () => {
   successMsg.value = ''
 }
 </script>
+
+<template>
+  <!-- inchangé -->
+</template>
+
+<style scoped>
+/* inchangé */
+</style>
 
 <template>
   <div class="auth-layout">
