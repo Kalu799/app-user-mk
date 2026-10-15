@@ -2,30 +2,36 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Auth from '../pages/AuthPage.vue'
 import GuestHome from '../pages/GuestHomePage.vue'
 import HomePage from '../pages/HomePage.vue'
+import GamePage from '../pages/GamePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/guesthome'
+      redirect: '/guesthome',
     },
     {
       path: '/auth',
       name: 'auth',
-      component: Auth
+      component: Auth,
     },
     {
       path: '/guesthome',
       name: 'guesthome',
-      component: GuestHome
+      component: GuestHome,
     },
     {
       path: '/homepage',
       name: 'homepage',
-      component: HomePage
+      component: HomePage,
     },
-  ]
+    {
+      path: '/game',
+      name: 'game',
+      component: GamePage,
+    },
+  ],
 })
 
 export default router
