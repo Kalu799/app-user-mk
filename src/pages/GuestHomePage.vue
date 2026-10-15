@@ -18,7 +18,7 @@ const selectAnswer = (answer) => {
   <div class="guest-layout">
     <header class="header">
       <nav class="nav">
-        <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
+        <RouterLink to="/"><img src="/logo.png" alt="Movie King Logo" class="logo" /></RouterLink>
         <RouterLink to="/auth">Register/login</RouterLink>
       </nav>
     </header>
@@ -26,10 +26,14 @@ const selectAnswer = (answer) => {
     <main>
 
       <div class="hero">
+        <div class="hero-contain">
         <h2>Devient le king du cinéma !</h2>
         <p>Entraine toi</p>
         <p>Participe aux tournois</p>
         <p>Gagne des <span>PRIX</span> !</p>
+        </div>
+
+        <div class="hero-img"></div>
       </div>
 
       <div class="tuto-wrapper">
@@ -89,7 +93,7 @@ const selectAnswer = (answer) => {
         </nav>
 
         <div class="footer-bottom">
-          <img src="/Property 1=king.png" alt="Movie Kings" class="footer-logo" />
+          <img src="/Union.png" alt="Movie Kings" class="footer-logo" />
 
           <p>© 2027 Movie Kings</p>
         </div>
@@ -111,7 +115,7 @@ const selectAnswer = (answer) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #1c1c1c;
+  background-color: #E5DBCA;
   color: #f5efe3;
   font-family: 'Inter', sans-serif;
 }
@@ -157,9 +161,17 @@ main p {
 /* HERO */
 
 .hero {
-  background-color: #64a69d;
-  padding: 55px 25px;
-  border-bottom: 6px solid #e9dfca;
+  background: linear-gradient(#6FBAAE, #6EB8AC, #5E9E94);
+  /* Ajuste le padding vertical pour retrouver la hauteur d'avant */
+  padding: 80px 25px;
+  margin-block: 15px;
+
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 
   display: flex;
   flex-direction: column;
@@ -204,6 +216,7 @@ main p {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  background-color: #1E1E1E;
 }
 
 .tuto-wrapper h2 {
