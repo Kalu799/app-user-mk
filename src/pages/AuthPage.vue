@@ -5,7 +5,7 @@ import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
 
 const router = useRouter()
-const API_URL = '/api/auth'
+const API_URL = 'https://mk-cms-api-remake.vercel.app/api/auth'
 const TOKEN_KEY = 'movie-king-auth-token'
 
 // État de l'affichage
