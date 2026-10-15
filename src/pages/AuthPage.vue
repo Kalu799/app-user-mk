@@ -91,11 +91,7 @@ const switchMode = () => {
   <div class="auth-layout">
     <header class="header">
       <RouterLink to="/">
-        <img
-          src="/Property 1=king.png"
-          alt="Movie King Logo"
-          class="logo"
-        >
+        <img src="/Property 1=king.png" alt="Movie King Logo" class="logo">
       </RouterLink>
     </header>
 
@@ -104,20 +100,11 @@ const switchMode = () => {
         {{ isLoginMode ? 'Connexion' : 'Créer un compte' }}
       </h1>
 
-      <RegisterForm
-        v-if="!isLoginMode"
-        @dataFormRegister="handleRegister"
-      />
+      <RegisterForm v-if="!isLoginMode" @dataFormRegister="handleRegister" />
 
-      <LoginForm
-        v-else
-        @dataFormLogin="handleLogin"
-      />
+      <LoginForm v-else @dataFormLogin="handleLogin" />
 
-       <button
-        class="switch-btn"
-        @click="switchMode"
-      >
+      <button class="switch-btn" @click="switchMode">
         {{
           isLoginMode
             ? 'Je n’ai pas encore de compte'
@@ -125,24 +112,15 @@ const switchMode = () => {
         }}
       </button>
 
-      <p
-        v-if="isLoading"
-        class="msg info"
-      >
+      <p v-if="isLoading" class="msg info">
         Chargement en cours...
       </p>
 
-      <p
-        v-if="errorMsg"
-        class="msg error"
-      >
+      <p v-if="errorMsg" class="msg error">
         {{ errorMsg }}
       </p>
 
-      <p
-        v-if="successMsg"
-        class="msg success"
-      >
+      <p v-if="successMsg" class="msg success">
         {{ successMsg }}
       </p>
     </main>
