@@ -1,94 +1,63 @@
-# 🔐 05. Authentification : Pages d'accueil, Inscription et Connexion
+# Authentification et communication avec l'API
 
-Ce document décrit la fonctionnalité d'authentification de **Movie King** telle qu'elle est implémentée aujourd'hui, et ce qu'il reste à faire. Il s'appuie sur les principes expliqués dans [04 - Composants et flux de données](./04-composants-et-flux-de-donnees.md).
+L'application Vue ne se connecte jamais directement à MySQL. Elle appelle les routes Nitro du CMS, qui seules accèdent à la base de données. L'API utilise notamment les tables `users` et `auth_sessions`.
 
-## 🗂️ Les fichiers concernés
+## Parcours et fichiers
 
-| Fichier | Type | Rôle |
-|---|---|---|
-| `pages/GuestHomePage.vue` | Page | Accueil visiteur : header gris, logo (lien vers `/`) et lien « Register/login » vers `/auth`. Le `<main>` est vide pour l'instant. |
-| `pages/AuthPage.vue` | Page (smart) | Orchestre l'inscription et la connexion : appels API, messages de feedback, bascule entre les deux formulaires. |
-| `components/RegisterForm.vue` | Composant (dumb) | Formulaire d'inscription : `pseudo`, `mail`, `password`. Émet `dataFormRegister`. |
-| `components/LoginForm.vue` | Composant (dumb) | Formulaire de connexion : `mail`, `password`. Émet `dataFormLogin`. |
-
-## 🧭 Parcours utilisateur
-
-```text
-GET /  (GuestHomePage)
-   │  clic sur « Register/login »
-   ▼
-GET /auth  (AuthPage, isLoginMode = false)
-   │
-   ├── RegisterForm ──► handleRegister ──► POST /api/auth/register
-   │                                           │ succès
-   │                                           ▼
-   │                     message de succès + isLoginMode = true
-   │
-   └── LoginForm ─────► handleLogin ─────► POST /api/auth/login
-                                               │ succès
-                                               ▼
-                                   message « Connexion réussie ! »
-                                   (pas encore de redirection ni de stockage)
-```
-
-Le bouton situé sous le formulaire (« J'ai déjà un compte » / « Je n'ai pas encore de compte ») appelle `switchMode()` : il inverse `isLoginMode` et efface les messages d'erreur et de succès. Le titre `<h1>` change en conséquence (« Créer un compte » / « Connexion »).
-
-## 🧩 Contrat des composants
-
-### Événements émis
-
-| Composant | Événement | Données envoyées au parent |
-|---|---|---|
-| `RegisterForm` | `dataFormRegister` | `{ pseudo, mail, password }` |
-| `LoginForm` | `dataFormLogin` | `{ mail, password }` |
-
-Les deux composants suivent le même schéma : état local via une fonction `initial…State()`, `v-model.lazy.trim`, `@submit.prevent`, émission d'une **copie** (`{ ...state.value }`) puis réinitialisation du formulaire.
-
-### États locaux de `AuthPage`
-
-| `ref` | Rôle |
+| Fichier | Rôle |
 |---|---|
-| `isLoginMode` | `false` = formulaire d'inscription (valeur par défaut), `true` = formulaire de connexion |
-| `isLoading` | `true` pendant un appel API (affiche « Chargement en cours... ») |
-| `errorMsg` | Message d'erreur affiché en rouge |
-| `successMsg` | Message de succès affiché en vert |
+| `src/pages/AuthPage.vue` | Reçoit les données des formulaires, appelle directement l'API et navigue vers `/homepage` après une connexion réussie. |
+| `src/components/RegisterForm.vue` | Émet `{ pseudo, mail, password }` à l'inscription. |
+| `src/components/LoginForm.vue` | Émet `{ mail, password }` à la connexion. |
+| `src/pages/HomePage.vue` | Vérifie le JWT avec `me`, affiche le pseudo et appelle `logout` à la déconnexion. |
+| `vite.config.js` | En développement, relaie `/api/*` vers le CMS en ligne. |
+| `vercel.json` | En production, relaie `/api/*` vers le CMS avant la règle de repli SPA. |
 
-## 🌐 Contrat API attendu par le front
+L'authentification n'utilise **pas Pinia**. Les composants de formulaire émettent leurs données vers `AuthPage.vue`, puis cette page effectue directement les requêtes `fetch`. Le profil utilisateur reste dans l'état local de la page concernée ; il n'est pas placé dans un store global.
 
-Le front appelle des URL **relatives**. En développement, elles doivent être redirigées vers le backend (proxy dans `vite.config.js`, voir [01](./01-architecture-config.md)). Le backend est un serveur **Nitro**.
+## Routes utilisées
 
-| Action | Requête | Corps JSON |
+Toutes les requêtes partent de l'origine de l'application et utilisent le préfixe `/api/auth`. Le navigateur ne contacte donc pas directement le domaine du CMS.
+
+| Fonction | Méthode et chemin | Corps / en-tête |
 |---|---|---|
 | Inscription | `POST /api/auth/register` | `{ "pseudo": "...", "mail": "...", "password": "..." }` |
 | Connexion | `POST /api/auth/login` | `{ "mail": "...", "password": "..." }` |
+| Utilisateur courant | `GET /api/auth/me` | En-tête d'autorisation Bearer contenant le JWT |
+| Déconnexion | `POST /api/auth/logout` | En-tête d'autorisation Bearer contenant le JWT |
 
-* **Succès :** réponse HTTP 2xx avec un corps JSON (actuellement seulement affiché dans la console).
-* **Erreur :** réponse non 2xx avec un corps JSON contenant `statusMessage`. Ce texte est affiché tel quel à l'utilisateur ; s'il est absent, un message par défaut est utilisé (« Erreur lors de la création du compte » / « Erreur lors de la connexion »).
+L'inscription crée l'utilisateur mais ne le connecte pas. La connexion renvoie un JWT et un profil public. `me` vérifie le JWT et la session en base ; `logout` révoque la session en base.
 
-> Ce contrat est déduit du code front. Il doit être confirmé avec l'implémentation des routes serveur.
+## Gestion du JWT dans l'application
 
-## ⚠️ Points d'attention connus
+Après une connexion réussie, `AuthPage.vue` conserve uniquement le JWT dans `sessionStorage`, puis redirige vers `/homepage`. `HomePage.vue` vérifie le JWT en appelant `GET /api/auth/me`, garde le profil renvoyé dans un `ref` local à cette page, puis affiche le pseudo. Une réponse 401 efface le JWT et redirige vers `/auth`. La déconnexion appelle directement `POST /api/auth/logout`, efface le JWT et renvoie vers `/guesthome`. Aucun cookie, `credentials: 'include'` ou store Pinia n'est utilisé pour ce flux.
 
-1. **Formulaire vidé avant la réponse du serveur.** `sendData()` réinitialise le formulaire dès l'émission. Si l'API répond par une erreur (mail déjà pris, mauvais mot de passe), l'utilisateur doit tout ressaisir. Piste : laisser la page décider quand vider le formulaire (par exemple en exposant une méthode `reset()` via `defineExpose`, ou en vidant seulement en cas de succès).
-2. **Données sensibles dans la console.** `AuthPage.vue` contient des `console.log` de la réponse de l'API (`Nouvel utilisateur`, `Utilisateur connecté`). À supprimer avant toute mise en production.
-3. **`navigateTo` n'existe pas dans ce projet.** Le commentaire de `handleLogin` mentionne `navigateTo('/profile')`, qui est une fonction de **Nuxt**. Avec Vue Router, utilisez `const router = useRouter()` puis `router.push('/profile')`.
-4. **Stockage du token.** Le commentaire suggère `localStorage.setItem('token', ...)`. Ce stockage est exposé aux attaques XSS. Préférez un cookie `httpOnly` posé par le serveur ; à défaut, gardez le token dans le store Pinia.
-5. **Pas de validation côté client.** Aucun attribut `required`, `minlength` ou contrôle de format n'est défini sur les champs : un formulaire vide peut être soumis. La validation côté serveur reste indispensable dans tous les cas.
-6. **Langue de l'interface mélangée.** Titres de formulaires et boutons en anglais (« Register Form », « Register », « Register/login »), mais pages et messages en français (« Connexion », « Se connecter »). À uniformiser.
-7. **Styles dupliqués.** `RegisterForm.vue` et `LoginForm.vue` ont des blocs `<style scoped>` quasi identiques (`.form-wrapper`, `input`, `button`…), et le header est répété dans `AuthPage.vue` et `GuestHomePage.vue`. Candidats à l'extraction en composants partagés (ex : `AppHeader.vue`, `AuthFormWrapper.vue`).
-8. **Logo.** Le fichier `public/Property 1=king.png` a un nom fragile (voir [01](./01-architecture-config.md#le-dossier-public)).
+Le jeton n'est conservé que dans l'onglet courant : `sessionStorage` est effacé à la fermeture de l'onglet. Comme tout stockage accessible au JavaScript, il reste exposé en cas de faille XSS ; ne pas y stocker de mot de passe ou d'autres secrets.
 
-## ✅ Ce qui reste à faire
+## Pourquoi le navigateur affichait « Failed to fetch »
 
-* **Créer `stores/auth.js` (Pinia)** : stocker l'utilisateur connecté (et le token si besoin), avec des actions `login`, `logout`. `AuthPage` appellerait l'action au lieu de faire le `fetch` directement.
-* **Rediriger après connexion** (ex : vers une page profil ou un catalogue de films) avec `router.push`.
-* **Protéger les routes** privées avec une garde de navigation (`router.beforeEach`) qui vérifie `auth.user`.
-* **Remplir `GuestHomePage`** : le `<main>` est vide.
-* **Ajouter la validation** des formulaires et un état « chargement » sur les boutons (désactivés pendant `isLoading`).
+La page construisait son URL à partir de `VITE_API_BASE_URL` et appelait directement `https://nuxt-app-mk.vercel.app`. Depuis `http://localhost:5173`, le navigateur envoyait donc une requête inter-origines avec prévol CORS. Le CMS ne renvoyait pas `Access-Control-Allow-Origin` pour cette origine (le port Vite `5173` n'était pas dans les origines par défaut ; une URL d'origine terminée par `/` ne correspond pas non plus à l'en-tête `Origin`). Le navigateur bloquait la requête avant que le CMS ne traite l'inscription. Les tests Insomnia fonctionnaient car Insomnia n'applique pas la politique CORS du navigateur.
 
-## 🧪 Pas à pas : ajouter un nouveau formulaire
+Le correctif fait passer les appels par `/api` :
 
-1. Créer le composant dans `components/` : état local via `initial…State()`, `defineEmits(['dataForm<Action>'])`, `@submit.prevent`.
-2. Dans la page : importer le composant, écouter `@dataForm<Action>="handle<Action>"`.
-3. Écrire `handle<Action>` en suivant le modèle de `handleRegister` : remise à zéro des messages, `try / catch / finally`, `isLoading` géré dans le `finally`.
-4. Ne passer par Pinia que si le résultat doit être partagé entre plusieurs pages.
+* En local, le proxy Vite relaie `/api/*` au CMS.
+* Sur Vercel, une règle de réécriture relaie `/api/*` au CMS avant le fallback SPA.
+
+Pour le navigateur, la requête est désormais de même origine que l'application. Il n'y a donc pas besoin d'activer CORS pour ces appels. Le middleware CORS du CMS demeure utile aux autres clients web qui appelleraient directement son domaine.
+
+## Mise en ligne et configuration des domaines
+
+L'application peut être déployée séparément du CMS sur Vercel. Vérifier les points suivants :
+
+1. Configurer le projet Vercel de l'app avec la racine `App/app-user-mk` et lancer le build `npm run build`.
+2. Garder dans `vercel.json` la réécriture API vers `https://nuxt-app-mk.vercel.app`. Si le domaine du CMS change, modifier la destination puis redéployer l'app.
+3. La configuration Vite sert uniquement au développement local et ne détermine pas la destination en production.
+4. Les variables privées `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME` et `JWT_SECRET` restent définies uniquement dans le projet Vercel du CMS. Elles ne doivent pas être ajoutées au projet de l'app ni à une variable `VITE_*`.
+5. Le CMS doit autoriser son accès réseau à la base MySQL distante et la table `auth_sessions` doit exister (voir `CMS/nuxt-app-mk/sql/create_sessions.sql`). Le dump SQL fourni contient `users`, mais ne remplace pas la création de cette table de sessions.
+6. Le domaine personnalisé de l'app n'a pas besoin d'être ajouté aux règles de routage si la réécriture API Vercel est conservée. Si des pages web appellent directement le domaine du CMS, ajouter l'origine exacte (protocole + hôte, sans chemin ni barre finale) à `CORS_ORIGINS` sur le CMS.
+
+## Tester
+
+En local, lancer `npm run dev`, ouvrir `/auth`, puis créer un compte et se connecter. Après le succès de `POST /api/auth/login`, l'application navigue vers `/homepage`. Le navigateur doit appeler `/api/auth/...` sur l'origine locale ; il ne doit pas appeler directement `nuxt-app-mk.vercel.app`.
+
+Sur `/homepage`, vérifier le profil récupéré via `me`, puis utiliser « Déconnexion » pour révoquer la session. Pour contrôler la réponse de l'API sans l'interface, Insomnia peut continuer à appeler `https://nuxt-app-mk.vercel.app/api/auth/...` directement.

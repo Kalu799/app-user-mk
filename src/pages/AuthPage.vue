@@ -1,7 +1,12 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
+
+const router = useRouter()
+const API_URL = '/api/auth'
+const TOKEN_KEY = 'movie-king-auth-token'
 
 // État de l'affichage
 const isLoginMode = ref(false)
@@ -20,34 +25,21 @@ const handleRegister = async (userData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
     })
-
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(
-        data.statusMessage ||
-        'Erreur lors de la création du compte'
-      )
+      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
     }
 
-    successMsg.value =
-      'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
-
-    console.log('Nouvel utilisateur :', data)
-
-    // Affiche automatiquement le formulaire de connexion
+    successMsg.value = 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
     isLoginMode.value = true
-
   } catch (error) {
-    console.error("Erreur d'inscription :", error)
-    errorMsg.value = error.message
+    errorMsg.value = error.message || "Erreur lors de la création du compte"
   } finally {
     isLoading.value = false
   }
@@ -62,36 +54,24 @@ const handleLogin = async (loginData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(loginData)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginData),
     })
-
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(
-        data.statusMessage ||
-        'Erreur lors de la connexion'
-      )
+      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
+    }
+    if (!data.token || !data.user) {
+      throw new Error('Réponse invalide du serveur d’authentification')
     }
 
-    successMsg.value = 'Connexion réussie !'
-
-    console.log('Utilisateur connecté :', data)
-
-    // Exemple si ton API renvoie un token
-    // localStorage.setItem('token', data.token)
-
-    // Exemple de redirection
-    // await navigateTo('/profile')
-
+    window.sessionStorage.setItem(TOKEN_KEY, data.token)
+    await router.push('/homepage')
   } catch (error) {
-    console.error('Erreur de connexion :', error)
-    errorMsg.value = error.message
+    errorMsg.value = error.message || 'Erreur lors de la connexion'
   } finally {
     isLoading.value = false
   }
@@ -170,92 +150,179 @@ const switchMode = () => {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
 .auth-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  font-family: sans-serif;
+
+  background-color: #1c1c1c;
+  color: #f5efe3;
+  font-family: 'Inter', sans-serif;
 }
 
+/* HEADER — mêmes dimensions que la GuestHome */
+
 .header {
-  background-color: #dcdcdc;
   width: 100%;
-  padding: 20px 0;
+  padding: .5rem 1rem;
+
   display: flex;
-  justify-content: center;
+  align-items: center;
+
+  background-color: #f5efe3;
+}
+
+.header a {
+  display: inline-flex;
   align-items: center;
 }
 
 .logo {
+  display: block;
   height: 60px;
   object-fit: contain;
 }
 
+/* CONTENU */
+
 .main-content {
   flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 45px 20px 60px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 16px;
+  gap: 20px;
 }
 
+/* TITRE — reprend le traitement du hero */
+
 .page-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 16px;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 0 10px;
+  padding: 30px 20px;
+
+  background-color: #64a69d;
+  border-bottom: 6px solid #e9dfca;
+
+  color: #fff5df;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(2.8rem, 8vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  text-align: center;
+  text-shadow: 3px 4px 0 #344b43;
 }
+
+/* CHANGEMENT CONNEXION / INSCRIPTION */
 
 .switch-btn {
   width: 100%;
-  max-width: 350px;
-  margin-bottom: 20px;
-  padding: 12px;
+  max-width: 400px;
+  min-height: 55px;
+  margin: 10px 0 5px;
+  padding: 12px 20px;
 
-  background-color: #555;
-  color: white;
+  background-color: #e9dfca;
+  color: #1c1c1c;
 
-  border: none;
-  border-radius: 25px;
+  border: 3px solid #111;
+  border-radius: 2px;
+  box-shadow: 5px 5px 0 #000;
 
-  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  font-size: .95rem;
+  font-weight: 700;
+  line-height: 1.4;
+
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition:
+    background-color .2s,
+    transform .15s,
+    box-shadow .15s;
 }
 
 .switch-btn:hover {
-  background-color: #333;
+  background-color: #fff5df;
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 #000;
 }
 
+.switch-btn:active {
+  transform: translate(5px, 5px);
+  box-shadow: none;
+}
+
+.switch-btn:focus-visible {
+  outline: 3px solid #ff626b;
+  outline-offset: 6px;
+}
+
+/* MESSAGES */
+
 .msg {
-  margin-top: 16px;
-  padding: 10px;
-  border-radius: 4px;
-  text-align: center;
   width: 100%;
   max-width: 400px;
+  margin: 0;
+  padding: 18px 15px;
+
+  border-left: 5px solid;
+  border-radius: 2px;
+
+  font-size: .95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .info {
-  background-color: #e3f2fd;
-  color: #0d47a1;
+  background-color: #2b2b2b;
+  border-color: #64a69d;
+  color: #f5efe3;
 }
 
 .error {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: #2b2b2b;
+  border-color: #ff626b;
+  color: #ffe0e4;
 }
 
 .success {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: #64a69d;
+  border-color: #e9dfca;
+  color: #173c37;
 }
+
+/* TABLETTE ET DESKTOP */
 
 @media (min-width: 768px) {
   .main-content {
-    max-width: 500px;
-    margin: 0 auto;
+    padding: 60px 50px 80px;
+    gap: 25px;
+  }
+
+  .page-title {
+    padding: 40px 25px;
+    margin-bottom: 15px;
+  }
+}
+
+/* ACCESSIBILITÉ */
+
+@media (prefers-reduced-motion: reduce) {
+  .switch-btn {
+    transition: none;
   }
 }
 </style>

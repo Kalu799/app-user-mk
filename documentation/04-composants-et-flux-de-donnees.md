@@ -11,7 +11,7 @@ Ce sont les blocs de construction de l'interface (ex: `RegisterForm.vue`, `Login
 
 ### 2. Les Pages (`/src/pages/` ou vues via le router)
 Ce sont les chefs d'orchestre (ex: `AuthPage.vue`, `GuestHomePage.vue`).
-* **Elles sont "intelligentes" (Smart Components) :** Elles gèrent les appels à l'API (fetch), communiquent avec le Store (Pinia), et décident de ce qui doit s'afficher.
+* **Elles sont "intelligentes" (Smart Components) :** Elles gèrent les appels à l'API (fetch), leur état local, et décident de ce qui doit s'afficher. Certaines fonctionnalités partagées peuvent aussi utiliser Pinia.
 * **Leur rôle :** Importer les composants, leur passer des données, et écouter leurs événements pour déclencher des actions globales.
 * Une page statique comme `GuestHomePage.vue` n'a pas de logique : elle n'affiche que le header et un `RouterLink` vers `/auth`.
 
@@ -118,8 +118,8 @@ Les trois états de feedback (`isLoading`, `errorMsg`, `successMsg`) sont des `r
 Dans l'exemple ci-dessus, nous n'avons pas utilisé Pinia. Pourquoi ?
 Parce que l'état d'un formulaire d'inscription est **éphémère** et **local**. Une fois le compte créé, on n'a plus besoin de retenir le mot de passe tapé dans les autres pages.
 
-**Il faut utiliser un Store Pinia (`/src/stores/`) uniquement quand une donnée doit survivre à un changement de page et être accessible partout :**
-* 🟢 **OUI pour Pinia :** L'utilisateur actuellement connecté (`auth.user`), son token d'authentification, le thème sombre/clair du site, les articles dans un panier.
+Un Store Pinia (`/src/stores/`) peut être utilisé quand une donnée doit survivre à un changement de page et être accessible partout :
+* 🟢 **Exemples adaptés à Pinia :** le thème sombre/clair du site, les articles dans un panier ou un état global partagé.
 * 🔴 **NON pour Pinia :** Le texte en train d'être tapé dans une barre de recherche, les champs d'un formulaire, un spinner de chargement spécifique à un bouton, les messages `errorMsg` / `successMsg` de `AuthPage`.
 
-> 🔜 Le résultat de la **connexion** (utilisateur / token) est typiquement une donnée « OUI pour Pinia » : elle n'est pas encore stockée. Voir [05 - Authentification](./05-authentification.md#-ce-qui-reste-à-faire).
+> Pour cette application, le flux d'authentification est volontairement géré directement par les pages, sans Pinia : voir [05 - Authentification](./05-authentification.md).
