@@ -6,6 +6,7 @@ import LoginForm from '@/components/LoginForm.vue'
 
 const router = useRouter()
 const API_URL = import.meta.env.VITE_API_BASE_URL
+console.log('API_URL utilisée :', API_URL)
 const TOKEN_KEY = 'movie-king-auth-token'
 
 // État de l'affichage
