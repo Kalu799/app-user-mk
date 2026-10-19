@@ -5,7 +5,7 @@ import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
 
 const router = useRouter()
-const API_URL = 'https://mk-cms-api-remake.vercel.app/api/auth'
+const API_URL = import.meta.env.VITE_API_BASE_URL
 const TOKEN_KEY = 'movie-king-auth-token'
 
 // État de l'affichage
@@ -25,7 +25,7 @@ const handleRegister = async (userData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_URL}/register`, {
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -54,7 +54,7 @@ const handleLogin = async (loginData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginData),

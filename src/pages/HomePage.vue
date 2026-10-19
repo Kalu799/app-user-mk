@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 
-const API_URL = '/api/auth'
+const API_URL = import.meta.env.VITE_API_BASE_URL
 const TOKEN_KEY = 'movie-king-auth-token'
 const router = useRouter()
 const user = ref(null)
@@ -17,7 +17,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/me`, {
+    const response = await fetch(`${API_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     const data = await response.json()
@@ -31,7 +31,7 @@ onMounted(async () => {
       throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
     }
 
-    user.value = data.user
+    user.value = data
   } catch (error) {
     errorMsg.value = error.message || 'Impossible de charger le profil'
   } finally {
@@ -62,19 +62,19 @@ const logout = async () => {
 }
 </script>
 <template>
-    <div class="homepage">
-        <header class="header">
+  <div class="homepage">
+    <header class="header">
       <nav class="nav">
         <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
         <button type="button" @click="logout">Déconnexion</button>
       </nav>
     </header>
     <main>
-        <p v-if="isLoading">Chargement...</p>
-        <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
-        <h1 v-if="user">Bonjour {{ user.pseudo }}</h1>
+      <p v-if="isLoading">Chargement...</p>
+      <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
+      <h1 v-if="user">Bonjour {{ user.user_pseudo }}</h1>
     </main>
-    </div>
+  </div>
 </template>
 <style scoped>
 /* HEADER */
