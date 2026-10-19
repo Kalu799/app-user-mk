@@ -1,30 +1,52 @@
 <script setup>
+import { RouterLink, useRouter } from 'vue-router'
 
-import { RouterLink } from 'vue-router'
+import { useGameStore } from '../stores/game'
 
 import { ref } from 'vue'
 
 const selectedAnswer = ref(null)
 
 const selectAnswer = (answer) => {
-  selectedAnswer.value =
-    selectedAnswer.value === answer ? null : answer
+  selectedAnswer.value = selectedAnswer.value === answer ? null : answer
 }
 
+// Récupère le routeur et le store partagés par l'application.
+const router = useRouter()
+const gameStore = useGameStore()
+
+const launchGuestGame = async () => {
+  // Ignore les demandes répétées pendant le chargement.
+  if (gameStore.isStarting) {
+    return
+  }
+
+  // Prépare une partie Action, catégorie par défaut du parcours invité.
+  await gameStore.loadGame(5)
+
+  // En cas d'erreur, reste sur la guest page pour afficher le message.
+  if (gameStore.startError) {
+    return
+  }
+
+  // Les données sont prêtes : rejoint le jeu.
+  // La page de jeu démarrera elle-même le chrono après son affichage.
+  await router.push({ name: 'game' })
+}
 </script>
 
 <template>
-
   <div class="guest-layout">
     <header class="header">
       <nav class="nav">
-        <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
+        <RouterLink to="/"
+          ><img src="/Property 1=king.png" alt="Movie King Logo" class="logo"
+        /></RouterLink>
         <RouterLink to="/auth">Register/login</RouterLink>
       </nav>
     </header>
 
     <main>
-
       <div class="hero">
         <h2>Devient le king du cinéma !</h2>
         <p>Entraine toi</p>
@@ -44,31 +66,52 @@ const selectAnswer = (answer) => {
         </div>
 
         <div class="tuto-answers-wrapper">
-          <button class="tuto-answer" :class="{ selected: selectedAnswer === 'inglorious' }"
-            :aria-pressed="selectedAnswer === 'inglorious'" @click="selectAnswer('inglorious')">
+          <button
+            class="tuto-answer"
+            :class="{ selected: selectedAnswer === 'inglorious' }"
+            :aria-pressed="selectedAnswer === 'inglorious'"
+            @click="selectAnswer('inglorious')"
+          >
             Inglorious Basterds
           </button>
 
-          <button class="tuto-answer" :class="{ selected: selectedAnswer === 'django' }"
-            :aria-pressed="selectedAnswer === 'django'" @click="selectAnswer('django')">
+          <button
+            class="tuto-answer"
+            :class="{ selected: selectedAnswer === 'django' }"
+            :aria-pressed="selectedAnswer === 'django'"
+            @click="selectAnswer('django')"
+          >
             Django Unchained
           </button>
         </div>
 
-        <button class="btn-play">JOUER (WIP)</button>
+        <!-- Lance la partie Action et bloque les clics pendant sa récupération. -->
+        <button
+          type="button"
+          class="btn-play"
+          :disabled="gameStore.isStarting"
+          @click="launchGuestGame"
+        >
+          {{ gameStore.isStarting ? 'Chargement…' : 'JOUER' }}
+        </button>
+
+        <!-- Affiche une erreur de démarrage sans envoyer le joueur vers le jeu. -->
+        <p v-if="gameStore.startError" role="alert">
+          {{ gameStore.startError }}
+        </p>
       </div>
 
       <div class="reward-wrapper">
         <h2>Nos récompenses</h2>
 
-        <img src="" alt="photo d'une salle de cinéma">
+        <img src="" alt="photo d'une salle de cinéma" />
 
         <p>Gagne des tickets pour aller voir de nombreux films dans les cinéma participants</p>
         <p>Et aussi des superbes chapeaux pour personnaliser ton avatar</p>
 
         <div class="partners-wrapper">
-          <img class="partner-img" src="" alt="photo ou logo d'un partenaire">
-          <img class="partner-img" src="" alt="photo ou logo d'un partenaire">
+          <img class="partner-img" src="" alt="photo ou logo d'un partenaire" />
+          <img class="partner-img" src="" alt="photo ou logo d'un partenaire" />
         </div>
       </div>
 
@@ -76,7 +119,6 @@ const selectAnswer = (answer) => {
         <h2>Classement général</h2>
         <p>Il y aura un classement ici (WIP)</p>
       </div>
-
     </main>
 
     <footer class="footer">
@@ -95,9 +137,7 @@ const selectAnswer = (answer) => {
         </div>
       </div>
     </footer>
-
   </div>
-
 </template>
 
 <style scoped>
@@ -121,7 +161,7 @@ const selectAnswer = (answer) => {
 .header {
   background-color: #f5efe3;
   width: 100%;
-  padding-block: .5rem;
+  padding-block: 0.5rem;
 }
 
 .nav {
@@ -265,7 +305,8 @@ main p {
   font-weight: 700;
 
   cursor: pointer;
-  transition: border-color 0.2s,
+  transition:
+    border-color 0.2s,
     background-color 0.2s;
 }
 
@@ -300,7 +341,8 @@ main p {
   text-transform: uppercase;
 
   cursor: pointer;
-  transition: transform 0.15s,
+  transition:
+    transform 0.15s,
     box-shadow 0.15s;
 }
 
@@ -327,7 +369,7 @@ main p {
   line-height: 1;
 }
 
-.reward-wrapper>img {
+.reward-wrapper > img {
   display: block;
   width: 100%;
   height: 180px;
@@ -338,12 +380,12 @@ main p {
   color: white;
 }
 
-.reward-wrapper>p {
+.reward-wrapper > p {
   font-size: 1.1rem;
   line-height: 1.6;
 }
 
-.reward-wrapper>p:nth-of-type(2) {
+.reward-wrapper > p:nth-of-type(2) {
   font-size: 1rem;
   line-height: 1.5;
   color: #ffe0e4;
@@ -420,7 +462,7 @@ main p {
     padding: 60px 50px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     height: 280px;
   }
 
@@ -449,7 +491,7 @@ main p {
     padding: 70px 80px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     max-width: 700px;
     align-self: center;
   }
