@@ -41,24 +41,8 @@ onMounted(async () => {
 
 const logout = async () => {
   errorMsg.value = ''
-  const token = window.sessionStorage.getItem(TOKEN_KEY)
-
-  try {
-    const response = await fetch(`${API_URL}/logout`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
-    }
-
-    window.sessionStorage.removeItem(TOKEN_KEY)
-    await router.push('/guesthome')
-  } catch (error) {
-    errorMsg.value = error.message || 'Impossible de se déconnecter'
-  }
+  window.sessionStorage.removeItem(TOKEN_KEY)
+  await router.push('/guesthome')
 }
 </script>
 <template>
