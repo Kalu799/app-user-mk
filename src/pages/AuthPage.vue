@@ -5,7 +5,8 @@ import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
 
 const router = useRouter()
-const API_URL = '/api/auth'
+const API_URL = import.meta.env.VITE_API_BASE_URL
+//console.log('API_URL utilisée :', API_URL)
 const TOKEN_KEY = 'movie-king-auth-token'
 
 // État de l'affichage
@@ -25,7 +26,7 @@ const handleRegister = async (userData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_URL}/register`, {
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -54,7 +55,7 @@ const handleLogin = async (loginData) => {
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginData),
@@ -91,11 +92,7 @@ const switchMode = () => {
   <div class="auth-layout">
     <header class="header">
       <RouterLink to="/">
-        <img
-          src="/Property 1=king.png"
-          alt="Movie King Logo"
-          class="logo"
-        >
+        <img src="/Property 1=king.png" alt="Movie King Logo" class="logo">
       </RouterLink>
     </header>
 
@@ -104,20 +101,11 @@ const switchMode = () => {
         {{ isLoginMode ? 'Connexion' : 'Créer un compte' }}
       </h1>
 
-      <RegisterForm
-        v-if="!isLoginMode"
-        @dataFormRegister="handleRegister"
-      />
+      <RegisterForm v-if="!isLoginMode" @dataFormRegister="handleRegister" />
 
-      <LoginForm
-        v-else
-        @dataFormLogin="handleLogin"
-      />
+      <LoginForm v-else @dataFormLogin="handleLogin" />
 
-       <button
-        class="switch-btn"
-        @click="switchMode"
-      >
+      <button class="switch-btn" @click="switchMode">
         {{
           isLoginMode
             ? 'Je n’ai pas encore de compte'
@@ -125,24 +113,15 @@ const switchMode = () => {
         }}
       </button>
 
-      <p
-        v-if="isLoading"
-        class="msg info"
-      >
+      <p v-if="isLoading" class="msg info">
         Chargement en cours...
       </p>
 
-      <p
-        v-if="errorMsg"
-        class="msg error"
-      >
+      <p v-if="errorMsg" class="msg error">
         {{ errorMsg }}
       </p>
 
-      <p
-        v-if="successMsg"
-        class="msg success"
-      >
+      <p v-if="successMsg" class="msg success">
         {{ successMsg }}
       </p>
     </main>

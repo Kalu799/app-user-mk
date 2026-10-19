@@ -2,7 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 
-const API_URL = '/api/auth'
+const API_URL = import.meta.env.VITE_API_BASE_URL
+//console.log('API_URL utilisée :', API_URL)
 const TOKEN_KEY = 'movie-king-auth-token'
 const router = useRouter()
 const user = ref(null)
@@ -17,7 +18,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/me`, {
+    const response = await fetch(`${API_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     const data = await response.json()
@@ -31,7 +32,7 @@ onMounted(async () => {
       throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
     }
 
-    user.value = data.user
+    user.value = data
   } catch (error) {
     errorMsg.value = error.message || 'Impossible de charger le profil'
   } finally {
@@ -41,40 +42,24 @@ onMounted(async () => {
 
 const logout = async () => {
   errorMsg.value = ''
-  const token = window.sessionStorage.getItem(TOKEN_KEY)
-
-  try {
-    const response = await fetch(`${API_URL}/logout`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
-    }
-
-    window.sessionStorage.removeItem(TOKEN_KEY)
-    await router.push('/guesthome')
-  } catch (error) {
-    errorMsg.value = error.message || 'Impossible de se déconnecter'
-  }
+  window.sessionStorage.removeItem(TOKEN_KEY)
+  await router.push('/guesthome')
 }
 </script>
 <template>
-    <div class="homepage">
-        <header class="header">
+  <div class="homepage">
+    <header class="header">
       <nav class="nav">
         <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
         <button type="button" @click="logout">Déconnexion</button>
       </nav>
     </header>
     <main>
-        <p v-if="isLoading">Chargement...</p>
-        <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
-        <h1 v-if="user">Bonjour {{ user.pseudo }}</h1>
+      <p v-if="isLoading">Chargement...</p>
+      <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
+      <h1 v-if="user">Bonjour {{ user.user_pseudo }}</h1>
     </main>
-    </div>
+  </div>
 </template>
 <style scoped>
 /* HEADER */
