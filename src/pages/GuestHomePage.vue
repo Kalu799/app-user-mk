@@ -26,41 +26,59 @@ const selectAnswer = (answer) => {
     <main>
 
       <div class="hero">
-        <div class="hero-contain">
-        <h2>Devient le king du cinéma !</h2>
-        <p>Entraine toi</p>
-        <p>Participe aux tournois</p>
-        <p>Gagne des <span>PRIX</span> !</p>
+        <div class="hero-content">
+          <h2>Devient le king du cinéma !</h2>
+          <p>Entraine toi</p>
+          <p>Participe aux tournois</p>
+          <div class="hero-link">
+            <p>Gagne des <span>PRIX</span> !</p>
+          </div>
         </div>
 
-        <div class="hero-img"></div>
+        <div class="hero-img">
+          <img src="/seat.png" alt="">
+        </div>
       </div>
 
       <div class="tuto-wrapper">
-        <h2>Comment jouer ?</h2>
-
-        <div class="tuto-question">
-          <p>De quel film provient cette réplique</p>
+        <!-- COLONNE GAUCHE (MONSTRE) -->
+        <div class="tuto-monster-column">
+          <div class="monster-container">
+            <img src="/crown.png" alt="" class="big-crown" />
+            <img src="/ghoster-blue.png" alt="" class="tuto-monster" />
+          </div>
         </div>
+        
+        <!-- COLONNE DROITE (QUIZ) -->
+        <div class="tuto-content-column">
+          <div class="tuto-header">
+            <img src="/crown.png" alt="">
+            <h2>Comment jouer ?</h2>
+          </div>
 
-        <div class="tuto-quote">
-          <p>"Attendez la crème ... !"</p>
-        </div>
+          <div class="tuto-question">
+            <p>De quel film provient cette réplique</p>
+          </div>
 
-        <div class="tuto-answers-wrapper">
-          <button class="tuto-answer" :class="{ selected: selectedAnswer === 'inglorious' }"
-            :aria-pressed="selectedAnswer === 'inglorious'" @click="selectAnswer('inglorious')">
-            Inglorious Basterds
-          </button>
+          <div class="tuto-quote">
+            <p>"Attendez la crème ... !"</p>
+          </div>
 
-          <button class="tuto-answer" :class="{ selected: selectedAnswer === 'django' }"
-            :aria-pressed="selectedAnswer === 'django'" @click="selectAnswer('django')">
-            Django Unchained
-          </button>
-        </div>
+          <div class="tuto-answers-wrapper">
+            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'inglorious' }"
+              :aria-pressed="selectedAnswer === 'inglorious'" @click="selectAnswer('inglorious')">
+              Inglorious Basterds
+            </button>
 
-        <button class="btn-play">JOUER (WIP)</button>
-      </div>
+            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'django' }"
+              :aria-pressed="selectedAnswer === 'django'" @click="selectAnswer('django')">
+              Django Unchained
+            </button>
+          </div>
+
+          <button class="btn-play">JOUER (WIP)</button>
+        </div> <!-- Fin tuto-content-column -->
+      </div> <!-- Fin tuto-wrapper -->
 
       <div class="reward-wrapper">
         <h2>Nos récompenses</h2>
@@ -93,7 +111,7 @@ const selectAnswer = (answer) => {
         </nav>
 
         <div class="footer-bottom">
-          <img src="/Union.png" alt="Movie Kings" class="footer-logo" />
+          <img src="/logokingwhite.png" alt="Movie Kings" class="footer-logo" />
 
           <p>© 2027 Movie Kings</p>
         </div>
@@ -106,6 +124,10 @@ const selectAnswer = (answer) => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ======================================================== */
+/* GENERAL / RESET */
+/* ======================================================== */
 
 :where(*, *::before, *::after) {
   box-sizing: border-box;
@@ -120,7 +142,9 @@ const selectAnswer = (answer) => {
   font-family: 'Inter', sans-serif;
 }
 
+/* ======================================================== */
 /* HEADER */
+/* ======================================================== */
 
 .header {
   background-color: #f5efe3;
@@ -140,11 +164,12 @@ const selectAnswer = (answer) => {
   object-fit: contain;
 }
 
+/* ======================================================== */
 /* MAIN */
+/* ======================================================== */
 
 main {
   width: 100%;
-  max-width: 1100px;
   margin-inline: auto;
 }
 
@@ -158,15 +183,17 @@ main p {
   margin: 0;
 }
 
+/* ======================================================== */
 /* HERO */
+/* ======================================================== */
 
 .hero {
   background: linear-gradient(#6FBAAE, #6EB8AC, #5E9E94);
-  /* Ajuste le padding vertical pour retrouver la hauteur d'avant */
-  padding: 80px 25px;
+  padding: 40px 25px;
   margin-block: 15px;
 
   width: 100vw;
+  height: 36rem;
   position: relative;
   left: 50%;
   right: 50%;
@@ -174,18 +201,26 @@ main p {
   margin-right: -50vw;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   gap: 15px;
 
   text-align: center;
 }
 
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
 .hero h2 {
-  max-width: 320px;
+  max-width: 600px;
   margin-bottom: 15px;
 
-  font-size: clamp(2.8rem, 11vw, 4.5rem);
+  font-size: clamp(3.5rem, 13vw, 5.5rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -1px;
@@ -196,38 +231,191 @@ main p {
 
 .hero p {
   color: #173c37;
-  font-size: 1.15rem;
+  font-size: 1.50rem;
   line-height: 1.5;
   font-weight: 500;
 }
 
-.hero span {
-  color: #ffdd66;
-  font-weight: 800;
-  font-size: 1.2em;
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  
+  /* Fond verre givré subtil qui ressort très bien sur le turquoise */
+  background: rgba(255, 245, 223, 0.15);
+  backdrop-filter: blur(8px);
+  
+  /* Contour fin avec une touche corail/pêche */
+  border: 1px solid rgba(255, 142, 117, 0.4);
+  padding: 8px 18px;
+  border-radius: 12px;
+  
+  color: #fff5df;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+  
+  /* Ombre portée douce sous tout le bloc */
+  box-shadow: 0 4px 15px rgba(23, 60, 55, 0.15);
+  
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* Style spécifique pour le mot PRIX */
+.hero-link span {
+  background: linear-gradient(135deg, #ffc4ab 0%, #ff8e75 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Effet d'interaction sur TOUTE la cartouche au survol */
+.hero-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 142, 117, 0.8);
+  box-shadow: 0 6px 20px rgba(255, 142, 117, 0.25);
+  background: rgba(255, 245, 223, 0.22);
+}
+
+.hero-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-img img {
+  width: 100%;
+  max-width: 450px; /* Change cette valeur pour grossir ou rétrécir l'image (ex: 250px, 400px...) */
+  height: auto;
+  object-fit: contain;
+}
+
+/* ======================================================== */
 /* TUTORIEL */
+/* ======================================================== */
 
 .tuto-wrapper {
-  padding: 45px 20px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  padding: 80px 40px 0 40px; /* Plus d'espace en haut/bas */
   background-color: #1E1E1E;
+  position: relative;
+  overflow: visible; /* CRUCIAL : permet au monstre de dépasser en bas */
+  
+  /* Flexbox pour créer deux colonnes */
+  display: flex;
+  justify-content: space-between; /* Espace entre les deux colonnes */
+  align-items: flex-end; /* Centre verticalement le monstre et le tuto */
+  gap: 60px; /* Espace entre le monstre et le contenu du tuto */
+  
+  max-width: 1400px; /* Ajuste selon tes préférences, comme vu précédemment */
+  margin-inline: auto;
 }
 
-.tuto-wrapper h2 {
+.tuto-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  font-size: 2rem;
+  height: 100%;
+  
+  background-image: url('/pattern.svg');
+  background-repeat: repeat; /* Répète le motif en mosaïque */
+  background-position: center;
+  
+  opacity: 0.3; /* */
+  
+  pointer-events: none; /* Permet d'interagir avec les éléments derrière si besoin */
+  z-index: 0;
+}
+
+/* Force TOUS les enfants directs de .tuto-wrapper à passer au-dessus du pattern */
+.tuto-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------- */
+/* TUTORIEL : COLONNE GAUCHE (MONSTRE) */
+/* -------------------------------------------------------- */
+
+.tuto-monster-column {
+  flex: 1; /* Prend l'espace disponible à gauche */
+  display: flex;
+  justify-content: flex-end; /* Pousse le monstre vers la droite DE SA COLONNE (le centre) */
+  padding-inline-end: 20px; /* Ajuste pour le "recentrer" par rapport au tuto */
+  position: relative;
+  z-index: 10;
+}
+
+.monster-container {
+  position: relative; /* Repère pour la couronne géante */
+  display: inline-block;
+}
+
+.tuto-monster {
+  display: block;
+  width: auto;
+  height: 350px; /* Ajuste la taille du monstre selon ton design */
+  object-fit: contain;
+  
+  transform: translateY(60px);
+  margin-bottom: -60px; /* Valeur négative = dépassement dans la section rouge */
+}
+
+.big-crown {
+  position: absolute;
+  top: -270px; /* Ajuste pour poser la couronne géante */
+  left: 50%;
+  transform: translateX(-50%); /* Centre la couronne sur la tête du monstre */
+  width: 350px; /* Ajuste la taille de la couronne géante */
+  height: auto;
+  z-index: 3;
+}
+
+/* -------------------------------------------------------- */
+/* TUTORIEL : COLONNE DROITE (CONTENU & QUIZ) */
+/* -------------------------------------------------------- */
+
+.tuto-content-column {
+  flex: 1.2; /* Prend un peu plus d'espace que le monstre */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre les éléments textuels entre eux */
+  gap: 25px;
+  text-align: center;
+}
+
+.tuto-header {
+  position: relative; /* Permet de caler la couronne par rapport à cette boîte */
+  display: inline-block; /* Ajuste la largeur du bloc au texte exact */
+  margin-bottom: 20px;
+}
+
+/* Le titre principal */
+.tuto-header h2 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 2.5rem;
   font-weight: 800;
   line-height: 1;
+  color: #fff;
+  margin: 0;
+}
+
+/* La couronne positionnée au-dessus du '?' */
+.tuto-header img {
+  position: absolute;
+  top: -24px;  /* Monte la couronne au-dessus du texte (ajuste entre -15px et -22px si besoin) */
+  right: -8.1px;  /* Aligne la couronne au bout du texte (sur le point d'interrogation) */
+  width: 30px;  /* Ajuste la taille de la couronne */
+  height: auto;
+  pointer-events: none;
 }
 
 .tuto-question {
   width: 100%;
+  max-width: 500px;
   padding: 25px 15px;
 
   background-color: #2b2b2b;
@@ -255,10 +443,11 @@ main p {
 /* REPONSES */
 
 .tuto-answers-wrapper {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   gap: 15px;
+  width: 100%;
+  max-width: 520px;
 }
 
 .tuto-answer {
@@ -266,11 +455,13 @@ main p {
   min-height: 75px;
   padding: 15px 12px;
 
-  background-color: #e9dfca;
+  background-color: #f4ebd0;
   color: #1c1c1c;
 
-  border: 3px solid transparent;
-  border-radius: 5px;
+  border: 2px solid #1c1c1c;
+  border-radius: 8px;
+
+  box-shadow: 0 4px 0 #1c1c1c;
 
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem;
@@ -278,17 +469,20 @@ main p {
   font-weight: 700;
 
   cursor: pointer;
-  transition: border-color 0.2s,
-    background-color 0.2s;
+  transition: all 0.15s ease-in-out;
 }
 
 .tuto-answer:hover {
-  background-color: #fff5df;
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1c1c1c;
 }
 
 .tuto-answer.selected {
-  border-color: #ff626b;
-  background-color: #fff5df;
+  background-color: #ff626b;
+  color: #fff5df;
+  border-color: #1c1c1c;
+  box-shadow: 0 2px 0 #1c1c1c;
+  transform: translateY(2px);
 }
 
 /* BOUTON JOUER */
@@ -322,7 +516,9 @@ main p {
   box-shadow: 2px 2px 0 #000;
 }
 
+/* ======================================================== */
 /* RECOMPENSES */
+/* ======================================================== */
 
 .reward-wrapper {
   padding: 35px 20px;
@@ -332,6 +528,33 @@ main p {
   display: flex;
   flex-direction: column;
   gap: 15px;
+
+  position: relative; /* Bloque le pattern dans ce conteneur */
+  overflow: visible;   /* Empêche tout dépassement */
+  z-index: 1;
+}
+
+.reward-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  background-image: url('/pattern.svg');
+  background-repeat: repeat; /* Répète le motif en mosaïque */
+  background-position: center;
+  
+  opacity: 0.4; /* */
+  
+  pointer-events: none; /* Permet d'interagir avec les éléments derrière si besoin */
+  z-index: 0;
+}
+
+.reward-wrapper > * {
+  position: relative;
+  z-index: 1;
 }
 
 .reward-wrapper h2 {
@@ -340,7 +563,7 @@ main p {
   line-height: 1;
 }
 
-.reward-wrapper>img {
+.reward-wrapper > img {
   display: block;
   width: 100%;
   height: 180px;
@@ -351,18 +574,20 @@ main p {
   color: white;
 }
 
-.reward-wrapper>p {
+.reward-wrapper > p {
   font-size: 1.1rem;
   line-height: 1.6;
 }
 
-.reward-wrapper>p:nth-of-type(2) {
+.reward-wrapper > p:nth-of-type(2) {
   font-size: 1rem;
   line-height: 1.5;
   color: #ffe0e4;
 }
 
-/* PARTENAIRES */
+/* -------------------------------------------------------- */
+/* RECOMPENSES : PARTENAIRES */
+/* -------------------------------------------------------- */
 
 .partners-wrapper {
   display: flex;
@@ -371,7 +596,6 @@ main p {
 }
 
 .partner-img {
-  width: calc(50% - 7.5px);
   height: 120px;
 
   background-color: #1c1c1c;
@@ -382,7 +606,9 @@ main p {
   color: white;
 }
 
+/* ======================================================== */
 /* CLASSEMENT */
+/* ======================================================== */
 
 .leaderboard-wrapper {
   padding: 45px 20px;
@@ -408,7 +634,25 @@ main p {
   text-align: center;
 }
 
-/* TABLETTE */
+/* ======================================================== */
+/* STYLE GROUPE : TUTO, RECOMPENSES & CLASSEMENT */
+/* ======================================================== */
+
+.tuto-wrapper,
+.reward-wrapper,
+.leaderboard-wrapper {
+  /* S'étend sur toute la largeur de l'écran (Full Width) */
+  width: 92%;
+  max-width: 1300px;
+  margin-inline: auto;
+  
+  /* Centrage du contenu interne pour garder de la cohérence visuelle */
+  box-sizing: border-box;
+}
+
+/* ======================================================== */
+/* RESPONSIVE : TABLETTE (min-width: 768px) */
+/* ======================================================== */
 
 @media (min-width: 768px) {
   .hero {
@@ -433,7 +677,7 @@ main p {
     padding: 60px 50px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     height: 280px;
   }
 
@@ -446,7 +690,9 @@ main p {
   }
 }
 
-/* DESKTOP */
+/* ======================================================== */
+/* RESPONSIVE : DESKTOP (min-width: 1024px) */
+/* ======================================================== */
 
 @media (min-width: 1024px) {
   .hero {
@@ -462,7 +708,7 @@ main p {
     padding: 70px 80px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     max-width: 700px;
     align-self: center;
   }
@@ -473,11 +719,13 @@ main p {
   }
 }
 
+/* ======================================================== */
 /* FOOTER */
+/* ======================================================== */
 
 .footer {
   width: 100%;
-  margin-top: auto;
+  margin-top: 3px;
   background-color: #181818;
   color: #e9dfca;
 }
@@ -533,7 +781,9 @@ main p {
   font-size: 0.8rem;
 }
 
-/* TABLETTE ET DESKTOP */
+/* ======================================================== */
+/* FOOTER : TABLETTE ET DESKTOP */
+/* ======================================================== */
 
 @media (min-width: 768px) {
   .footer-content {
