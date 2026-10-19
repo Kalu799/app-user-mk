@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useGameStore } from '../stores/game'
 import Auth from '../pages/AuthPage.vue'
 import GuestHome from '../pages/GuestHomePage.vue'
 import HomePage from '../pages/HomePage.vue'
@@ -30,6 +31,20 @@ const router = createRouter({
       path: '/game',
       name: 'game',
       component: GamePage,
+
+      // Ce contrôle s'exécute avant d'entrer sur la page de jeu.
+      beforeEnter: () => {
+        // Récupère le store au moment de la navigation.
+        const gameStore = useGameStore()
+
+        // Sans partie prête, renvoie vers l'accueil invité.
+        if (!gameStore.game || gameStore.isStarting) {
+          return { name: 'guesthome' }
+        }
+
+        // Autorise l'accès lorsque les données sont disponibles.
+        return true
+      },
     },
   ],
 })
