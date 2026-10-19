@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import BottomNav from '@/components/BottomNav.vue'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 //console.log('API_URL utilisée :', API_URL)
@@ -59,6 +60,8 @@ const logout = async () => {
       <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
       <h1 v-if="user">Bonjour {{ user.user_pseudo }}</h1>
     </main>
+    <!-- Affiche la navigation sur cette page. -->
+    <BottomNav />
   </div>
 </template>
 <style scoped>
@@ -84,5 +87,11 @@ const logout = async () => {
 
 button {
   cursor: pointer;
+}
+/* Réserve de la place pour la navigation fixée au-dessus du contenu. */
+.homepage {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
 }
 </style>
