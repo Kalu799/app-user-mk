@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
-console.log('API_URL utilisée :', API_URL)
+//console.log('API_URL utilisée :', API_URL)
 const TOKEN_KEY = 'movie-king-auth-token'
 const router = useRouter()
 const user = ref(null)
