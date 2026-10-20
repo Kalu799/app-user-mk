@@ -21,8 +21,8 @@ const launchGuestGame = async () => {
     return
   }
 
-  // Prépare une partie Action, catégorie par défaut du parcours invité.
-  await gameStore.loadGame(5)
+  // Prépare une partie invitée avec toutes les catégories.
+await gameStore.loadGame(null)
 
   // En cas d'erreur, reste sur la guest page pour afficher le message.
   if (gameStore.startError) {

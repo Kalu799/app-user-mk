@@ -164,10 +164,11 @@ export const useGameStore = defineStore('game', {
           throw new Error('La partie doit être terminée avant sa correction')
         }
 
-        // Attend le résultat fourni par le service.
-        const result = await finishGame(game.game_id, {
-          answers: this.answers,
-        })
+        // Transmet les réponses et le jeton reçu au démarrage de cette partie.
+const result = await finishGame(game.game_id, {
+  answers: this.answers,
+  gameToken: game.game_token,
+})
 
         // Conserve le résultat uniquement si cette partie est toujours courante.
         if (this.game === game) {

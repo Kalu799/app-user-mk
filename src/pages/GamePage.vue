@@ -194,10 +194,24 @@ const goBack = () => {
         </section>
       </div>
 
-      <!-- Conserve le message provisoire ; la page de récapitulatif reste séparée. -->
-      <p v-if="gameStore.game && !gameStore.currentQuestion" class="game-message" role="status">
-        Partie terminée : {{ gameStore.answers.length }} réponses enregistrées.
-      </p>
+      <!-- Indique que le serveur est en train de corriger la partie. -->
+<p v-if="gameStore.isFinishing" class="game-message" role="status">
+  Calcul du résultat en cours…
+</p>
+
+<!-- Rend visible une éventuelle erreur de correction. -->
+<p
+  v-else-if="gameStore.finishError"
+  class="game-message error-message"
+  role="alert"
+>
+  {{ gameStore.finishError }}
+</p>
+
+<!-- Confirme la réception du résultat avant le futur écran récapitulatif. -->
+<p v-else-if="gameStore.result" class="game-message" role="status">
+  Partie terminée : résultat reçu !
+</p>
     </main>
   </div>
 </template>
