@@ -3,7 +3,7 @@ import { RouterLink, useRouter } from 'vue-router'
 
 import { useGameStore } from '../stores/game'
 
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 
 const selectedAnswer = ref(null)
 
@@ -14,12 +14,39 @@ const selectAnswer = (answer) => {
 const scrollToRewards = () => {
   const el = document.getElementById('rewards')
   if (el) {
-    const yOffset = -65; // Ajuste cette valeur (en pixels) pour remonter ou descendre le point d'arrêt
-    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    const yOffset = -65 // Ajuste cette valeur (en pixels) pour remonter ou descendre le point d'arrêt
+    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset
     window.scrollTo({ top: y, behavior: 'smooth' })
   }
 }
+// Récupère le store du jeu et le routeur déjà importés.
+const gameStore = useGameStore()
+const router = useRouter()
 
+// Évite une navigation tardive si le joueur quitte cette page.
+let isPageActive = true
+
+onUnmounted(() => {
+  isPageActive = false
+})
+
+const launchGuestGame = async () => {
+  // Ignore les clics répétés pendant le chargement.
+  if (gameStore.isStarting) {
+    return
+  }
+
+  // Demande une partie toutes catégories auprès de l’API.
+  await gameStore.loadGame(null)
+
+  // Reste sur place en cas d’erreur et respecte un départ de la page.
+  if (!isPageActive || gameStore.startError) {
+    return
+  }
+
+  // Ouvre le jeu lorsque ses données sont disponibles.
+  await router.push({ name: 'game' })
+}
 </script>
 
 <template>
@@ -29,20 +56,16 @@ const scrollToRewards = () => {
         <RouterLink to="/"><img src="/logo.png" alt="Movie King Logo" class="logo" /></RouterLink>
 
         <div class="nav-actions">
-          <RouterLink to="/auth" class="btn-nav">
-            Connexion
-          </RouterLink>
+          <RouterLink to="/auth" class="btn-nav"> Connexion </RouterLink>
 
-          <RouterLink to="/auth" class="btn-nav active">
-            Inscription
-          </RouterLink>
+          <RouterLink to="/auth" class="btn-nav active"> Inscription </RouterLink>
         </div>
       </nav>
     </header>
 
     <main>
       <div class="hero">
-        <img src="/crown.png" alt="Couronne" class="hero-crown">
+        <img src="/crown.png" alt="Couronne" class="hero-crown" />
         <div class="hero-content">
           <h2>Devient le king du cinéma !</h2>
           <p>Entraine toi</p>
@@ -53,7 +76,7 @@ const scrollToRewards = () => {
         </div>
 
         <div class="hero-img">
-          <img src="/seat.png" alt="">
+          <img src="/seat.png" alt="" />
         </div>
       </div>
 
@@ -65,11 +88,11 @@ const scrollToRewards = () => {
             <img src="/ghoster-blue.png" alt="" class="tuto-monster" />
           </div>
         </div>
-        
+
         <!-- COLONNE DROITE (QUIZ) -->
         <div class="tuto-content-column">
           <div class="tuto-header">
-            <img src="/crown.png" alt="">
+            <img src="/crown.png" alt="" />
             <h2>Comment jouer ?</h2>
           </div>
 
@@ -82,32 +105,55 @@ const scrollToRewards = () => {
           </div>
 
           <div class="tuto-answers-wrapper">
-            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'inglorious' }"
-              :aria-pressed="selectedAnswer === 'inglorious'" @click="selectAnswer('inglorious')">
+            <button
+              class="tuto-answer"
+              :class="{ selected: selectedAnswer === 'inglorious' }"
+              :aria-pressed="selectedAnswer === 'inglorious'"
+              @click="selectAnswer('inglorious')"
+            >
               Inglorious Basterds
             </button>
 
-            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'django' }"
-              :aria-pressed="selectedAnswer === 'django'" @click="selectAnswer('django')">
+            <button
+              class="tuto-answer"
+              :class="{ selected: selectedAnswer === 'django' }"
+              :aria-pressed="selectedAnswer === 'django'"
+              @click="selectAnswer('django')"
+            >
               Django Unchained
             </button>
           </div>
 
-          <button class="btn-play">JOUER (WIP)</button>
-        </div> <!-- Fin tuto-content-column -->
-      </div> <!-- Fin tuto-wrapper -->
+          <!-- Lance la partie et indique son chargement. -->
+          <button
+            type="button"
+            class="btn-play"
+            :disabled="gameStore.isStarting"
+            @click="launchGuestGame"
+          >
+            {{ gameStore.isStarting ? 'Chargement…' : 'JOUER' }}
+          </button>
+
+          <!-- Affiche une erreur de lancement sans ouvrir le jeu. -->
+          <p v-if="gameStore.startError" role="alert">
+            {{ gameStore.startError }}
+          </p>
+        </div>
+        <!-- Fin tuto-content-column -->
+      </div>
+      <!-- Fin tuto-wrapper -->
 
       <div id="rewards" class="reward-wrapper">
         <h2>Nos récompenses</h2>
 
-        <img src="/cinema.png" alt="photo d'une salle de cinéma">
+        <img src="/cinema.png" alt="photo d'une salle de cinéma" />
 
         <p>Gagne des tickets pour aller voir de nombreux films dans les cinéma participants</p>
         <p>Et aussi des superbes chapeaux pour personnaliser ton avatar</p>
 
         <div class="partners-wrapper">
-          <img class="partner-img" src="/cinemalogo1.png" alt="photo ou logo d'un partenaire">
-          <img class="partner-img" src="/cinemalogo2.png" alt="photo ou logo d'un partenaire">
+          <img class="partner-img" src="/cinemalogo1.png" alt="photo ou logo d'un partenaire" />
+          <img class="partner-img" src="/cinemalogo2.png" alt="photo ou logo d'un partenaire" />
         </div>
       </div>
 
@@ -151,7 +197,7 @@ const scrollToRewards = () => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #E5DBCA;
+  background-color: #e5dbca;
   color: #f5efe3;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden; /* Empêche le scroll horizontal parasite sur mobile */
@@ -199,21 +245,21 @@ html {
   align-items: center;
   justify-content: center;
   padding: 8px 18px;
-  
+
   /* Fond clair et bordure noire nette par défaut */
   background-color: #f5efe3;
   border: 2px solid #1c1c1c;
   border-radius: 8px;
-  
+
   /* Petite ombre portée discrète au repos */
   box-shadow: 2px 2px 0 #1c1c1c;
-  
+
   color: #1c1c1c;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   text-decoration: none;
-  
+
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
@@ -250,7 +296,7 @@ main p {
 /* ======================================================== */
 
 .hero {
-  background: linear-gradient(#6FBAAE, #6EB8AC, #5E9E94);
+  background: linear-gradient(#6fbaae, #6eb8ac, #5e9e94);
   padding: 40px 25px;
   margin-block: 15px;
 
@@ -298,7 +344,7 @@ main p {
 
 .hero p {
   color: #173c37;
-  font-size: 1.50rem;
+  font-size: 1.5rem;
   line-height: 1.5;
   font-weight: 500;
 }
@@ -309,25 +355,25 @@ main p {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  
+
   /* Fond jaune vif ou crème contrasté */
-  background-color: #ffb900; 
+  background-color: #ffb900;
   color: #1c1c1c;
-  
+
   /* Bordure noire épaisse et nette */
   border: 2px solid #1c1c1c;
   border-radius: 8px;
-  
+
   /* Ombre portée néobrutaliste classique */
   box-shadow: 4px 4px 0 #1c1c1c;
-  
+
   padding: 12px 24px;
   font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
   font-weight: 800;
   text-decoration: none;
   text-transform: uppercase;
-  
+
   cursor: pointer;
   transition: all 0.1s ease-in-out;
 }
@@ -372,15 +418,15 @@ main p {
 
 .tuto-wrapper {
   padding: 80px 40px 0 40px;
-  background-color: #1E1E1E;
+  background-color: #1e1e1e;
   position: relative;
   overflow: visible;
-  
+
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 60px;
-  
+
   max-width: 1400px;
   margin-inline: auto;
 }
@@ -392,13 +438,13 @@ main p {
   left: 0;
   width: 100%;
   height: 100%;
-  
+
   background-image: url('/pattern.svg');
   background-repeat: repeat;
   background-position: center;
-  
+
   opacity: 0.3;
-  
+
   pointer-events: none;
   z-index: 0;
 }
@@ -431,7 +477,7 @@ main p {
   width: auto;
   height: 350px;
   object-fit: contain;
-  
+
   transform: translateY(60px);
   margin-bottom: -60px;
 }
@@ -577,7 +623,9 @@ main p {
   text-transform: uppercase;
 
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .btn-play:hover {
@@ -619,13 +667,13 @@ main p {
   left: 0;
   width: 100%;
   height: 100%;
-  
+
   background-image: url('/pattern.svg');
   background-repeat: repeat;
   background-position: center;
-  
+
   opacity: 0.4;
-  
+
   pointer-events: none;
   z-index: 0;
 }
@@ -881,7 +929,6 @@ main p {
 /* ======================================================== */
 
 @media (max-width: 767px) {
-  
   /* --- Header & Navigation Mobile --- */
   .logo {
     height: 42px;
