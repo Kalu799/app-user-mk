@@ -1,8 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import BottomNav from '@/components/BottomNav.vue'
+import UserSummary from '@/components/UserSummary.vue'
 
-const API_URL = '/api/auth'
+const API_URL = import.meta.env.VITE_API_BASE_URL
+//console.log('API_URL utilisée :', API_URL)
 const TOKEN_KEY = 'movie-king-auth-token'
 const router = useRouter()
 const user = ref(null)
@@ -17,7 +20,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/me`, {
+    const response = await fetch(`${API_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     const data = await response.json()
@@ -31,7 +34,7 @@ onMounted(async () => {
       throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
     }
 
-    user.value = data.user
+    user.value = data
   } catch (error) {
     errorMsg.value = error.message || 'Impossible de charger le profil'
   } finally {
@@ -41,40 +44,31 @@ onMounted(async () => {
 
 const logout = async () => {
   errorMsg.value = ''
-  const token = window.sessionStorage.getItem(TOKEN_KEY)
-
-  try {
-    const response = await fetch(`${API_URL}/logout`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
-    }
-
-    window.sessionStorage.removeItem(TOKEN_KEY)
-    await router.push('/guesthome')
-  } catch (error) {
-    errorMsg.value = error.message || 'Impossible de se déconnecter'
-  }
+  window.sessionStorage.removeItem(TOKEN_KEY)
+  await router.push('/guesthome')
 }
 </script>
 <template>
-    <div class="homepage">
-        <header class="header">
+  <div class="homepage">
+    <header class="header">
       <nav class="nav">
-        <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
+        <RouterLink to="/homepage"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
         <button type="button" @click="logout">Déconnexion</button>
       </nav>
     </header>
-    <main>
-        <p v-if="isLoading">Chargement...</p>
-        <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
-        <h1 v-if="user">Bonjour {{ user.pseudo }}</h1>
-    </main>
-    </div>
+    <main class="home-content">
+  <p v-if="isLoading">Chargement...</p>
+  <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
+
+  <!-- Transmet le pseudo récupéré par la home au composant. -->
+  <UserSummary
+    v-if="user"
+    :pseudo="user.user_pseudo"
+  />
+</main>
+    <!-- Affiche la navigation sur cette page. -->
+    <BottomNav />
+  </div>
 </template>
 <style scoped>
 /* HEADER */
@@ -100,4 +94,24 @@ const logout = async () => {
 button {
   cursor: pointer;
 }
+
+/* Organise la page verticalement et réserve la place de la navigation. */
+.homepage {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Utilise l’espace disponible et centre verticalement la bannière. */
+.home-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px 20px;
+}
+
 </style>

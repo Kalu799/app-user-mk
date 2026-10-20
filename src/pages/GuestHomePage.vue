@@ -1,14 +1,14 @@
 <script setup>
+import { RouterLink, useRouter } from 'vue-router'
 
-import { RouterLink } from 'vue-router'
+import { useGameStore } from '../stores/game'
 
 import { ref } from 'vue'
 
 const selectedAnswer = ref(null)
 
 const selectAnswer = (answer) => {
-  selectedAnswer.value =
-    selectedAnswer.value === answer ? null : answer
+  selectedAnswer.value = selectedAnswer.value === answer ? null : answer
 }
 
 const scrollToRewards = () => {
@@ -23,7 +23,6 @@ const scrollToRewards = () => {
 </script>
 
 <template>
-
   <div class="guest-layout">
     <header class="header">
       <nav class="nav">
@@ -42,7 +41,6 @@ const scrollToRewards = () => {
     </header>
 
     <main>
-
       <div class="hero">
         <img src="/crown.png" alt="Couronne" class="hero-crown">
         <div class="hero-content">
@@ -117,7 +115,6 @@ const scrollToRewards = () => {
         <h2>Classement général</h2>
         <p>Il y aura un classement ici (WIP)</p>
       </div>
-
     </main>
 
     <footer class="footer">
@@ -136,9 +133,7 @@ const scrollToRewards = () => {
         </div>
       </div>
     </footer>
-
   </div>
-
 </template>
 
 <style scoped>
@@ -173,7 +168,7 @@ html {
 .header {
   background-color: #f5efe3;
   width: 100%;
-  padding-block: .5rem;
+  padding-block: 0.5rem;
 }
 
 .nav {
