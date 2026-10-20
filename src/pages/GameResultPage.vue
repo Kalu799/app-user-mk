@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
 import { getCurrentUser } from '@/services/userService'
@@ -7,6 +7,12 @@ import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 
 const gameStore = useGameStore()
 const router = useRouter()
+// Mémorise si la page de résultats est toujours affichée.
+let isPageActive = true
+
+onUnmounted(() => {
+  isPageActive = false
+})
 
 // Choisit l’aperçu invité selon la présence d’un token.
 const authToken = window.sessionStorage.getItem('movie-king-auth-token')
@@ -44,6 +50,10 @@ const replayGame = async () => {
   try {
     // Demande une nouvelle partie avec la même catégorie.
     await gameStore.loadGame(parameters.ID_genre)
+    // Évite de revenir au jeu si le joueur a quitté cette page.
+if (!isPageActive) {
+  return
+}
 
     if (gameStore.startError) {
       throw new Error(gameStore.startError)

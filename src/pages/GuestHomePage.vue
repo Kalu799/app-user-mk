@@ -56,7 +56,9 @@ const launchGuestGame = async () => {
         <RouterLink to="/"><img src="/logo.png" alt="Movie King Logo" class="logo" /></RouterLink>
 
         <div class="nav-actions">
-          <RouterLink to="/auth" class="btn-nav"> Connexion </RouterLink>
+          <RouterLink :to="{ name: 'auth', query: { mode: 'login' } }" class="btn-nav">
+            Connexion
+          </RouterLink>
 
           <RouterLink to="/auth" class="btn-nav active"> Inscription </RouterLink>
         </div>

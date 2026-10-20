@@ -19,7 +19,7 @@ export default defineConfig({
     proxy: {
       // Toutes les requêtes commençant par /api seront redirigées vers ton serveur Nuxt
       '/api': {
-        target: 'https://nuxt-app-mk.vercel.app',
+        target: 'https://mk-cms-api-remake.vercel.app',
         changeOrigin: true
       }
     }
