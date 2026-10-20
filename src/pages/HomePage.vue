@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import BottomNav from '@/components/BottomNav.vue'
+import UserSummary from '@/components/UserSummary.vue'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 //console.log('API_URL utilisée :', API_URL)
@@ -55,11 +56,16 @@ const logout = async () => {
         <button type="button" @click="logout">Déconnexion</button>
       </nav>
     </header>
-    <main>
-      <p v-if="isLoading">Chargement...</p>
-      <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
-      <h1 v-if="user">Bonjour {{ user.user_pseudo }}</h1>
-    </main>
+    <main class="home-content">
+  <p v-if="isLoading">Chargement...</p>
+  <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
+
+  <!-- Transmet le pseudo récupéré par la home au composant. -->
+  <UserSummary
+    v-if="user"
+    :pseudo="user.user_pseudo"
+  />
+</main>
     <!-- Affiche la navigation sur cette page. -->
     <BottomNav />
   </div>
@@ -89,10 +95,23 @@ button {
   cursor: pointer;
 }
 
-/* Réserve de la place pour la navigation fixée au-dessus du contenu. */
+/* Organise la page verticalement et réserve la place de la navigation. */
 .homepage {
   box-sizing: border-box;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
 }
+
+/* Utilise l’espace disponible et centre verticalement la bannière. */
+.home-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px 20px;
+}
+
 </style>
