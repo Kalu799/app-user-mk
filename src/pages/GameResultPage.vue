@@ -1,7 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
+import { getCurrentUser } from '@/services/userService'
+import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 
 const gameStore = useGameStore()
 const router = useRouter()
@@ -56,6 +58,43 @@ const replayGame = async () => {
     isReplaying.value = false
   }
 }
+// Prépare l’identifiant du joueur et les états de chargement du profil.
+const currentUserId = ref(null)
+const isProfileLoading = ref(false)
+const profileError = ref('')
+
+onMounted(async () => {
+  // L’invité conserve son aperçu flouté.
+  if (!authToken) {
+    return
+  }
+
+  isProfileLoading.value = true
+
+  try {
+    // Récupère le profil avec le service.
+    const user = await getCurrentUser(authToken)
+
+    // Vérifie la présence de l’identifiant attendu.
+    if (!user || user.ID_user === undefined || user.ID_user === null) {
+      throw new Error('Identifiant du joueur indisponible')
+    }
+
+    currentUserId.value = user.ID_user
+  } catch (error) {
+    // Une connexion expirée fait revenir à l’affichage invité.
+    if (error.status === 401) {
+      window.sessionStorage.removeItem('movie-king-auth-token')
+      isGuest.value = true
+      return
+    }
+
+    // Conserve les résultats même si le profil ne peut pas être récupéré.
+    profileError.value = error.message || 'Impossible de récupérer le profil'
+  } finally {
+    isProfileLoading.value = false
+  }
+})
 </script>
 
 <template>
@@ -130,8 +169,9 @@ const replayGame = async () => {
       </p>
     </section>
     <!-- Accueillera le classement autour du joueur connecté. -->
-<section class="result-leaderboard" aria-labelledby="leaderboard-title">
-  <h2 id="leaderboard-title">Classement général</h2>
+<!-- Le titre du parcours connecté est fourni par UsersLeaderboard. -->
+<section class="result-leaderboard" aria-label="Classement">
+  <h2 v-if="isGuest">Classement général</h2>
 
   <div v-if="isGuest" class="leaderboard-preview">
     <!-- Ces lignes sont décoratives et ne représentent aucun vrai joueur. -->
@@ -150,26 +190,22 @@ const replayGame = async () => {
     </RouterLink>
   </div>
 
-  <!--
-  À remplacer par le futur composant de classement.
-  Besoin : joueur connecté + un joueur devant + un derrière.
-  Les scores affichés seront les totaux des comptes.
--->
+ <!-- Affiche le classement du joueur après récupération de son identifiant. -->
 <div v-else>
-  <p>Classement à venir</p>
-
-  <!-- Ces lignes illustrent uniquement la disposition attendue. -->
-  <p class="leaderboard-row">
-    — · Joueur devant · — points
+  <p v-if="isProfileLoading" role="status">
+    Chargement du profil…
   </p>
 
-  <p class="leaderboard-row is-current-user">
-    — · Toi · — points
+  <p v-else-if="profileError" class="result-error" role="alert">
+    {{ profileError }}
   </p>
 
-  <p class="leaderboard-row">
-    — · Joueur derrière · — points
-  </p>
+  <!-- Le composant récupère les scores et sélectionne les voisins. -->
+  <UsersLeaderboard
+    v-else-if="currentUserId !== null"
+    :current-user-id="currentUserId"
+    mode="nearby"
+  />
 </div>
 </section>
 <!-- Regroupe les actions proposées après la partie. -->
