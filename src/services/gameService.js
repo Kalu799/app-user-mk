@@ -3,7 +3,7 @@ import horrorGame from '../data/game-start-horreur.json'
 // Charge les bonnes réponses des deux parties de test.
 import correctionData from '../data/game-corrections.local.json'
 
-export async function startGame({ ID_genre }) {
+export const startGame = async ({ ID_genre }) => {
   if (ID_genre === 5) {
     return structuredClone(actionGame)
   }
@@ -15,7 +15,7 @@ export async function startGame({ ID_genre }) {
   throw new Error('Catégorie inconnue')
 }
 
-export function isAnswerCorrect(answer, correctMovieId, timeLimitMs) {
+export const isAnswerCorrect = (answer, correctMovieId, timeLimitMs) => {
   // Compare l'identifiant choisi à celui du film attendu.
   const isRightMovie = answer.selected_movie_id === correctMovieId
 
@@ -27,7 +27,27 @@ export function isAnswerCorrect(answer, correctMovieId, timeLimitMs) {
   return isRightMovie && isOnTime
 }
 
-export function getGameCorrection(gameId) {
+export const getAnswerScore = (answer, correctMovieId, timeLimitMs) => {
+  // Une mauvaise réponse ou une expiration rapporte zéro point.
+  if (!isAnswerCorrect(answer, correctMovieId, timeLimitMs)) {
+    return 0
+  }
+
+  // Chaque bonne réponse rapporte au minimum 100 points.
+  const basePoints = 100
+
+  // Calcule la proportion de temps restant :
+  // 15 secondes restantes sur 30 donnent 0.5.
+  const remainingRatio = (timeLimitMs - answer.response_time_ms) / timeLimitMs
+
+  // Ajoute jusqu'à 25 points, arrondis à l'entier inférieur.
+  const speedBonus = Math.floor(25 * remainingRatio)
+
+  // Renvoie le nombre de points gagnés pour cette réponse.
+  return basePoints + speedBonus
+}
+
+export const getGameCorrection = (gameId) => {
   // Cherche le corrigé dont l'identifiant correspond à la partie jouée.
   const correction = correctionData.games.find((game) => {
     return game.game_id === gameId
@@ -41,7 +61,7 @@ export function getGameCorrection(gameId) {
   // Renvoie une copie pour préserver les données du fichier de référence.
   return structuredClone(correction)
 }
-export async function finishGame(gameId, { answers }) {
+export const finishGame = async (gameId, { answers }) => {
   // Récupère le corrigé de la partie demandée.
   const correction = getGameCorrection(gameId)
 
@@ -111,6 +131,8 @@ export async function finishGame(gameId, { answers }) {
       // Ajoute le bon film et le résultat de notre vérification.
       correct_movie_id: question.correct_movie_id,
       is_correct: isAnswerCorrect(answer, question.correct_movie_id, game.question_time_limit_ms),
+      // Ajoute les points gagnés pour cette question à sa correction.
+      score: getAnswerScore(answer, question.correct_movie_id, game.question_time_limit_ms),
     }
   })
 
@@ -120,12 +142,21 @@ export async function finishGame(gameId, { answers }) {
     return correction.is_correct
   }).length
 
+  // Additionne les points de chaque correction.
+  // Le total commence à zéro grâce au deuxième argument de reduce.
+  const totalScore = corrections.reduce((total, correction) => {
+    return total + correction.score
+  }, 0)
   // Renvoie le récapitulatif et les corrections détaillées.
   return {
     game_id: gameId,
     summary: {
+      // Conserve le nombre de bonnes réponses et le nombre de questions.
       correct_answers: correctAnswersCount,
       question_count: corrections.length,
+
+      // Fournit le total des points pour l'écran de fin de partie.
+      score: totalScore,
     },
     corrections,
   }
