@@ -51,7 +51,7 @@ const logout = async () => {
   <div class="homepage">
     <header class="header">
       <nav class="nav">
-        <RouterLink to="/"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
+        <RouterLink to="/homepage"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
         <button type="button" @click="logout">Déconnexion</button>
       </nav>
     </header>
@@ -88,6 +88,7 @@ const logout = async () => {
 button {
   cursor: pointer;
 }
+
 /* Réserve de la place pour la navigation fixée au-dessus du contenu. */
 .homepage {
   box-sizing: border-box;
