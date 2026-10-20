@@ -1,16 +1,22 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
+import { registerUser, loginUser } from '@/services/authService'
 
 const router = useRouter()
-const API_URL = import.meta.env.VITE_API_BASE_URL
-//console.log('API_URL utilisée :', API_URL)
+const route = useRoute()
+// Indique si la page d’authentification est toujours affichée.
+let isPageActive = true
+
+onUnmounted(() => {
+  isPageActive = false
+})
 const TOKEN_KEY = 'movie-king-auth-token'
 
-// État de l'affichage
-const isLoginMode = ref(false)
+// Ouvre la connexion si le lien la demande, sinon l’inscription.
+const isLoginMode = ref(route.query.mode === 'login')
 
 // États de feedback
 const isLoading = ref(false)
@@ -21,26 +27,30 @@ const successMsg = ref('')
  * Inscription
  */
 const handleRegister = async (userData) => {
+  if (isLoading.value) {
+    return
+  }
+
   isLoading.value = true
   errorMsg.value = ''
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    })
-    const data = await response.json()
+    await registerUser(userData)
 
-    if (!response.ok) {
-      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
+    // Ignore le résultat si le joueur a quitté la page.
+    if (!isPageActive) {
+      return
     }
 
     successMsg.value = 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
     isLoginMode.value = true
   } catch (error) {
-    errorMsg.value = error.message || "Erreur lors de la création du compte"
+    if (!isPageActive) {
+      return
+    }
+
+    errorMsg.value = error.message || 'Erreur lors de la création du compte'
   } finally {
     isLoading.value = false
   }
@@ -50,28 +60,33 @@ const handleRegister = async (userData) => {
  * Connexion
  */
 const handleLogin = async (loginData) => {
+  if (isLoading.value) {
+    return
+  }
+
   isLoading.value = true
   errorMsg.value = ''
   successMsg.value = ''
 
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginData),
-    })
-    const data = await response.json()
+    const data = await loginUser(loginData)
 
-    if (!response.ok) {
-      throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
+    // Empêche une connexion tardive après le départ de la page.
+    if (!isPageActive) {
+      return
     }
-    if (!data.token || !data.user) {
+
+    if (!data?.token || !data?.user) {
       throw new Error('Réponse invalide du serveur d’authentification')
     }
 
     window.sessionStorage.setItem(TOKEN_KEY, data.token)
     await router.push('/homepage')
   } catch (error) {
+    if (!isPageActive) {
+      return
+    }
+
     errorMsg.value = error.message || 'Erreur lors de la connexion'
   } finally {
     isLoading.value = false
@@ -82,6 +97,11 @@ const handleLogin = async (loginData) => {
  * Changement de mode
  */
 const switchMode = () => {
+  // Attend la fin de la demande avant de changer de formulaire.
+  if (isLoading.value) {
+    return
+  }
+
   isLoginMode.value = !isLoginMode.value
   errorMsg.value = ''
   successMsg.value = ''
@@ -101,11 +121,24 @@ const switchMode = () => {
         {{ isLoginMode ? 'Connexion' : 'Créer un compte' }}
       </h1>
 
-      <RegisterForm v-if="!isLoginMode" @dataFormRegister="handleRegister" />
+      <RegisterForm
+  v-if="!isLoginMode"
+  :is-loading="isLoading"
+  @dataFormRegister="handleRegister"
+/>
 
-      <LoginForm v-else @dataFormLogin="handleLogin" />
+      <LoginForm
+  v-else
+  :is-loading="isLoading"
+  @dataFormLogin="handleLogin"
+/>
 
-      <button class="switch-btn" @click="switchMode">
+      <button
+  type="button"
+  class="switch-btn"
+  :disabled="isLoading"
+  @click="switchMode"
+>
         {{
           isLoginMode
             ? 'Je n’ai pas encore de compte'

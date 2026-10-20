@@ -81,19 +81,26 @@ onUnmounted(() => {
 })
 
 const goBack = () => {
-  // Une partie en cours nécessite une confirmation avant d'être abandonnée.
+  // Demande confirmation lorsqu’une question est encore en cours.
   if (gameStore.currentQuestion) {
-    const shouldLeave = window.confirm('Quitter la partie ? Ta progression sera perdue.')
+    const shouldLeave = window.confirm(
+      'Quitter la partie ? Ta progression sera perdue.',
+    )
 
     if (!shouldLeave) {
       return
     }
-
-    gameStore.$reset()
   }
 
-  // Destination actuelle : le choix selon la connexion sera ajouté avec l'API.
-  router.push({ name: 'homepage' })
+  // Efface la partie et ignore ses éventuelles réponses API tardives.
+  gameStore.$reset()
+
+  // Choisit l’accueil selon la présence d’un token.
+  const destination = window.sessionStorage.getItem('movie-king-auth-token')
+    ? 'homepage'
+    : 'guesthome'
+
+  router.push({ name: destination })
 }
 </script>
 
@@ -212,14 +219,21 @@ const goBack = () => {
   Calcul du résultat en cours…
 </p>
 
-<!-- Rend visible une éventuelle erreur de correction. -->
-<p
-  v-else-if="gameStore.finishError"
-  class="game-message error-message"
-  role="alert"
->
-  {{ gameStore.finishError }}
-</p>
+<!-- Conserve les réponses et permet de redemander leur correction. -->
+<div v-else-if="gameStore.finishError">
+  <p class="game-message error-message" role="alert">
+    {{ gameStore.finishError }}
+  </p>
+
+  <button
+    type="button"
+    class="validate-button"
+    :disabled="gameStore.isFinishing"
+    @click="gameStore.completeGame()"
+  >
+    Réessayer le calcul du résultat
+  </button>
+</div>
 
 <!-- Confirme la réception du résultat avant le futur écran récapitulatif. -->
 <p v-else-if="gameStore.result" class="game-message" role="status">

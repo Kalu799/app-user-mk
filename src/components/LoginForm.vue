@@ -1,5 +1,12 @@
 <script setup>
 import { ref } from 'vue'
+// Reçoit l’état de chargement géré par la page.
+const props = defineProps({
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 // Valeur de base vide pour le login
 const initialLoginState = () => ({
@@ -15,10 +22,12 @@ const emits = defineEmits(['dataFormLogin'])
 
 // Fonction appelée au submit
 const sendData = () => {
-  emits('dataFormLogin', { ...newLogin.value })
+  if (props.isLoading) {
+    return
+  }
 
-  // Reset du formulaire
-  newLogin.value = initialLoginState()
+  // Transmet une copie sans effacer la saisie.
+  emits('dataFormLogin', { ...newLogin.value })
 }
 </script>
 
@@ -43,7 +52,9 @@ const sendData = () => {
         v-model.lazy.trim="newLogin.password"
       >
 
-      <button>Se connecter</button>
+      <button type="submit" :disabled="props.isLoading">
+  {{ props.isLoading ? 'Connexion en cours…' : 'Se connecter' }}
+</button>
     </form>
   </div>
 </template>
