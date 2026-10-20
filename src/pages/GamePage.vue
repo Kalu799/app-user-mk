@@ -22,6 +22,19 @@ watch(
   { flush: 'post' },
 )
 
+// Observe l’arrivée du résultat renvoyé par l’API.
+watch(
+  () => gameStore.result,
+  (result) => {
+    // Ouvre le récapitulatif uniquement après réception du résultat.
+    if (result) {
+      router.replace({ name: 'game-result' })
+    }
+  },
+  // Couvre aussi une arrivée sur le jeu avec un résultat déjà disponible.
+  { immediate: true },
+)
+
 // Conserve une mesure précise en millisecondes pour le bouton-timer.
 const remainingTimeMs = computed(() => {
   if (!gameStore.game || gameStore.questionStartedAt === null) {
