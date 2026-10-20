@@ -11,6 +11,15 @@ const selectAnswer = (answer) => {
     selectedAnswer.value === answer ? null : answer
 }
 
+const scrollToRewards = () => {
+  const el = document.getElementById('rewards')
+  if (el) {
+    const yOffset = -65; // Ajuste cette valeur (en pixels) pour remonter ou descendre le point d'arrêt
+    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' })
+  }
+}
+
 </script>
 
 <template>
@@ -19,20 +28,30 @@ const selectAnswer = (answer) => {
     <header class="header">
       <nav class="nav">
         <RouterLink to="/"><img src="/logo.png" alt="Movie King Logo" class="logo" /></RouterLink>
-        <RouterLink to="/auth">Register/login</RouterLink>
+
+        <div class="nav-actions">
+          <RouterLink to="/auth" class="btn-nav">
+            Connexion
+          </RouterLink>
+
+          <RouterLink to="/auth" class="btn-nav active">
+            Inscription
+          </RouterLink>
+        </div>
       </nav>
     </header>
 
     <main>
 
       <div class="hero">
+        <img src="/crown.png" alt="Couronne" class="hero-crown">
         <div class="hero-content">
           <h2>Devient le king du cinéma !</h2>
           <p>Entraine toi</p>
           <p>Participe aux tournois</p>
-          <div class="hero-link">
+          <a href="#rewards" class="hero-link" @click.prevent="scrollToRewards">
             <p>Gagne des <span>PRIX</span> !</p>
-          </div>
+          </a>
         </div>
 
         <div class="hero-img">
@@ -80,17 +99,17 @@ const selectAnswer = (answer) => {
         </div> <!-- Fin tuto-content-column -->
       </div> <!-- Fin tuto-wrapper -->
 
-      <div class="reward-wrapper">
+      <div id="rewards" class="reward-wrapper">
         <h2>Nos récompenses</h2>
 
-        <img src="" alt="photo d'une salle de cinéma">
+        <img src="/cinema.png" alt="photo d'une salle de cinéma">
 
         <p>Gagne des tickets pour aller voir de nombreux films dans les cinéma participants</p>
         <p>Et aussi des superbes chapeaux pour personnaliser ton avatar</p>
 
         <div class="partners-wrapper">
-          <img class="partner-img" src="" alt="photo ou logo d'un partenaire">
-          <img class="partner-img" src="" alt="photo ou logo d'un partenaire">
+          <img class="partner-img" src="/cinemalogo1.png" alt="photo ou logo d'un partenaire">
+          <img class="partner-img" src="/cinemalogo2.png" alt="photo ou logo d'un partenaire">
         </div>
       </div>
 
@@ -140,6 +159,11 @@ const selectAnswer = (answer) => {
   background-color: #E5DBCA;
   color: #f5efe3;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden; /* Empêche le scroll horizontal parasite sur mobile */
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 /* ======================================================== */
@@ -162,6 +186,49 @@ const selectAnswer = (answer) => {
 .logo {
   height: 60px;
   object-fit: contain;
+}
+
+/* ======================================================== */
+/* BOUTONS NAV / AUTH */
+/* ======================================================== */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Style de base des boutons de navigation */
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  
+  /* Fond clair et bordure noire nette par défaut */
+  background-color: #f5efe3;
+  border: 2px solid #1c1c1c;
+  border-radius: 8px;
+  
+  /* Petite ombre portée discrète au repos */
+  box-shadow: 2px 2px 0 #1c1c1c;
+  
+  color: #1c1c1c;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+/* État hover et actif : cartouche beige, bordure nette et ombre portée */
+.btn-nav:hover {
+  background-color: #f4ebd0;
+  border-color: #1c1c1c;
+  box-shadow: 3px 3px 0 #1c1c1c;
+  transform: translateY(-1px);
 }
 
 /* ======================================================== */
@@ -208,12 +275,17 @@ main p {
 
   text-align: center;
 }
+/* Cache la couronne du Hero sur ordinateur */
+.hero-crown {
+  display: none;
+}
 
 .hero-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  gap: 12px;
 }
 
 .hero h2 {
@@ -237,46 +309,53 @@ main p {
 }
 
 .hero-link {
+  margin: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   
-  /* Fond verre givré subtil qui ressort très bien sur le turquoise */
-  background: rgba(255, 245, 223, 0.15);
-  backdrop-filter: blur(8px);
+  /* Fond jaune vif ou crème contrasté */
+  background-color: #ffb900; 
+  color: #1c1c1c;
   
-  /* Contour fin avec une touche corail/pêche */
-  border: 1px solid rgba(255, 142, 117, 0.4);
-  padding: 8px 18px;
-  border-radius: 12px;
+  /* Bordure noire épaisse et nette */
+  border: 2px solid #1c1c1c;
+  border-radius: 8px;
   
-  color: #fff5df;
-  font-size: 1.15rem;
-  font-weight: 600;
+  /* Ombre portée néobrutaliste classique */
+  box-shadow: 4px 4px 0 #1c1c1c;
+  
+  padding: 12px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
   text-decoration: none;
-  
-  /* Ombre portée douce sous tout le bloc */
-  box-shadow: 0 4px 15px rgba(23, 60, 55, 0.15);
-  
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-/* Style spécifique pour le mot PRIX */
-.hero-link span {
-  background: linear-gradient(135deg, #ffc4ab 0%, #ff8e75 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
 }
 
-/* Effet d'interaction sur TOUTE la cartouche au survol */
+/* Style du mot "PRIX" à l'intérieur pour le faire ressortir */
+.hero-link span {
+  background-color: #1c1c1c;
+  color: #f5efe3;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Effet au survol : le bouton remonte et l'ombre s'agrandit */
 .hero-link:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 142, 117, 0.8);
-  box-shadow: 0 6px 20px rgba(255, 142, 117, 0.25);
-  background: rgba(255, 245, 223, 0.22);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #1c1c1c;
+  background-color: #ffc72c;
+}
+
+/* Effet au clic : le bouton s'enfonce */
+.hero-link:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #1c1c1c;
 }
 
 .hero-img {
@@ -287,7 +366,7 @@ main p {
 
 .hero-img img {
   width: 100%;
-  max-width: 450px; /* Change cette valeur pour grossir ou rétrécir l'image (ex: 250px, 400px...) */
+  max-width: 450px;
   height: auto;
   object-fit: contain;
 }
@@ -297,18 +376,17 @@ main p {
 /* ======================================================== */
 
 .tuto-wrapper {
-  padding: 80px 40px 0 40px; /* Plus d'espace en haut/bas */
+  padding: 80px 40px 0 40px;
   background-color: #1E1E1E;
   position: relative;
-  overflow: visible; /* CRUCIAL : permet au monstre de dépasser en bas */
+  overflow: visible;
   
-  /* Flexbox pour créer deux colonnes */
   display: flex;
-  justify-content: space-between; /* Espace entre les deux colonnes */
-  align-items: flex-end; /* Centre verticalement le monstre et le tuto */
-  gap: 60px; /* Espace entre le monstre et le contenu du tuto */
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 60px;
   
-  max-width: 1400px; /* Ajuste selon tes préférences, comme vu précédemment */
+  max-width: 1400px;
   margin-inline: auto;
 }
 
@@ -321,16 +399,15 @@ main p {
   height: 100%;
   
   background-image: url('/pattern.svg');
-  background-repeat: repeat; /* Répète le motif en mosaïque */
+  background-repeat: repeat;
   background-position: center;
   
-  opacity: 0.3; /* */
+  opacity: 0.3;
   
-  pointer-events: none; /* Permet d'interagir avec les éléments derrière si besoin */
+  pointer-events: none;
   z-index: 0;
 }
 
-/* Force TOUS les enfants directs de .tuto-wrapper à passer au-dessus du pattern */
 .tuto-wrapper > * {
   position: relative;
   z-index: 1;
@@ -341,35 +418,35 @@ main p {
 /* -------------------------------------------------------- */
 
 .tuto-monster-column {
-  flex: 1; /* Prend l'espace disponible à gauche */
+  flex: 1;
   display: flex;
-  justify-content: flex-end; /* Pousse le monstre vers la droite DE SA COLONNE (le centre) */
-  padding-inline-end: 20px; /* Ajuste pour le "recentrer" par rapport au tuto */
+  justify-content: flex-end;
+  padding-inline-end: 20px;
   position: relative;
   z-index: 10;
 }
 
 .monster-container {
-  position: relative; /* Repère pour la couronne géante */
+  position: relative;
   display: inline-block;
 }
 
 .tuto-monster {
   display: block;
   width: auto;
-  height: 350px; /* Ajuste la taille du monstre selon ton design */
+  height: 350px;
   object-fit: contain;
   
   transform: translateY(60px);
-  margin-bottom: -60px; /* Valeur négative = dépassement dans la section rouge */
+  margin-bottom: -60px;
 }
 
 .big-crown {
   position: absolute;
-  top: -270px; /* Ajuste pour poser la couronne géante */
+  top: -270px;
   left: 50%;
-  transform: translateX(-50%); /* Centre la couronne sur la tête du monstre */
-  width: 350px; /* Ajuste la taille de la couronne géante */
+  transform: translateX(-50%);
+  width: 350px;
   height: auto;
   z-index: 3;
 }
@@ -379,21 +456,20 @@ main p {
 /* -------------------------------------------------------- */
 
 .tuto-content-column {
-  flex: 1.2; /* Prend un peu plus d'espace que le monstre */
+  flex: 1.2;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centre les éléments textuels entre eux */
+  align-items: center;
   gap: 25px;
   text-align: center;
 }
 
 .tuto-header {
-  position: relative; /* Permet de caler la couronne par rapport à cette boîte */
-  display: inline-block; /* Ajuste la largeur du bloc au texte exact */
+  position: relative;
+  display: inline-block;
   margin-bottom: 20px;
 }
 
-/* Le titre principal */
 .tuto-header h2 {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 2.5rem;
@@ -403,12 +479,11 @@ main p {
   margin: 0;
 }
 
-/* La couronne positionnée au-dessus du '?' */
 .tuto-header img {
   position: absolute;
-  top: -24px;  /* Monte la couronne au-dessus du texte (ajuste entre -15px et -22px si besoin) */
-  right: -8.1px;  /* Aligne la couronne au bout du texte (sur le point d'interrogation) */
-  width: 30px;  /* Ajuste la taille de la couronne */
+  top: -24px;
+  right: -8.1px;
+  width: 30px;
   height: auto;
   pointer-events: none;
 }
@@ -507,8 +582,7 @@ main p {
   text-transform: uppercase;
 
   cursor: pointer;
-  transition: transform 0.15s,
-    box-shadow 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .btn-play:hover {
@@ -529,9 +603,18 @@ main p {
   flex-direction: column;
   gap: 15px;
 
-  position: relative; /* Bloque le pattern dans ce conteneur */
-  overflow: visible;   /* Empêche tout dépassement */
+  position: relative;
+  overflow: visible;
   z-index: 1;
+}
+
+.reward-wrapper > img {
+  display: block;
+  width: 100%;
+  height: 200px; /* Ajuste la hauteur selon tes besoins */
+  border: 3px solid #1c1c1c;
+  border-radius: 4px; /* Optionnel pour arrondir légèrement les coins */
+  object-fit: cover; /* Évite que l'image soit déformée et remplit bien l'espace */
 }
 
 .reward-wrapper::before {
@@ -543,12 +626,12 @@ main p {
   height: 100%;
   
   background-image: url('/pattern.svg');
-  background-repeat: repeat; /* Répète le motif en mosaïque */
+  background-repeat: repeat;
   background-position: center;
   
-  opacity: 0.4; /* */
+  opacity: 0.4;
   
-  pointer-events: none; /* Permet d'interagir avec les éléments derrière si besoin */
+  pointer-events: none;
   z-index: 0;
 }
 
@@ -591,19 +674,21 @@ main p {
 
 .partners-wrapper {
   display: flex;
-  gap: 15px;
-  margin-top: 10px;
+  justify-content: center; /* Centre les logos horizontalement */
+  gap: 15rem; /* Augmente l'espace entre les deux logos */
+  margin-top: 15px;
+  width: 100%;
 }
 
 .partner-img {
+  width: 150px;
   height: 120px;
-
-  background-color: #1c1c1c;
-  border: 2px solid #f5efe3;
-  border-radius: 5px;
-
+  background-color: #f5efe3;
+  border: 3px solid #1c1c1c;
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 #1c1c1c;
   object-fit: contain;
-  color: white;
+  padding: 10px;
 }
 
 /* ======================================================== */
@@ -641,12 +726,9 @@ main p {
 .tuto-wrapper,
 .reward-wrapper,
 .leaderboard-wrapper {
-  /* S'étend sur toute la largeur de l'écran (Full Width) */
   width: 92%;
   max-width: 1300px;
   margin-inline: auto;
-  
-  /* Centrage du contenu interne pour garder de la cohérence visuelle */
   box-sizing: border-box;
 }
 
@@ -796,6 +878,172 @@ main p {
 
   .footer-bottom {
     margin-top: 80px;
+  }
+}
+
+/* ======================================================== */
+/* RESPONSIVE : MOBILE EXCLUSIF (max-width: 767px) */
+/* ======================================================== */
+
+@media (max-width: 767px) {
+  
+  /* --- Header & Navigation Mobile --- */
+  .logo {
+    height: 42px;
+  }
+
+  .nav {
+    margin-inline: 0.5rem; /* Réduit un peu les marges globales du header sur les côtés si besoin */
+  }
+
+  .nav-actions {
+    gap: 15px; /* Augmente l'espace entre le bouton Connexion et Inscription */
+  }
+
+  .btn-nav {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  /* --- Hero Section Mobile --- */
+  .hero {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    padding: 0 15px 30px 15px; /* On laisse de la place en haut pour la couronne */
+    gap: 20px;
+    position: relative;
+  }
+
+  /* Masquer l'image du monstre sur le siège sur mobile */
+  .hero-img {
+    display: none !important;
+  }
+
+  /* Afficher et positionner la grande couronne au-dessus du texte */
+  .hero-crown {
+    display: block;
+    width: 200px; /* Ajuste la largeur de la grande couronne selon tes préférences */
+    height: auto;
+    margin-bottom: -30px; /* Rapproche légèrement la couronne du titre */
+    object-fit: contain;
+  }
+
+  .hero-content {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .hero h2 {
+    font-size: clamp(2.3rem, 10vw, 3.2rem);
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .hero-link {
+    width: 100%;
+    max-width: 280px;
+    font-size: 1rem;
+    padding: 10px 18px;
+  }
+
+  /* Image principale Hero sur Mobile */
+  .hero-img img {
+    max-width: 260px;
+  }
+
+  /* --- Tutoriel Mobile --- */
+  .tuto-wrapper {
+    flex-direction: column; /* Place le texte au-dessus du monstre */
+    align-items: center;
+    padding: 40px 15px 60px 15px;
+    gap: 20px;
+
+    position: relative;
+    overflow: visible !important; /* CRUCIAL : Permet au monstre de dépasser en bas du bloc noir */
+  }
+
+  .tuto-monster-column {
+    order: 1; /* Place le monstre après le contenu textuel/boutons si ton tuto-content-column est à order: 1 */
+    margin-top: 20px;
+    position: relative;
+    z-index: 1 !important;
+  }
+
+  /* Ajustements spécifiques des images du tutoriel (Monstre & Couronne) */
+  .tuto-monster {
+    height: 220px;
+    transform: translateY(60px);
+    margin-bottom: -40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .big-crown {
+    top: -100px; /* Recalcule la hauteur pour qu'elle se pose bien sur la tête */
+    width: 180px; /* Réduit la taille de la couronne sur mobile */
+    z-index: -1; /* FORCÉ EN ARRIÈRE-PLAN : Passe derrière le bouton de manière inconditionnelle */
+    pointer-events: none;
+  }
+
+  .tuto-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .tuto-header img {
+    width: 22px;
+    top: -16px;
+    right: -6px;
+  }
+
+  /* Quiz Mobile */
+  .tuto-content-column {
+    position: relative;
+    z-index: 10 !important; /* Force toute la colonne de contenu (quiz + bouton) au premier plan */
+  }
+
+  .tuto-answers-wrapper {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tuto-answer {
+    min-height: 55px;
+    font-size: 0.95rem;
+  }
+
+  .btn-play {
+    position: relative;
+    z-index: 20;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  /* --- Récompenses & Partenaires Mobile --- */
+  .reward-wrapper {
+    padding: 25px 15px;
+  }
+
+  .reward-wrapper > img {
+    height: 140px;
+  }
+
+  .partners-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Réduit l'espace vertical entre les deux blocs */
+    margin-top: 15px;
+  }
+
+  /* Images logos partenaires sur Mobile */
+  .partner-img {
+    width: 100%;
+    max-width: 220px;
+    height: 90px;
   }
 }
 </style>
