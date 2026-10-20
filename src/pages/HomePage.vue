@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import BottomNav from '@/components/BottomNav.vue'
 import UserSummary from '@/components/UserSummary.vue'
+import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 //console.log('API_URL utilisée :', API_URL)
@@ -57,15 +58,18 @@ const logout = async () => {
       </nav>
     </header>
     <main class="home-content">
-  <p v-if="isLoading">Chargement...</p>
-  <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
+      <p v-if="isLoading">Chargement...</p>
+      <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
 
-  <!-- Transmet le pseudo récupéré par la home au composant. -->
-  <UserSummary
-    v-if="user"
-    :pseudo="user.user_pseudo"
-  />
-</main>
+      <!-- Transmet le pseudo récupéré par la home au composant. -->
+      <UserSummary v-if="user" :pseudo="user.user_pseudo" />
+
+      <!-- classement générale -->
+      <UsersLeaderboard />
+
+      <!-- classement autour du user connecté -->
+      <UsersLeaderboard v-if="user" :current-user-id="user.ID_user" mode="nearby" />
+    </main>
     <!-- Affiche la navigation sur cette page. -->
     <BottomNav />
   </div>
@@ -113,5 +117,4 @@ button {
   gap: 16px;
   padding: 32px 20px;
 }
-
 </style>
