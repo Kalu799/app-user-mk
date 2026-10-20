@@ -4,6 +4,7 @@ import { startGame, finishGame } from '../services/gameService'
 export const useGameStore = defineStore('game', {
   state: () => ({
     game: null,
+    gameParameters: null,
     result: null,
     currentQuestionIndex: 0,
     selectedMovieId: null,
@@ -48,6 +49,10 @@ export const useGameStore = defineStore('game', {
       try {
         // Attend les données du service avant de préparer la partie.
         this.game = await startGame({ ID_genre })
+        this.gameParameters = {
+  // null correspond à une partie toutes catégories.
+  ID_genre: ID_genre ?? null,
+}
 
         // Réinitialise les données de la partie précédente.
         this.answers = []
