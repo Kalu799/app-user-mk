@@ -149,8 +149,8 @@ const launchGuestGame = async () => {
       </div>
 
       <div class="leaderboard-wrapper">
-        <h2>Classement général</h2>
-        <p>Il y aura un classement ici (WIP)</p>
+        <!-- Aperçu du top 10 -->
+        <UsersLeaderboard mode="preview" />
       </div>
     </main>
 

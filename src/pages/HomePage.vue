@@ -6,6 +6,7 @@ import UserSummary from '@/components/UserSummary.vue'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 import { useGameStore } from '@/stores/game'
 import { getCurrentUser } from '@/services/userService'
+import TheLoading from '@/components/TheLoading.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const router = useRouter()
@@ -75,7 +76,12 @@ const logout = async () => {
       </nav>
     </header>
     <main class="home-content">
-      <p v-if="isLoading">Chargement...</p>
+
+      <div v-if="isLoading">
+        <TheLoading />
+      </div>
+
+
       <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
 
       <!-- Transmet le pseudo récupéré par la home au composant. -->

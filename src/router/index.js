@@ -5,6 +5,7 @@ import GuestHome from '../pages/GuestHomePage.vue'
 import HomePage from '../pages/HomePage.vue'
 import GamePage from '../pages/GamePage.vue'
 import GameResultPage from '../pages/GameResultPage.vue'
+import LeaderboardPage from '../pages/LeaderboardPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/homepage',
       name: 'homepage',
       component: HomePage,
+    },
+    {
+      path: '/leaderboard',
+      name: 'leaderboard',
+      component: LeaderboardPage,
     },
     {
       path: '/game',
