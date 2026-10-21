@@ -2,6 +2,13 @@
 
 import { ref } from 'vue'
 
+// Reçoit l’état de chargement géré par la page.
+const props = defineProps({
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+})
 // valeurs de base vide pour le form
 const initialRegisterState = () => ({
   pseudo: "",
@@ -17,10 +24,12 @@ const emits = defineEmits(['dataFormRegister'])
 
 // fct appelée au submit du form
 const sendData = () => {
-  // emits des données vers le parent
+  if (props.isLoading) {
+    return
+  }
+
+  // Conserve la saisie si l’inscription échoue.
   emits('dataFormRegister', { ...newRegister.value })
-  // reset du form
-  newRegister.value = initialRegisterState()
 }
 
 </script>
@@ -40,7 +49,9 @@ const sendData = () => {
       <label for="password">Password : </label>
       <input id="password" type="password" name="password" v-model.lazy.trim="newRegister.password">
 
-      <button>Register</button>
+      <button type="submit" :disabled="props.isLoading">
+  {{ props.isLoading ? 'Inscription en cours…' : 'S’inscrire' }}
+</button>
     </form>
   </div>
 

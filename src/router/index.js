@@ -4,6 +4,7 @@ import Auth from '../pages/AuthPage.vue'
 import GuestHome from '../pages/GuestHomePage.vue'
 import HomePage from '../pages/HomePage.vue'
 import GamePage from '../pages/GamePage.vue'
+import GameResultPage from '../pages/GameResultPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,22 @@ const router = createRouter({
         return true
       },
     },
+    {
+  path: '/game-result',
+  name: 'game-result',
+  component: GameResultPage,
+
+  // Évite d’afficher une page vide si aucun résultat n’est disponible.
+  beforeEnter: () => {
+    const gameStore = useGameStore()
+
+    if (!gameStore.result) {
+      return { name: 'guesthome' }
+    }
+
+    return true
+  },
+},
   ],
 })
 

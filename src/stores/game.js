@@ -1,14 +1,18 @@
 import { defineStore } from 'pinia'
 import { startGame, finishGame } from '../services/gameService'
+// Reste indépendant des remises à zéro du store.
+let startRequestSequence = 0
 
 export const useGameStore = defineStore('game', {
   state: () => ({
     game: null,
+    gameParameters: null,
     result: null,
     currentQuestionIndex: 0,
     selectedMovieId: null,
     questionStartedAt: null,
     answers: [],
+    startRequestId: null,
     isStarting: false,
     startError: null,
     isFinishing: false,
@@ -36,38 +40,49 @@ export const useGameStore = defineStore('game', {
       this.startQuestion()
     },
     async loadGame(ID_genre) {
-      // Ignore une nouvelle demande si le démarrage est déjà en cours.
-      if (this.isStarting) {
-        return
-      }
+  if (this.isStarting) {
+    return
+  }
 
-      // Commence l'attente et efface une éventuelle erreur précédente.
-      this.isStarting = true
-      this.startError = null
+  // Identifie précisément cette demande de partie.
+  const requestId = ++startRequestSequence
+  this.startRequestId = requestId
+  this.isStarting = true
+  this.startError = null
 
-      try {
-        // Attend les données du service avant de préparer la partie.
-        this.game = await startGame({ ID_genre })
+  try {
+    const game = await startGame({ ID_genre })
 
-        // Réinitialise les données de la partie précédente.
-        this.answers = []
-        this.result = null
-        this.isFinishing = false
-        this.finishError = null
-        this.currentQuestionIndex = 0
+    // Ignore une réponse après une remise à zéro ou une nouvelle demande.
+    if (this.startRequestId !== requestId) {
+      return
+    }
 
-        // Prépare la partie sans démarrer le chrono.
-        // La page le démarrera lorsque la première question sera affichée.
-        this.selectedMovieId = null
-        this.questionStartedAt = null
-      } catch (error) {
-        // Conserve l'erreur pour que la page puisse l'afficher.
-        this.startError = error.message
-      } finally {
-        // Termine l'attente, que le démarrage ait réussi ou échoué.
-        this.isStarting = false
-      }
-    },
+    this.game = game
+    this.gameParameters = {
+      ID_genre: ID_genre ?? null,
+    }
+
+    this.answers = []
+    this.result = null
+    this.isFinishing = false
+    this.finishError = null
+    this.currentQuestionIndex = 0
+    this.selectedMovieId = null
+    this.questionStartedAt = null
+  } catch (error) {
+    // Une ancienne erreur ne doit pas affecter la nouvelle partie.
+    if (this.startRequestId === requestId) {
+      this.startError = error.message || 'Impossible de démarrer la partie'
+    }
+  } finally {
+    // Une ancienne demande ne doit pas arrêter le nouveau chargement.
+    if (this.startRequestId === requestId) {
+      this.isStarting = false
+      this.startRequestId = null
+    }
+  }
+},
     selectMovie(movieId) {
       this.selectedMovieId = movieId
     },
@@ -164,10 +179,11 @@ export const useGameStore = defineStore('game', {
           throw new Error('La partie doit être terminée avant sa correction')
         }
 
-        // Attend le résultat fourni par le service.
-        const result = await finishGame(game.game_id, {
-          answers: this.answers,
-        })
+        // Transmet les réponses et le jeton reçu au démarrage de cette partie.
+const result = await finishGame(game.game_id, {
+  answers: this.answers,
+  gameToken: game.game_token,
+})
 
         // Conserve le résultat uniquement si cette partie est toujours courante.
         if (this.game === game) {
