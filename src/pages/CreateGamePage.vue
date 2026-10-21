@@ -5,6 +5,7 @@ import { getCategories } from '@/services/categoryService'
 import BottomNav from '@/components/BottomNav.vue'
 import TheLoading from '@/components/TheLoading.vue'
 import { useGameStore } from '@/stores/game'
+import TheHeader from '@/components/TheHeader.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -122,6 +123,17 @@ const launchGame = async () => {
   }
 
   await router.push({ name: 'game' })
+
+}
+
+const logout = async () => {
+  // Retire la connexion du compte.
+  window.sessionStorage.removeItem('movie-king-auth-token')
+
+  // Efface la partie et ignore ses éventuelles réponses tardives.
+  gameStore.$reset()
+
+  await router.push('/guesthome')
 }
 
 onMounted(async () => {
@@ -140,6 +152,8 @@ onMounted(async () => {
   <TheLoading v-if="gameStore.isStarting" fullscreen label="Préparation de la partie…" />
 
   <div class="create-game-page" :inert="gameStore.isStarting">
+    <TheHeader :is-authenticated="true" @logout="logout" />
+
     <main class="creation-content">
       <h1>Créer une partie</h1>
 
