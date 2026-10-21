@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import TheLoading from '@/components/TheLoading.vue'
 
 const props = defineProps({
   currentUserId: {
@@ -177,26 +178,11 @@ onMounted(loadLeaderboard)
   <section class="users-leaderboard">
     <h2>{{ title }}</h2>
 
-    <div v-if="mode === 'general'" class="leaderboard-filters">
-      <label>
-        <span>Rechercher un joueur</span>
-
-        <input v-model="searchPseudo" type="search" placeholder="Son pseudo…" />
-      </label>
-
-      <label>
-        <span>Trier les points</span>
-
-        <select v-model="scoreOrder">
-          <option value="desc">Du plus élevé au plus faible</option>
-          <option value="asc">Du plus faible au plus élevé</option>
-        </select>
-      </label>
-    </div>
-
-    <p v-if="isLoading" role="status">
-      Chargement du classement…
-    </p>
+       <!-- Affiche le chargement dans la zone du classement. -->
+    <TheLoading
+      v-if="isLoading"
+      label="Chargement du classement…"
+    />
 
     <div v-else-if="errorMsg" role="alert">
       <p>{{ errorMsg }}</p>

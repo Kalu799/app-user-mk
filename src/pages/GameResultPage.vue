@@ -5,6 +5,7 @@ import { useGameStore } from '@/stores/game'
 import { getCurrentUser } from '@/services/userService'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 import TheHeader from '@/components/TheHeader.vue'
+import TheLoading from '@/components/TheLoading.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()
@@ -118,10 +119,21 @@ const logout = async () => {
 </script>
 
 <template>
-  <div class="result-layout">
-    <TheHeader :is-authenticated="!isGuest" @logout="logout" />
-  <!-- Attend un résultat disponible avant d’afficher ses informations. -->
-  <main v-if="gameStore.result" class="result-page">
+  <!-- Recouvre la page pendant la préparation d’une nouvelle partie. -->
+  <TheLoading
+    v-if="isReplaying"
+    fullscreen
+    label="Préparation de la partie…"
+  />
+
+  <TheHeader :is-authenticated="!isGuest" @logout="logout" />
+
+  <!-- Conserve les résultats affichés derrière le chargement. -->
+  <main
+    v-if="gameStore.result"
+    class="result-page"
+    :inert="isReplaying"
+  >
     <section class="result-summary">
       <h1>Partie terminée</h1>
 
@@ -214,9 +226,11 @@ const logout = async () => {
 
  <!-- Affiche le classement du joueur après récupération de son identifiant. -->
 <div v-else>
-  <p v-if="isProfileLoading" role="status">
-    Chargement du profil…
-  </p>
+    <!-- Charge le profil sans masquer les résultats de la partie. -->
+  <TheLoading
+    v-if="isProfileLoading"
+    label="Chargement du profil…"
+  />
 
   <p v-else-if="profileError" class="result-error" role="alert">
     {{ profileError }}

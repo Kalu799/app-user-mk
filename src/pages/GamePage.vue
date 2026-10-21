@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '../stores/game'
+import TheLoading from '@/components/TheLoading.vue'
 
 // Le store conserve la partie ; le routeur permet de quitter cet écran.
 const router = useRouter()
@@ -105,7 +106,14 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="game-layout">
+  <!-- Affiche l’attente pendant le calcul des résultats. -->
+  <TheLoading
+    v-if="gameStore.isFinishing"
+    fullscreen
+    label="Calcul des résultats…"
+  />
+
+  <div class="game-layout" :inert="gameStore.isFinishing">
     <!-- L'en-tête reprend l'ordre du wireframe : retour, contexte, logo. -->
     <header class="game-header">
       <div class="game-header-inner">
@@ -214,13 +222,8 @@ const goBack = () => {
         </section>
       </div>
 
-      <!-- Indique que le serveur est en train de corriger la partie. -->
-<p v-if="gameStore.isFinishing" class="game-message" role="status">
-  Calcul du résultat en cours…
-</p>
-
 <!-- Conserve les réponses et permet de redemander leur correction. -->
-<div v-else-if="gameStore.finishError">
+<div v-if="gameStore.finishError">
   <p class="game-message error-message" role="alert">
     {{ gameStore.finishError }}
   </p>
