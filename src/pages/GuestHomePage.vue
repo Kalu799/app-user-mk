@@ -5,6 +5,7 @@ import { useGameStore } from '../stores/game'
 
 import { ref, onUnmounted } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
+import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 
 const selectedAnswer = ref(null)
 
@@ -96,32 +97,19 @@ const launchGuestGame = async () => {
           </div>
 
           <div class="tuto-answers-wrapper">
-            <button
-              class="tuto-answer"
-              :class="{ selected: selectedAnswer === 'inglorious' }"
-              :aria-pressed="selectedAnswer === 'inglorious'"
-              @click="selectAnswer('inglorious')"
-            >
+            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'inglorious' }"
+              :aria-pressed="selectedAnswer === 'inglorious'" @click="selectAnswer('inglorious')">
               Inglorious Basterds
             </button>
 
-            <button
-              class="tuto-answer"
-              :class="{ selected: selectedAnswer === 'django' }"
-              :aria-pressed="selectedAnswer === 'django'"
-              @click="selectAnswer('django')"
-            >
+            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'django' }"
+              :aria-pressed="selectedAnswer === 'django'" @click="selectAnswer('django')">
               Django Unchained
             </button>
           </div>
 
           <!-- Lance la partie et indique son chargement. -->
-          <button
-            type="button"
-            class="btn-play"
-            :disabled="gameStore.isStarting"
-            @click="launchGuestGame"
-          >
+          <button type="button" class="btn-play" :disabled="gameStore.isStarting" @click="launchGuestGame">
             {{ gameStore.isStarting ? 'Chargement…' : 'JOUER' }}
           </button>
 
@@ -191,7 +179,8 @@ const launchGuestGame = async () => {
   background-color: #e5dbca;
   color: #f5efe3;
   font-family: 'Inter', sans-serif;
-  overflow-x: hidden; /* Empêche le scroll horizontal parasite sur mobile */
+  overflow-x: hidden;
+  /* Empêche le scroll horizontal parasite sur mobile */
 }
 
 html {
@@ -242,6 +231,7 @@ main p {
 
   text-align: center;
 }
+
 /* Cache la couronne du Hero sur ordinateur */
 .hero-crown {
   display: none;
@@ -375,7 +365,7 @@ main p {
   z-index: 0;
 }
 
-.tuto-wrapper > * {
+.tuto-wrapper>* {
   position: relative;
   z-index: 1;
 }
@@ -577,13 +567,16 @@ main p {
   z-index: 1;
 }
 
-.reward-wrapper > img {
+.reward-wrapper>img {
   display: block;
   width: 100%;
-  height: 200px; /* Ajuste la hauteur selon tes besoins */
+  height: 200px;
+  /* Ajuste la hauteur selon tes besoins */
   border: 3px solid #1c1c1c;
-  border-radius: 4px; /* Optionnel pour arrondir légèrement les coins */
-  object-fit: cover; /* Évite que l'image soit déformée et remplit bien l'espace */
+  border-radius: 4px;
+  /* Optionnel pour arrondir légèrement les coins */
+  object-fit: cover;
+  /* Évite que l'image soit déformée et remplit bien l'espace */
 }
 
 .reward-wrapper::before {
@@ -604,7 +597,7 @@ main p {
   z-index: 0;
 }
 
-.reward-wrapper > * {
+.reward-wrapper>* {
   position: relative;
   z-index: 1;
 }
@@ -615,7 +608,7 @@ main p {
   line-height: 1;
 }
 
-.reward-wrapper > img {
+.reward-wrapper>img {
   display: block;
   width: 100%;
   height: 180px;
@@ -626,12 +619,12 @@ main p {
   color: white;
 }
 
-.reward-wrapper > p {
+.reward-wrapper>p {
   font-size: 1.1rem;
   line-height: 1.6;
 }
 
-.reward-wrapper > p:nth-of-type(2) {
+.reward-wrapper>p:nth-of-type(2) {
   font-size: 1rem;
   line-height: 1.5;
   color: #ffe0e4;
@@ -643,8 +636,10 @@ main p {
 
 .partners-wrapper {
   display: flex;
-  justify-content: center; /* Centre les logos horizontalement */
-  gap: 15rem; /* Augmente l'espace entre les deux logos */
+  justify-content: center;
+  /* Centre les logos horizontalement */
+  gap: 15rem;
+  /* Augmente l'espace entre les deux logos */
   margin-top: 15px;
   width: 100%;
 }
@@ -728,7 +723,7 @@ main p {
     padding: 60px 50px;
   }
 
-  .reward-wrapper > img {
+  .reward-wrapper>img {
     height: 280px;
   }
 
@@ -759,7 +754,7 @@ main p {
     padding: 70px 80px;
   }
 
-  .reward-wrapper > img {
+  .reward-wrapper>img {
     max-width: 700px;
     align-self: center;
   }
@@ -855,13 +850,15 @@ main p {
 /* ======================================================== */
 
 @media (max-width: 767px) {
+
   /* --- Hero Section Mobile --- */
   .hero {
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: auto;
-    padding: 0 15px 30px 15px; /* On laisse de la place en haut pour la couronne */
+    padding: 0 15px 30px 15px;
+    /* On laisse de la place en haut pour la couronne */
     gap: 20px;
     position: relative;
   }
@@ -874,9 +871,11 @@ main p {
   /* Afficher et positionner la grande couronne au-dessus du texte */
   .hero-crown {
     display: block;
-    width: 200px; /* Ajuste la largeur de la grande couronne selon tes préférences */
+    width: 200px;
+    /* Ajuste la largeur de la grande couronne selon tes préférences */
     height: auto;
-    margin-bottom: -30px; /* Rapproche légèrement la couronne du titre */
+    margin-bottom: -30px;
+    /* Rapproche légèrement la couronne du titre */
     object-fit: contain;
   }
 
@@ -908,17 +907,20 @@ main p {
 
   /* --- Tutoriel Mobile --- */
   .tuto-wrapper {
-    flex-direction: column; /* Place le texte au-dessus du monstre */
+    flex-direction: column;
+    /* Place le texte au-dessus du monstre */
     align-items: center;
     padding: 40px 15px 60px 15px;
     gap: 20px;
 
     position: relative;
-    overflow: visible !important; /* CRUCIAL : Permet au monstre de dépasser en bas du bloc noir */
+    overflow: visible !important;
+    /* CRUCIAL : Permet au monstre de dépasser en bas du bloc noir */
   }
 
   .tuto-monster-column {
-    order: 1; /* Place le monstre après le contenu textuel/boutons si ton tuto-content-column est à order: 1 */
+    order: 1;
+    /* Place le monstre après le contenu textuel/boutons si ton tuto-content-column est à order: 1 */
     margin-top: 20px;
     position: relative;
     z-index: 1 !important;
@@ -934,9 +936,12 @@ main p {
   }
 
   .big-crown {
-    top: -100px; /* Recalcule la hauteur pour qu'elle se pose bien sur la tête */
-    width: 180px; /* Réduit la taille de la couronne sur mobile */
-    z-index: -1; /* FORCÉ EN ARRIÈRE-PLAN : Passe derrière le bouton de manière inconditionnelle */
+    top: -100px;
+    /* Recalcule la hauteur pour qu'elle se pose bien sur la tête */
+    width: 180px;
+    /* Réduit la taille de la couronne sur mobile */
+    z-index: -1;
+    /* FORCÉ EN ARRIÈRE-PLAN : Passe derrière le bouton de manière inconditionnelle */
     pointer-events: none;
   }
 
@@ -953,7 +958,8 @@ main p {
   /* Quiz Mobile */
   .tuto-content-column {
     position: relative;
-    z-index: 10 !important; /* Force toute la colonne de contenu (quiz + bouton) au premier plan */
+    z-index: 10 !important;
+    /* Force toute la colonne de contenu (quiz + bouton) au premier plan */
   }
 
   .tuto-answers-wrapper {
@@ -978,14 +984,15 @@ main p {
     padding: 25px 15px;
   }
 
-  .reward-wrapper > img {
+  .reward-wrapper>img {
     height: 140px;
   }
 
   .partners-wrapper {
     flex-direction: column;
     align-items: center;
-    gap: 15px; /* Réduit l'espace vertical entre les deux blocs */
+    gap: 15px;
+    /* Réduit l'espace vertical entre les deux blocs */
     margin-top: 15px;
   }
 
