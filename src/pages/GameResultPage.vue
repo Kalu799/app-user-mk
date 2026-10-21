@@ -54,9 +54,9 @@ const replayGame = async () => {
     // Demande une nouvelle partie avec la même catégorie.
     await gameStore.loadGame(parameters.ID_genre)
     // Évite de revenir au jeu si le joueur a quitté cette page.
-if (!isPageActive) {
-  return
-}
+    if (!isPageActive) {
+      return
+    }
 
     if (gameStore.startError) {
       throw new Error(gameStore.startError)
@@ -120,20 +120,12 @@ const logout = async () => {
 
 <template>
   <!-- Recouvre la page pendant la préparation d’une nouvelle partie. -->
-  <TheLoading
-    v-if="isReplaying"
-    fullscreen
-    label="Préparation de la partie…"
-  />
+  <TheLoading v-if="isReplaying" fullscreen label="Préparation de la partie…" />
 
   <TheHeader :is-authenticated="!isGuest" @logout="logout" />
 
   <!-- Conserve les résultats affichés derrière le chargement. -->
-  <main
-    v-if="gameStore.result"
-    class="result-page"
-    :inert="isReplaying"
-  >
+  <main v-if="gameStore.result" class="result-page" :inert="isReplaying">
     <section class="result-summary">
       <h1>Partie terminée</h1>
 
@@ -144,55 +136,40 @@ const logout = async () => {
         bonnes réponses
       </p>
       <!-- Indique aussi aux outils d’accessibilité si les corrections sont ouvertes. -->
-<button
-  type="button"
-  class="corrections-toggle"
-  :aria-expanded="showCorrections"
-  aria-controls="game-corrections"
-  @click="toggleCorrections"
->
-  {{ showCorrections ? 'Masquer les corrections' : 'Voir les corrections' }}
-</button>
+      <button type="button" class="corrections-toggle" :aria-expanded="showCorrections" aria-controls="game-corrections"
+        @click="toggleCorrections">
+        {{ showCorrections ? 'Masquer les corrections' : 'Voir les corrections' }}
+      </button>
     </section>
     <!-- L’ouverture de cette section pousse naturellement le contenu suivant. -->
-<section
-  v-show="showCorrections"
-  id="game-corrections"
-  class="result-corrections"
->
-  <h2>Corrections</h2>
+    <section v-show="showCorrections" id="game-corrections" class="result-corrections">
+      <h2>Corrections</h2>
 
-  <!-- Construit une carte pour chaque réponse, dans l’ordre de la partie. -->
-  <article
-    v-for="(correction, index) in gameStore.result.corrections"
-    :key="correction.question_id"
-    class="correction-card"
-  >
-    <h3>Question {{ index + 1 }}</h3>
+      <!-- Construit une carte pour chaque réponse, dans l’ordre de la partie. -->
+      <article v-for="(correction, index) in gameStore.result.corrections" :key="correction.question_id"
+        class="correction-card">
+        <h3>Question {{ index + 1 }}</h3>
 
-    <blockquote>{{ correction.quote_text }}</blockquote>
+        <blockquote>{{ correction.quote_text }}</blockquote>
 
-    <div class="correction-answers">
-      <!-- La classe permettra de colorer la réponse en vert ou en rouge. -->
-      <!-- Affiche le résultat et le film choisi, ou l’absence de réponse. -->
-<p
-  class="player-answer"
-  :class="{
-    'is-correct': correction.is_correct,
-    'is-incorrect': !correction.is_correct,
-  }"
->
-  {{ correction.is_correct ? 'Bonne réponse :' : 'Ta réponse :' }}
-  {{ correction.selected_movie_title ?? 'Aucune réponse validée' }}
-</p>
+        <div class="correction-answers">
+          <!-- La classe permettra de colorer la réponse en vert ou en rouge. -->
+          <!-- Affiche le résultat et le film choisi, ou l’absence de réponse. -->
+          <p class="player-answer" :class="{
+            'is-correct': correction.is_correct,
+            'is-incorrect': !correction.is_correct,
+          }">
+            {{ correction.is_correct ? 'Bonne réponse :' : 'Ta réponse :' }}
+            {{ correction.selected_movie_title ?? 'Aucune réponse validée' }}
+          </p>
 
-      <!-- En cas d’erreur ou d’expiration, affiche également le bon film. -->
-      <p v-if="!correction.is_correct" class="correct-answer">
-        Bonne réponse : {{ correction.correct_movie_title }}
-      </p>
-    </div>
-  </article>
-</section>
+          <!-- En cas d’erreur ou d’expiration, affiche également le bon film. -->
+          <p v-if="!correction.is_correct" class="correct-answer">
+            Bonne réponse : {{ correction.correct_movie_title }}
+          </p>
+        </div>
+      </article>
+    </section>
     <!-- Ce bloc restera sous les corrections lorsqu’elles seront ouvertes. -->
     <section class="result-score">
       <h2>Bravo !</h2>
@@ -203,79 +180,59 @@ const logout = async () => {
       </p>
     </section>
     <!-- Accueillera le classement autour du joueur connecté. -->
-<!-- Le titre du parcours connecté est fourni par UsersLeaderboard. -->
-<section class="result-leaderboard" aria-label="Classement">
-  <h2 v-if="isGuest">Classement général</h2>
+    <!-- Le titre du parcours connecté est fourni par UsersLeaderboard. -->
+    <section class="result-leaderboard" aria-label="Classement">
+      <h2 v-if="isGuest">Classement général</h2>
 
-  <div v-if="isGuest" class="leaderboard-preview">
-    <!-- Ces lignes sont décoratives et ne représentent aucun vrai joueur. -->
-    <div class="leaderboard-placeholder" aria-hidden="true">
-      <p v-for="line in 3" :key="line" class="leaderboard-row">
-        — · Joueur · — points
+      <div v-if="isGuest" class="leaderboard-preview">
+        <!-- Ces lignes sont décoratives et ne représentent aucun vrai joueur. -->
+        <div class="leaderboard-placeholder" aria-hidden="true">
+          <p v-for="line in 3" :key="line" class="leaderboard-row">
+            — · Joueur · — points
+          </p>
+        </div>
+
+        <!-- Le lien reste net et accessible au-dessus du classement flouté. -->
+        <RouterLink :to="{ name: 'auth' }" class="leaderboard-invitation">
+          S’inscrire pour accéder au classement
+        </RouterLink>
+      </div>
+
+      <!-- Affiche le classement du joueur après récupération de son identifiant. -->
+      <div v-else>
+        <!-- Charge le profil sans masquer les résultats de la partie. -->
+        <TheLoading v-if="isProfileLoading" label="Chargement du profil…" />
+
+        <p v-else-if="profileError" class="result-error" role="alert">
+          {{ profileError }}
+        </p>
+
+        <!-- Le composant récupère les scores et sélectionne les voisins. -->
+        <UsersLeaderboard v-else-if="currentUserId !== null" :current-user-id="currentUserId" mode="nearby" />
+      </div>
+    </section>
+    <!-- Regroupe les actions proposées après la partie. -->
+    <section class="result-actions" aria-label="Actions après la partie">
+      <p v-if="replayError" class="result-error" role="alert">
+        {{ replayError }}
       </p>
-    </div>
 
-    <!-- Le lien reste net et accessible au-dessus du classement flouté. -->
-    <RouterLink
-      :to="{ name: 'auth' }"
-      class="leaderboard-invitation"
-    >
-      S’inscrire pour accéder au classement
-    </RouterLink>
-  </div>
+      <!-- Désactive le bouton pendant la préparation de la nouvelle partie. -->
+      <button type="button" class="replay-button" :disabled="isReplaying" @click="replayGame">
+        {{ isReplaying ? 'Chargement…' : 'Rejouer' }}
+      </button>
+      <!-- Sera relié à la page de création de partie lorsqu’elle sera disponible. -->
+      <button type="button" class="configuration-button" aria-describedby="configuration-info" disabled>
+        Changer de mode
+      </button>
 
- <!-- Affiche le classement du joueur après récupération de son identifiant. -->
-<div v-else>
-    <!-- Charge le profil sans masquer les résultats de la partie. -->
-  <TheLoading
-    v-if="isProfileLoading"
-    label="Chargement du profil…"
-  />
-
-  <p v-else-if="profileError" class="result-error" role="alert">
-    {{ profileError }}
-  </p>
-
-  <!-- Le composant récupère les scores et sélectionne les voisins. -->
-  <UsersLeaderboard
-    v-else-if="currentUserId !== null"
-    :current-user-id="currentUserId"
-    mode="nearby"
-  />
-</div>
-</section>
-<!-- Regroupe les actions proposées après la partie. -->
-<section class="result-actions" aria-label="Actions après la partie">
-  <p v-if="replayError" class="result-error" role="alert">
-    {{ replayError }}
-  </p>
-
-  <!-- Désactive le bouton pendant la préparation de la nouvelle partie. -->
-  <button
-    type="button"
-    class="replay-button"
-    :disabled="isReplaying"
-    @click="replayGame"
-  >
-    {{ isReplaying ? 'Chargement…' : 'Rejouer' }}
-  </button>
-  <!-- Sera relié à la page de création de partie lorsqu’elle sera disponible. -->
-<button
-  type="button"
-  class="configuration-button"
-  aria-describedby="configuration-info"
-  disabled
->
-  Changer de mode
-</button>
-
-<!-- Explique pourquoi le bouton n’est pas encore accessible. -->
-<p id="configuration-info" class="configuration-info">
-  Configuration de partie bientôt disponible.
-</p>
-</section>
+      <!-- Explique pourquoi le bouton n’est pas encore accessible. -->
+      <p id="configuration-info" class="configuration-info">
+        Configuration de partie bientôt disponible.
+      </p>
+    </section>
   </main>
-  </div>
+
 </template>
 <style scoped>
 .result-layout {
@@ -296,7 +253,7 @@ const logout = async () => {
 }
 
 /* Limite la largeur du contenu sur les grands écrans. */
-.result-page > section {
+.result-page>section {
   max-width: 760px;
   margin-inline: auto;
   margin-bottom: 24px;
@@ -376,6 +333,7 @@ const logout = async () => {
 .player-answer.is-incorrect {
   background-color: #ff626b;
 }
+
 /* Sert de repère pour placer l’invitation au-dessus des lignes. */
 .leaderboard-preview {
   position: relative;
@@ -425,6 +383,7 @@ const logout = async () => {
   outline: 3px solid #ff626b;
   outline-offset: 5px;
 }
+
 /* Met en évidence la future ligne du joueur connecté. */
 .leaderboard-row.is-current-user {
   background-color: #ffb900;
@@ -446,6 +405,7 @@ const logout = async () => {
 .result-error {
   color: #ff626b;
 }
+
 /* Place la configuration sous Rejouer avec un style secondaire. */
 .configuration-button {
   display: block;
