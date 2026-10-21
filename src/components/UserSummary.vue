@@ -27,19 +27,13 @@ const levelProgress = computed(() => getLevelProgress(props.score))
 <template>
   <section class="user-summary" aria-label="Résumé de ton compte">
     <!-- Réserve la place du futur avatar. -->
-    <div
-      class="user-avatar"
-      role="img"
-      aria-label="Avatar à venir"
-    >
-      Avatar
-    </div>
+    <div class="user-avatar" role="img" aria-label="Avatar à venir">Avatar</div>
 
     <div class="user-info">
       <!-- Affiche le pseudo transmis par la home. -->
       <h2 class="user-pseudo">{{ pseudo }}</h2>
 
-            <!-- Affiche le niveau et la progression calculés depuis le score total. -->
+      <!-- Affiche le niveau et la progression calculés depuis le score total. -->
       <div class="user-level">
         <p class="level-label">Niveau {{ levelProgress.level }}</p>
 
@@ -53,8 +47,8 @@ const levelProgress = computed(() => getLevelProgress(props.score))
         </progress>
 
         <p class="xp-details">
-          {{ levelProgress.xpInLevel }} / {{ levelProgress.xpForNextLevel }} XP
-          vers le niveau {{ levelProgress.level + 1 }}
+          {{ levelProgress.xpInLevel }} / {{ levelProgress.xpForNextLevel }} XP vers le niveau
+          {{ levelProgress.level + 1 }}
         </p>
       </div>
 
@@ -62,9 +56,7 @@ const levelProgress = computed(() => getLevelProgress(props.score))
       <p class="user-title">Titre à venir</p>
 
       <!-- Affiche un tiret lorsque la position n’est pas encore disponible. -->
-      <p class="user-position">
-        Position au classement : {{ position ?? '—' }}
-      </p>
+      <p class="user-position">Position au classement : {{ position ?? '—' }}</p>
     </div>
   </section>
 </template>

@@ -3,10 +3,7 @@ export const getLevelProgress = (score) => {
   const numericScore = Number(score)
 
   // Utilise zéro si le score n’est pas un entier positif ou nul.
-  const totalXp =
-    Number.isSafeInteger(numericScore) && numericScore >= 0
-      ? numericScore
-      : 0
+  const totalXp = Number.isSafeInteger(numericScore) && numericScore >= 0 ? numericScore : 0
 
   let level = 1
   let xpInLevel = totalXp

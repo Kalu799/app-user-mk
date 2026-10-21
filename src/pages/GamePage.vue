@@ -84,9 +84,7 @@ onUnmounted(() => {
 const goBack = () => {
   // Demande confirmation lorsqu’une question est encore en cours.
   if (gameStore.currentQuestion) {
-    const shouldLeave = window.confirm(
-      'Quitter la partie ? Ta progression sera perdue.',
-    )
+    const shouldLeave = window.confirm('Quitter la partie ? Ta progression sera perdue.')
 
     if (!shouldLeave) {
       return
@@ -107,22 +105,13 @@ const goBack = () => {
 
 <template>
   <!-- Affiche l’attente pendant le calcul des résultats. -->
-  <TheLoading
-    v-if="gameStore.isFinishing"
-    fullscreen
-    label="Calcul des résultats…"
-  />
+  <TheLoading v-if="gameStore.isFinishing" fullscreen label="Calcul des résultats…" />
 
   <div class="game-layout" :inert="gameStore.isFinishing">
     <!-- L'en-tête reprend l'ordre du wireframe : retour, contexte, logo. -->
     <header class="game-header">
       <div class="game-header-inner">
-        <button
-          type="button"
-          class="back-button"
-          aria-label="Revenir à l'accueil"
-          @click="goBack"
-        >
+        <button type="button" class="back-button" aria-label="Revenir à l'accueil" @click="goBack">
           <span aria-hidden="true">←</span>
         </button>
 
@@ -177,9 +166,7 @@ const goBack = () => {
         </section>
 
         <section class="question-panel" aria-labelledby="question-title">
-          <h2 id="question-title" class="question-title">
-            De quel film provient cette réplique ?
-          </h2>
+          <h2 id="question-title" class="question-title">De quel film provient cette réplique ?</h2>
 
           <blockquote class="quote-card">
             <p>« {{ gameStore.currentQuestion.quote.quote_text }} »</p>
@@ -222,26 +209,26 @@ const goBack = () => {
         </section>
       </div>
 
-<!-- Conserve les réponses et permet de redemander leur correction. -->
-<div v-if="gameStore.finishError">
-  <p class="game-message error-message" role="alert">
-    {{ gameStore.finishError }}
-  </p>
+      <!-- Conserve les réponses et permet de redemander leur correction. -->
+      <div v-if="gameStore.finishError">
+        <p class="game-message error-message" role="alert">
+          {{ gameStore.finishError }}
+        </p>
 
-  <button
-    type="button"
-    class="validate-button"
-    :disabled="gameStore.isFinishing"
-    @click="gameStore.completeGame()"
-  >
-    Réessayer le calcul du résultat
-  </button>
-</div>
+        <button
+          type="button"
+          class="validate-button"
+          :disabled="gameStore.isFinishing"
+          @click="gameStore.completeGame()"
+        >
+          Réessayer le calcul du résultat
+        </button>
+      </div>
 
-<!-- Confirme la réception du résultat avant le futur écran récapitulatif. -->
-<p v-else-if="gameStore.result" class="game-message" role="status">
-  Partie terminée : résultat reçu !
-</p>
+      <!-- Confirme la réception du résultat avant le futur écran récapitulatif. -->
+      <p v-else-if="gameStore.result" class="game-message" role="status">
+        Partie terminée : résultat reçu !
+      </p>
     </main>
   </div>
 </template>
@@ -506,7 +493,10 @@ button:focus-visible {
   font-weight: 700;
   line-height: 1.4;
   overflow-wrap: anywhere;
-  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .answer-button:hover {

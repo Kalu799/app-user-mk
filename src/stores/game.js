@@ -39,50 +39,64 @@ export const useGameStore = defineStore('game', {
       // Démarre la première question lorsque la page est prête.
       this.startQuestion()
     },
-    async loadGame(ID_genre) {
-  if (this.isStarting) {
-    return
-  }
+    async loadGame(configuration = null) {
+      if (this.isStarting) {
+        return
+      }
 
-  // Identifie précisément cette demande de partie.
-  const requestId = ++startRequestSequence
-  this.startRequestId = requestId
-  this.isStarting = true
-  this.startError = null
+      const requestId = ++startRequestSequence
+      this.startRequestId = requestId
+      this.isStarting = true
+      this.startError = null
 
-  try {
-    const game = await startGame({ ID_genre })
+      try {
+        // Les anciens appels avec null restent des parties toutes catégories.
+        const mode = configuration?.mode ?? 'find_movie'
+        const genreIds = configuration?.genreIds ?? null
 
-    // Ignore une réponse après une remise à zéro ou une nouvelle demande.
-    if (this.startRequestId !== requestId) {
-      return
-    }
+        if (mode !== 'find_movie') {
+          throw new Error('Ce mode de jeu n’est pas encore disponible')
+        }
 
-    this.game = game
-    this.gameParameters = {
-      ID_genre: ID_genre ?? null,
-    }
+        // Une sélection vide ne doit pas devenir une partie toutes catégories.
+        if (genreIds !== null && (!Array.isArray(genreIds) || genreIds.length === 0)) {
+          throw new Error('Choisis au moins une catégorie')
+        }
 
-    this.answers = []
-    this.result = null
-    this.isFinishing = false
-    this.finishError = null
-    this.currentQuestionIndex = 0
-    this.selectedMovieId = null
-    this.questionStartedAt = null
-  } catch (error) {
-    // Une ancienne erreur ne doit pas affecter la nouvelle partie.
-    if (this.startRequestId === requestId) {
-      this.startError = error.message || 'Impossible de démarrer la partie'
-    }
-  } finally {
-    // Une ancienne demande ne doit pas arrêter le nouveau chargement.
-    if (this.startRequestId === requestId) {
-      this.isStarting = false
-      this.startRequestId = null
-    }
-  }
-},
+        // Copie la sélection pour conserver les paramètres de cette demande.
+        const parameters = {
+          mode,
+          genreIds: genreIds === null ? null : [...genreIds],
+        }
+
+        // L’API utilise actuellement le seul mode disponible.
+        const game = await startGame({ genreIds: parameters.genreIds })
+
+        // Ignore une réponse après une remise à zéro ou une nouvelle demande.
+        if (this.startRequestId !== requestId) {
+          return
+        }
+
+        this.game = game
+        this.gameParameters = parameters
+        this.answers = []
+        this.result = null
+        this.isFinishing = false
+        this.finishError = null
+        this.currentQuestionIndex = 0
+        this.selectedMovieId = null
+        this.questionStartedAt = null
+      } catch (error) {
+        if (this.startRequestId === requestId) {
+          this.startError = error.message || 'Impossible de démarrer la partie'
+        }
+      } finally {
+        if (this.startRequestId === requestId) {
+          this.isStarting = false
+          this.startRequestId = null
+        }
+      }
+    },
     selectMovie(movieId) {
       this.selectedMovieId = movieId
     },
@@ -180,10 +194,10 @@ export const useGameStore = defineStore('game', {
         }
 
         // Transmet les réponses et le jeton reçu au démarrage de cette partie.
-const result = await finishGame(game.game_id, {
-  answers: this.answers,
-  gameToken: game.game_token,
-})
+        const result = await finishGame(game.game_id, {
+          answers: this.answers,
+          gameToken: game.game_token,
+        })
 
         // Conserve le résultat uniquement si cette partie est toujours courante.
         if (this.game === game) {

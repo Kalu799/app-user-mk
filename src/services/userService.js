@@ -13,9 +13,7 @@ export const getCurrentUser = async (token) => {
   const data = await response.json()
 
   if (!response.ok) {
-    const error = new Error(
-      data.statusMessage || data.message || `Erreur HTTP ${response.status}`,
-    )
+    const error = new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
 
     // Permet à la page de reconnaître une connexion expirée.
     error.status = response.status

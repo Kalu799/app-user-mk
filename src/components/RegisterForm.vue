@@ -1,5 +1,4 @@
 <script setup>
-
 import { ref } from 'vue'
 
 // Reçoit l’état de chargement géré par la page.
@@ -11,15 +10,15 @@ const props = defineProps({
 })
 // valeurs de base vide pour le form
 const initialRegisterState = () => ({
-  pseudo: "",
-  mail: "",
-  password: ""
+  pseudo: '',
+  mail: '',
+  password: '',
 })
 
 // state des données du form
 const newRegister = ref(initialRegisterState())
 
-// emits 
+// emits
 const emits = defineEmits(['dataFormRegister'])
 
 // fct appelée au submit du form
@@ -31,30 +30,32 @@ const sendData = () => {
   // Conserve la saisie si l’inscription échoue.
   emits('dataFormRegister', { ...newRegister.value })
 }
-
 </script>
 
 <template>
-
   <div class="form-wrapper">
     <h3>Register Form</h3>
 
     <form action="" @submit.prevent="sendData">
       <label for="pseudo">Pseudo : </label>
-      <input id="pseudo" type="text" name="pseudo" v-model.lazy.trim="newRegister.pseudo">
+      <input id="pseudo" type="text" name="pseudo" v-model.lazy.trim="newRegister.pseudo" />
 
       <label for="mail">Mail : </label>
-      <input id="mail" type="email" name="mail" v-model.lazy.trim="newRegister.mail">
+      <input id="mail" type="email" name="mail" v-model.lazy.trim="newRegister.mail" />
 
       <label for="password">Password : </label>
-      <input id="password" type="password" name="password" v-model.lazy.trim="newRegister.password">
+      <input
+        id="password"
+        type="password"
+        name="password"
+        v-model.lazy.trim="newRegister.password"
+      />
 
       <button type="submit" :disabled="props.isLoading">
-  {{ props.isLoading ? 'Inscription en cours…' : 'S’inscrire' }}
-</button>
+        {{ props.isLoading ? 'Inscription en cours…' : 'S’inscrire' }}
+      </button>
     </form>
   </div>
-
 </template>
 
 <style scoped>
@@ -98,7 +99,7 @@ form {
 
 label {
   color: #f5efe3;
-  font-size: .95rem;
+  font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.5;
 }
@@ -123,8 +124,8 @@ input {
   line-height: 1.4;
 
   transition:
-    background-color .2s,
-    border-color .2s;
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 input:hover {
@@ -161,8 +162,8 @@ button {
 
   cursor: pointer;
   transition:
-    transform .15s,
-    box-shadow .15s;
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 button:hover {

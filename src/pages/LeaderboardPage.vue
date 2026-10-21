@@ -65,7 +65,6 @@ const logout = async () => {
 
   await router.push('/guesthome')
 }
-
 </script>
 
 <template>
