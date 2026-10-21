@@ -1,36 +1,70 @@
+<script setup>
+defineProps({
+  // Active l’affichage par-dessus toute la page.
+  fullscreen: {
+    type: Boolean,
+    default: false,
+  },
+  // Permet de préciser ce qui est en cours de chargement.
+  label: {
+    type: String,
+    default: 'Chargement en cours…',
+  },
+})
+</script>
 <template>
-  <div class="loader-grid">
-    <img src="/smile.svg" alt="Mascotte" class="mascotte" />
+  <div
+    class="loader-grid"
+    :class="{ 'is-fullscreen': fullscreen }"
+    role="status"
+  >
+    <!-- Les éléments animés sont décoratifs ; le texte décrit l’attente. -->
+    <img src="/smile.svg" alt="" class="mascotte" />
 
-    <div class="dots-container">
-      <!-- Boule 1 -->
+    <div class="dots-container" aria-hidden="true">
       <div class="jump-wrapper">
         <span class="dot"></span>
       </div>
-      <!-- Boule 2 -->
       <div class="jump-wrapper">
         <span class="dot"></span>
       </div>
-      <!-- Boule 3 -->
       <div class="jump-wrapper">
         <span class="dot"></span>
       </div>
     </div>
+
+    <p class="loading-label">{{ label }}</p>
   </div>
 </template>
 
 <style scoped>
+/* Par défaut, le chargement occupe une zone dans la page. */
 .loader-grid {
+  box-sizing: border-box;
   display: grid;
-  grid-template-columns: 1fr;
-  justify-content: center;
-  align-items: center;
   justify-items: center;
   align-content: center;
-  gap: 100px;
+  gap: 24px;
+  width: 100%;
+  min-height: 240px;
+  padding: 32px 16px;
+  background-color: #1c1c1c;
+  color: #f5efe3;
+}
 
-  width: 100vw;
-  height: 100vh;
+/* Le mode plein écran recouvre la page pendant l’opération. */
+.loader-grid.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.loading-label {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  line-height: 1.5;
 }
 
 /* -- Les 3 boules -- */
@@ -144,8 +178,13 @@
 
   /* On place le point d'ancrage en bas au centre pour qu'elle pivote depuis sa base */
   transform-origin: bottom center;
+  width: 100px;
+  height: auto;
 }
-
+/* Agrandit la mascotte pour les chargements en plein écran. */
+.is-fullscreen .mascotte {
+  width: 160px;
+}
 /* ===================================================
    3. ANIMATION DE LA MASCOTTE (Balancement continu)
    =================================================== */

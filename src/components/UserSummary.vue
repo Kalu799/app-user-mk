@@ -1,18 +1,27 @@
 <script setup>
-// Les props permettent à la home de transmettre des données au composant.
-defineProps({
-  // Le pseudo sera celui récupéré pour l’utilisateur connecté.
+import { computed } from 'vue'
+import { getLevelProgress } from '@/utils/levelProgress'
+
+const props = defineProps({
   pseudo: {
     type: String,
     required: true,
   },
 
-  // La position restera vide tant que le classement n’est pas récupéré.
   position: {
     type: Number,
     default: null,
   },
+
+  // Reçoit le score total du compte, utilisé comme XP cumulée.
+  score: {
+    type: [Number, String],
+    required: true,
+  },
 })
+
+// Recalcule le niveau et la progression lorsque le score change.
+const levelProgress = computed(() => getLevelProgress(props.score))
 </script>
 
 <template>
@@ -29,6 +38,25 @@ defineProps({
     <div class="user-info">
       <!-- Affiche le pseudo transmis par la home. -->
       <h2 class="user-pseudo">{{ pseudo }}</h2>
+
+            <!-- Affiche le niveau et la progression calculés depuis le score total. -->
+      <div class="user-level">
+        <p class="level-label">Niveau {{ levelProgress.level }}</p>
+
+        <progress
+          class="xp-bar"
+          :value="levelProgress.xpInLevel"
+          :max="levelProgress.xpForNextLevel"
+          :aria-label="`Progression vers le niveau ${levelProgress.level + 1}`"
+        >
+          {{ Math.round(levelProgress.progressPercent) }} %
+        </progress>
+
+        <p class="xp-details">
+          {{ levelProgress.xpInLevel }} / {{ levelProgress.xpForNextLevel }} XP
+          vers le niveau {{ levelProgress.level + 1 }}
+        </p>
+      </div>
 
       <!-- Ce texte sera remplacé lorsque les titres seront disponibles. -->
       <p class="user-title">Titre à venir</p>
@@ -117,5 +145,49 @@ defineProps({
   font-weight: 800;
   line-height: 1.2;
   color: #111;
+}
+
+/* Regroupe le niveau, la barre et les informations d’XP. */
+.user-level {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.level-label {
+  color: #111;
+  font-weight: 800;
+}
+
+/* Reprend les couleurs et les bordures de l’application. */
+.xp-bar {
+  box-sizing: border-box;
+  display: block;
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+  background-color: #f5efe3;
+  border: 2px solid #111;
+  border-radius: 999px;
+}
+
+/* Fond et remplissage pour Chrome, Edge et Safari. */
+.xp-bar::-webkit-progress-bar {
+  background-color: #f5efe3;
+}
+
+.xp-bar::-webkit-progress-value {
+  background-color: #ffb900;
+}
+
+/* Remplissage pour Firefox. */
+.xp-bar::-moz-progress-bar {
+  background-color: #ffb900;
+}
+
+.xp-details {
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 </style>

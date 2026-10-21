@@ -3,7 +3,7 @@
   <nav class="bottom-nav" aria-label="Navigation principale">
     <!-- Ouvrira la page du classement lorsqu’elle sera disponible. -->
     <button type="button" class="nav-item">
-      Classement
+      <router-link to="/leaderboard" class="nav-router">Classement</router-link>
     </button>
 
     <!-- Le bouton central aura un style plus visible. -->
@@ -13,7 +13,7 @@
 
     <!-- Ouvrira le profil de l’utilisateur connecté. -->
     <button type="button" class="nav-item">
-      Profil
+      <router-link to="/profile" class="nav-router">Profil</router-link>
     </button>
   </nav>
 </template>
@@ -73,5 +73,10 @@
 .nav-item:focus-visible {
   outline: 3px solid #ff626b;
   outline-offset: 4px;
+}
+
+.nav-router {
+  text-decoration: none;
+  color: #111;
 }
 </style>
