@@ -3,7 +3,7 @@
   <nav class="bottom-nav" aria-label="Navigation principale">
     <!-- Ouvrira la page du classement lorsqu’elle sera disponible. -->
     <button type="button" class="nav-item">
-      Classement
+      <router-link to="/leaderboard">Classement</router-link>
     </button>
 
     <!-- Le bouton central aura un style plus visible. -->

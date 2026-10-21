@@ -2,6 +2,7 @@
 import { RouterLink, useRouter } from 'vue-router'
 import { useGameStore } from '../stores/game'
 import { ref, onUnmounted } from 'vue'
+import TheHeader from '@/components/TheHeader.vue'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 import TheLoading from '@/components/TheLoading.vue'
 
@@ -156,7 +157,7 @@ const launchGuestGame = async () => {
 
       <div class="leaderboard-wrapper">
         <!-- Aperçu du top 10 -->
-        <UsersLeaderboard mode="preview" :current-user-id="currentUserId" />
+        <UsersLeaderboard mode="preview" />
       </div>
     </main>
 
@@ -203,71 +204,6 @@ const launchGuestGame = async () => {
 
 html {
   scroll-behavior: smooth;
-}
-
-/* ======================================================== */
-/* HEADER */
-/* ======================================================== */
-
-.header {
-  background-color: #f5efe3;
-  width: 100%;
-  padding-block: 0.5rem;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-inline: 1rem;
-}
-
-.logo {
-  height: 60px;
-  object-fit: contain;
-}
-
-/* ======================================================== */
-/* BOUTONS NAV / AUTH */
-/* ======================================================== */
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Style de base des boutons de navigation */
-.btn-nav {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 18px;
-
-  /* Fond clair et bordure noire nette par défaut */
-  background-color: #f5efe3;
-  border: 2px solid #1c1c1c;
-  border-radius: 8px;
-
-  /* Petite ombre portée discrète au repos */
-  box-shadow: 2px 2px 0 #1c1c1c;
-
-  color: #1c1c1c;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  text-decoration: none;
-
-  cursor: pointer;
-  transition: all 0.15s ease-in-out;
-}
-
-/* État hover et actif : cartouche beige, bordure nette et ombre portée */
-.btn-nav:hover {
-  background-color: #f4ebd0;
-  border-color: #1c1c1c;
-  box-shadow: 3px 3px 0 #1c1c1c;
-  transform: translateY(-1px);
 }
 
 /* ======================================================== */
@@ -933,26 +869,6 @@ main p {
 /* ======================================================== */
 
 @media (max-width: 767px) {
-
-  /* --- Header & Navigation Mobile --- */
-  .logo {
-    height: 42px;
-  }
-
-  .nav {
-    margin-inline: 0.5rem;
-    /* Réduit un peu les marges globales du header sur les côtés si besoin */
-  }
-
-  .nav-actions {
-    gap: 15px;
-    /* Augmente l'espace entre le bouton Connexion et Inscription */
-  }
-
-  .btn-nav {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
 
   /* --- Hero Section Mobile --- */
   .hero {
