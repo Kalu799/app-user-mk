@@ -7,6 +7,7 @@ import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
 import { useGameStore } from '@/stores/game'
 import { getCurrentUser } from '@/services/userService'
 import TheLoading from '@/components/TheLoading.vue'
+import TheHeader from '@/components/TheHeader.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const router = useRouter()
@@ -123,12 +124,7 @@ const logout = async () => {
 
   <!-- Empêche les interactions derrière le chargement plein écran. -->
   <div class="homepage" :inert="gameStore.isStarting">
-    <header class="header">
-      <nav class="nav">
-        <RouterLink to="/homepage"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
-        <button type="button" @click="logout">Déconnexion</button>
-      </nav>
-    </header>
+    <TheHeader :is-authenticated="true" @logout="logout" />
     <main class="home-content">
 <!-- Chargement limité à la zone du profil. -->
 <TheLoading v-if="isLoading" label="Chargement du profil…" />      <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
@@ -161,30 +157,6 @@ const logout = async () => {
   </div>
 </template>
 <style scoped>
-/* HEADER */
-
-.header {
-  background-color: #dcdcdc;
-  width: 100%;
-  padding-block: 1rem;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-inline: 2rem;
-}
-
-.logo {
-  height: 60px;
-  object-fit: contain;
-}
-
-button {
-  cursor: pointer;
-}
-
 /* Organise la page verticalement et réserve la place de la navigation. */
 .homepage {
   box-sizing: border-box;

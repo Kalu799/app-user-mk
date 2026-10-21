@@ -1,15 +1,32 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+
+defineProps({
+  isAuthenticated: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+defineEmits(['logout'])
 </script>
 
 <template>
   <header class="header">
     <nav class="nav">
-      <RouterLink to="/">
-        <img src="/logo.png" alt="Movie King Logo" class="logo" />
+      <RouterLink :to="isAuthenticated ? '/homepage' : '/'">
+        <img
+          :src="isAuthenticated ? '/Property 1=king.png' : '/logo.png'"
+          alt="Movie King Logo"
+          class="logo"
+        />
       </RouterLink>
 
-      <div class="nav-actions">
+      <div v-if="isAuthenticated" class="nav-actions">
+        <button type="button" class="btn-nav" @click="$emit('logout')">Déconnexion</button>
+      </div>
+
+      <div v-else class="nav-actions">
         <RouterLink :to="{ name: 'auth', query: { mode: 'login' } }" class="btn-nav">
           Connexion
         </RouterLink>
@@ -68,6 +85,10 @@ import { RouterLink } from 'vue-router'
   border-color: #1c1c1c;
   box-shadow: 3px 3px 0 #1c1c1c;
   transform: translateY(-1px);
+}
+
+button.btn-nav {
+  appearance: none;
 }
 
 @media (max-width: 767px) {

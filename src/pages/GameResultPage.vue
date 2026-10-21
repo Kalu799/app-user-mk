@@ -4,8 +4,10 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
 import { getCurrentUser } from '@/services/userService'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
+import TheHeader from '@/components/TheHeader.vue'
 import TheLoading from '@/components/TheLoading.vue'
 
+const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()
 const router = useRouter()
 // Mémorise si la page de résultats est toujours affichée.
@@ -16,7 +18,7 @@ onUnmounted(() => {
 })
 
 // Choisit l’aperçu invité selon la présence d’un token.
-const authToken = window.sessionStorage.getItem('movie-king-auth-token')
+const authToken = window.sessionStorage.getItem(TOKEN_KEY)
 const isGuest = ref(!authToken)
 
 // Les corrections sont fermées au départ.
@@ -95,7 +97,7 @@ onMounted(async () => {
   } catch (error) {
     // Une connexion expirée fait revenir à l’affichage invité.
     if (error.status === 401) {
-      window.sessionStorage.removeItem('movie-king-auth-token')
+      window.sessionStorage.removeItem(TOKEN_KEY)
       isGuest.value = true
       return
     }
@@ -106,6 +108,14 @@ onMounted(async () => {
     isProfileLoading.value = false
   }
 })
+
+const logout = async () => {
+  window.sessionStorage.removeItem(TOKEN_KEY)
+  isGuest.value = true
+  currentUserId.value = null
+  gameStore.$reset()
+  await router.push('/guesthome')
+}
 </script>
 
 <template>
@@ -115,6 +125,8 @@ onMounted(async () => {
     fullscreen
     label="Préparation de la partie…"
   />
+
+  <TheHeader :is-authenticated="!isGuest" @logout="logout" />
 
   <!-- Conserve les résultats affichés derrière le chargement. -->
   <main
@@ -263,12 +275,20 @@ onMounted(async () => {
 </p>
 </section>
   </main>
+  </div>
 </template>
 <style scoped>
+.result-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: #1c1c1c;
+}
+
 /* Reprend les couleurs principales de l’application. */
 .result-page {
   box-sizing: border-box;
-  min-height: 100dvh;
+  flex: 1;
   padding: 24px 16px 40px;
   background-color: #1c1c1c;
   color: #f5efe3;
