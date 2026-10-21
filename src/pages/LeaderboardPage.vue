@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/game'
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import BottomNav from '@/components/BottomNav.vue'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
+import TheHeader from '@/components/TheHeader.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()
@@ -37,44 +38,11 @@ const logout = async () => {
 </script>
 
 <template>
-
-  <header class="header">
-    <nav class="nav">
-      <RouterLink to="/homepage"><img src="/Property 1=king.png" alt="Movie King Logo" class="logo" /></RouterLink>
-      <button type="button" @click="logout">Déconnexion</button>
-    </nav>
-  </header>
+  <TheHeader :is-authenticated="true" @logout="logout" />
 
   <!-- Classement complet -->
   <UsersLeaderboard mode="general" />
 
   <!-- Affiche la navigation sur cette page. -->
   <BottomNav />
-
 </template>
-
-<style scoped>
-/* HEADER */
-
-.header {
-  background-color: #dcdcdc;
-  width: 100%;
-  padding-block: 1rem;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-inline: 2rem;
-}
-
-.logo {
-  height: 60px;
-  object-fit: contain;
-}
-
-button {
-  cursor: pointer;
-}
-</style>
