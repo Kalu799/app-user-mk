@@ -79,4 +79,9 @@
   outline: 3px solid #ff626b;
   outline-offset: 4px;
 }
+
+.nav-router {
+  text-decoration: none;
+  color: black;
+}
 </style>
