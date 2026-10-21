@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/services/userService'
 import BottomNav from '@/components/BottomNav.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheLoading from '@/components/TheLoading.vue'
+import UserSummary from '@/components/UserSummary.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()

@@ -3,7 +3,7 @@
   <nav class="bottom-nav" aria-label="Navigation principale">
     <!-- Ouvrira la page du classement lorsqu’elle sera disponible. -->
     <button type="button" class="nav-item">
-      <router-link to="/leaderboard">Classement</router-link>
+      <router-link to="/leaderboard" class="nav-router">Classement</router-link>
     </button>
 
     <!-- Ouvre la configuration d’une nouvelle partie. -->
@@ -13,7 +13,7 @@
 
     <!-- Ouvrira le profil de l’utilisateur connecté. -->
     <button type="button" class="nav-item">
-      <router-link to="/profile">Profil</router-link>
+      <router-link to="/profile" class="nav-router">Profil</router-link>
     </button>
   </nav>
 </template>
