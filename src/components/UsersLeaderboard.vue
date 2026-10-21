@@ -20,6 +20,9 @@ const users = ref([])
 const isLoading = ref(true)
 const errorMsg = ref('')
 
+const searchPseudo = ref('')
+const scoreOrder = ref('desc')
+
 const title = computed(() => {
   const titles = {
     general: 'Classement général',
@@ -48,9 +51,32 @@ const currentUserIndex = computed(() => {
   })
 })
 
+const filteredGeneralUsers = computed(() => {
+  const search = searchPseudo.value.trim().toLocaleLowerCase('fr')
+
+  const filteredUsers = rankedUsers.value.filter((user) => {
+    return String(user.user_pseudo ?? '')
+      .toLocaleLowerCase('fr')
+      .includes(search)
+  })
+
+  return filteredUsers.sort((a, b) => {
+    const scoreDifference = Number(a.user_score) - Number(b.user_score)
+
+    // En cas d’égalité, conserve l’ordre initial du classement.
+    if (scoreDifference === 0) {
+      return a.position - b.position
+    }
+
+    return scoreOrder.value === 'asc'
+      ? scoreDifference
+      : -scoreDifference
+  })
+})
+
 const displayedUsers = computed(() => {
   if (props.mode === 'general') {
-    return rankedUsers.value
+    return filteredGeneralUsers.value
   }
 
   if (props.mode === 'preview') {
@@ -88,7 +114,11 @@ const displayedRows = computed(() => {
   displayedUsers.value.forEach((user, index) => {
     const previousUser = displayedUsers.value[index - 1]
 
-    if (previousUser && user.position > previousUser.position + 1) {
+    if (
+      props.mode === 'nearby' &&
+      previousUser &&
+      user.position > previousUser.position + 1
+    ) {
       rows.push({
         type: 'gap',
         key: `gap-${previousUser.position}-${user.position}`,
@@ -147,6 +177,23 @@ onMounted(loadLeaderboard)
   <section class="users-leaderboard">
     <h2>{{ title }}</h2>
 
+    <div v-if="mode === 'general'" class="leaderboard-filters">
+      <label>
+        <span>Rechercher un joueur</span>
+
+        <input v-model="searchPseudo" type="search" placeholder="Son pseudo…" />
+      </label>
+
+      <label>
+        <span>Trier les points</span>
+
+        <select v-model="scoreOrder">
+          <option value="desc">Du plus élevé au plus faible</option>
+          <option value="asc">Du plus faible au plus élevé</option>
+        </select>
+      </label>
+    </div>
+
     <p v-if="isLoading" role="status">
       Chargement du classement…
     </p>
@@ -165,6 +212,10 @@ onMounted(loadLeaderboard)
 
     <p v-else-if="mode === 'nearby' && currentUserIndex === -1">
       Ta position est indisponible.
+    </p>
+
+    <p v-else-if="mode === 'general' && displayedUsers.length === 0">
+      Aucun joueur ne correspond à « {{ searchPseudo }} ».
     </p>
 
     <table v-else>
@@ -476,5 +527,227 @@ onMounted(loadLeaderboard)
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+.users-leaderboard .leaderboard-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.users-leaderboard .leaderboard-filters label {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.users-leaderboard .leaderboard-filters label>span {
+  color: #e9dfca;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.users-leaderboard .leaderboard-filters input,
+.users-leaderboard .leaderboard-filters select {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 12px;
+
+  background-color: #292929;
+  color: #fff5df;
+
+  border: 2px solid #64a69d;
+  border-radius: 4px;
+
+  font: inherit;
+  font-size: .9rem;
+  color-scheme: dark;
+}
+
+.users-leaderboard .leaderboard-filters input::placeholder {
+  color: #bcb7ab;
+}
+
+.users-leaderboard .leaderboard-filters select {
+  cursor: pointer;
+}
+
+.users-leaderboard .leaderboard-filters input:focus-visible,
+.users-leaderboard .leaderboard-filters select:focus-visible {
+  outline: 3px solid #ff626b;
+  outline-offset: 3px;
+}
+
+/* MOBILE : marges autour du composant */
+.users-leaderboard {
+  width: calc(100% - 32px);
+  max-width: 760px;
+  margin: 24px auto 36px;
+}
+
+.users-leaderboard h2 {
+  margin-bottom: 24px;
+  padding: 24px 16px;
+  font-size: clamp(1.8rem, 7vw, 2.8rem);
+}
+
+/* FILTRES : empilés sur mobile */
+.users-leaderboard .leaderboard-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+
+  margin: 0 0 24px;
+  padding: 20px 16px;
+
+  background-color: #292929;
+  border: 2px solid #3c3c38;
+  border-top: 4px solid #64a69d;
+  border-radius: 6px;
+}
+
+.users-leaderboard .leaderboard-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.users-leaderboard .leaderboard-filters label>span {
+  color: #fff5df;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.users-leaderboard .leaderboard-filters input,
+.users-leaderboard .leaderboard-filters select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  padding: 12px;
+
+  background-color: #191919;
+  color: #fff5df;
+
+  border: 2px solid #64a69d;
+  border-radius: 4px;
+
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  color-scheme: dark;
+}
+
+.users-leaderboard .leaderboard-filters input::placeholder {
+  color: #c9c5bd;
+  opacity: 1;
+}
+
+.users-leaderboard .leaderboard-filters select {
+  cursor: pointer;
+}
+
+.users-leaderboard .leaderboard-filters input:focus-visible,
+.users-leaderboard .leaderboard-filters select:focus-visible {
+  outline: 3px solid #ff626b;
+  outline-offset: 3px;
+}
+
+/* CLASSEMENT */
+.users-leaderboard table {
+  margin: 0;
+  border-spacing: 0 10px;
+}
+
+/* En-têtes foncés pour rester lisibles sur le fond blanc */
+.users-leaderboard thead th {
+  padding: 12px 10px;
+  color: #344b43;
+
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.users-leaderboard thead th:first-child {
+  width: 80px;
+}
+
+.users-leaderboard thead th:last-child {
+  width: 90px;
+}
+
+.users-leaderboard tbody td,
+.users-leaderboard tbody th {
+  padding: 18px 10px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.users-leaderboard tbody td:first-child {
+  font-size: 1.2rem;
+}
+
+.users-leaderboard tbody th {
+  color: #fff5df;
+}
+
+.users-leaderboard tbody td:last-child {
+  color: #ffcb45;
+  font-size: 1.05rem;
+}
+
+/* Garde les textes du joueur connecté bien contrastés */
+.users-leaderboard tbody tr.current-user>* {
+  color: #111;
+}
+
+/* Points de séparation visibles sur le fond blanc */
+.users-leaderboard tbody tr.leaderboard-gap>td {
+  color: #344b43;
+}
+
+/* ÉCRANS PLUS LARGES */
+@media (min-width: 640px) {
+  .users-leaderboard {
+    width: calc(100% - 48px);
+    margin-block: 32px 48px;
+  }
+
+  .users-leaderboard .leaderboard-filters {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .users-leaderboard thead th {
+    padding-inline: 16px;
+    font-size: .9rem;
+  }
+
+  .users-leaderboard thead th:first-child {
+    width: 105px;
+  }
+
+  .users-leaderboard thead th:last-child {
+    width: 125px;
+  }
+
+  .users-leaderboard tbody td,
+  .users-leaderboard tbody th {
+    padding: 22px 16px;
+    font-size: 1.05rem;
+  }
+}
+
+.users-leaderboard {
+  padding-bottom: calc(80px + 24px + env(safe-area-inset-bottom, 0px));
 }
 </style>

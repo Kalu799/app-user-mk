@@ -149,7 +149,7 @@ const launchGuestGame = async () => {
 
       <div class="leaderboard-wrapper">
         <!-- Aperçu du top 10 -->
-        <UsersLeaderboard mode="preview" :current-user-id="currentUserId" />
+        <UsersLeaderboard mode="preview" />
       </div>
     </main>
 
