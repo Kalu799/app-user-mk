@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
 import { registerUser, loginUser } from '@/services/authService'
+import TheLoading from '@/components/TheLoading.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -109,7 +110,15 @@ const switchMode = () => {
 </script>
 
 <template>
-  <div class="auth-layout">
+  <!-- Affiche l’attente pendant la connexion ou la création du compte. -->
+  <TheLoading
+    v-if="isLoading"
+    fullscreen
+    :label="isLoginMode ? 'Connexion en cours…' : 'Création du compte…'"
+  />
+
+  <!-- Conserve les formulaires montés et bloque les interactions pendant l’attente. -->
+  <div class="auth-layout" :inert="isLoading">
     <header class="header">
       <RouterLink to="/">
         <img src="/Property 1=king.png" alt="Movie King Logo" class="logo">
@@ -117,10 +126,16 @@ const switchMode = () => {
     </header>
 
     <main class="main-content">
-      <h1 class="page-title">
-        {{ isLoginMode ? 'Connexion' : 'Créer un compte' }}
+       <h1
+        class="page-title"
+      >
+        {{ isLoginMode ? 'Connexion' : 'Créer mon compte' }}
       </h1>
-
+            <!-- Confirme la création du compte avant le formulaire de connexion. -->
+      <div v-if="successMsg" class="msg success" role="status">
+        <strong>✓ Ton compte est créé !</strong>
+        <p>{{ successMsg }}</p>
+      </div>
       <RegisterForm
   v-if="!isLoginMode"
   :is-loading="isLoading"
@@ -146,17 +161,10 @@ const switchMode = () => {
         }}
       </button>
 
-      <p v-if="isLoading" class="msg info">
-        Chargement en cours...
-      </p>
-
       <p v-if="errorMsg" class="msg error">
         {{ errorMsg }}
       </p>
 
-      <p v-if="successMsg" class="msg success">
-        {{ successMsg }}
-      </p>
     </main>
   </div>
 </template>
@@ -314,6 +322,16 @@ const switchMode = () => {
   background-color: #64a69d;
   border-color: #e9dfca;
   color: #173c37;
+}
+
+/* Met la confirmation en évidence au-dessus du formulaire. */
+.success strong {
+  display: block;
+  font-size: 1.15rem;
+}
+
+.success p {
+  margin: 8px 0 0;
 }
 
 /* TABLETTE ET DESKTOP */
