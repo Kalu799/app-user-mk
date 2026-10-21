@@ -1,10 +1,9 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router'
-
 import { useGameStore } from '../stores/game'
-
 import { ref, onUnmounted } from 'vue'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
+import TheLoading from '@/components/TheLoading.vue'
 
 const selectedAnswer = ref(null)
 
@@ -51,7 +50,15 @@ const launchGuestGame = async () => {
 </script>
 
 <template>
-  <div class="guest-layout">
+  <!-- Affiche le chargement pendant la préparation de la partie. -->
+  <TheLoading
+    v-if="gameStore.isStarting"
+    fullscreen
+    label="Préparation de la partie…"
+  />
+
+  <!-- Bloque les interactions derrière le chargement. -->
+  <div class="guest-layout" :inert="gameStore.isStarting">
     <header class="header">
       <nav class="nav">
         <RouterLink to="/"><img src="/logo.png" alt="Movie King Logo" class="logo" /></RouterLink>

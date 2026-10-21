@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
 import { getCurrentUser } from '@/services/userService'
 import UsersLeaderboard from '@/components/UsersLeaderboard.vue'
+import TheLoading from '@/components/TheLoading.vue'
 
 const gameStore = useGameStore()
 const router = useRouter()
@@ -108,8 +109,19 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- Attend un résultat disponible avant d’afficher ses informations. -->
-  <main v-if="gameStore.result" class="result-page">
+  <!-- Recouvre la page pendant la préparation d’une nouvelle partie. -->
+  <TheLoading
+    v-if="isReplaying"
+    fullscreen
+    label="Préparation de la partie…"
+  />
+
+  <!-- Conserve les résultats affichés derrière le chargement. -->
+  <main
+    v-if="gameStore.result"
+    class="result-page"
+    :inert="isReplaying"
+  >
     <section class="result-summary">
       <h1>Partie terminée</h1>
 
@@ -202,9 +214,11 @@ onMounted(async () => {
 
  <!-- Affiche le classement du joueur après récupération de son identifiant. -->
 <div v-else>
-  <p v-if="isProfileLoading" role="status">
-    Chargement du profil…
-  </p>
+    <!-- Charge le profil sans masquer les résultats de la partie. -->
+  <TheLoading
+    v-if="isProfileLoading"
+    label="Chargement du profil…"
+  />
 
   <p v-else-if="profileError" class="result-error" role="alert">
     {{ profileError }}
