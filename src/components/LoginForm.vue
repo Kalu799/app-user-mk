@@ -10,8 +10,8 @@ const props = defineProps({
 
 // Valeur de base vide pour le login
 const initialLoginState = () => ({
-  mail: "",
-  password: ""
+  mail: '',
+  password: '',
 })
 
 // State des données du formulaire
@@ -37,24 +37,14 @@ const sendData = () => {
 
     <form @submit.prevent="sendData">
       <label for="mail">Mail :</label>
-      <input
-        id="mail"
-        type="email"
-        name="mail"
-        v-model.lazy.trim="newLogin.mail"
-      >
+      <input id="mail" type="email" name="mail" v-model.lazy.trim="newLogin.mail" />
 
       <label for="password">Password :</label>
-      <input
-        id="password"
-        type="password"
-        name="password"
-        v-model.lazy.trim="newLogin.password"
-      >
+      <input id="password" type="password" name="password" v-model.lazy.trim="newLogin.password" />
 
       <button type="submit" :disabled="props.isLoading">
-  {{ props.isLoading ? 'Connexion en cours…' : 'Se connecter' }}
-</button>
+        {{ props.isLoading ? 'Connexion en cours…' : 'Se connecter' }}
+      </button>
     </form>
   </div>
 </template>
@@ -100,7 +90,7 @@ form {
 
 label {
   color: #f5efe3;
-  font-size: .95rem;
+  font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.5;
 }
@@ -125,8 +115,8 @@ input {
   line-height: 1.4;
 
   transition:
-    background-color .2s,
-    border-color .2s;
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 input:hover {
@@ -163,8 +153,8 @@ button {
 
   cursor: pointer;
   transition:
-    transform .15s,
-    box-shadow .15s;
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 button:hover {

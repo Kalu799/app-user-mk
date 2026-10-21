@@ -7,11 +7,7 @@ export const getCategories = async () => {
 
   // Transmet une éventuelle erreur à la page.
   if (!response.ok) {
-    throw new Error(
-      data?.statusMessage ||
-      data?.message ||
-      'Impossible de charger les catégories',
-    )
+    throw new Error(data?.statusMessage || data?.message || 'Impossible de charger les catégories')
   }
 
   // Vérifie que la réponse contient bien une liste.

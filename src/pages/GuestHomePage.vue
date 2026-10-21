@@ -52,11 +52,7 @@ const launchGuestGame = async () => {
 
 <template>
   <!-- Affiche le chargement pendant la préparation de la partie. -->
-  <TheLoading
-    v-if="gameStore.isStarting"
-    fullscreen
-    label="Préparation de la partie…"
-  />
+  <TheLoading v-if="gameStore.isStarting" fullscreen label="Préparation de la partie…" />
 
   <!-- Bloque les interactions derrière le chargement. -->
   <div class="guest-layout" :inert="gameStore.isStarting">
@@ -116,19 +112,32 @@ const launchGuestGame = async () => {
           </div>
 
           <div class="tuto-answers-wrapper">
-            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'inglorious' }"
-              :aria-pressed="selectedAnswer === 'inglorious'" @click="selectAnswer('inglorious')">
+            <button
+              class="tuto-answer"
+              :class="{ selected: selectedAnswer === 'inglorious' }"
+              :aria-pressed="selectedAnswer === 'inglorious'"
+              @click="selectAnswer('inglorious')"
+            >
               Inglorious Basterds
             </button>
 
-            <button class="tuto-answer" :class="{ selected: selectedAnswer === 'django' }"
-              :aria-pressed="selectedAnswer === 'django'" @click="selectAnswer('django')">
+            <button
+              class="tuto-answer"
+              :class="{ selected: selectedAnswer === 'django' }"
+              :aria-pressed="selectedAnswer === 'django'"
+              @click="selectAnswer('django')"
+            >
               Django Unchained
             </button>
           </div>
 
           <!-- Lance la partie et indique son chargement. -->
-          <button type="button" class="btn-play" :disabled="gameStore.isStarting" @click="launchGuestGame">
+          <button
+            type="button"
+            class="btn-play"
+            :disabled="gameStore.isStarting"
+            @click="launchGuestGame"
+          >
             {{ gameStore.isStarting ? 'Chargement…' : 'JOUER' }}
           </button>
 
@@ -384,7 +393,7 @@ main p {
   z-index: 0;
 }
 
-.tuto-wrapper>* {
+.tuto-wrapper > * {
   position: relative;
   z-index: 1;
 }
@@ -586,7 +595,7 @@ main p {
   z-index: 1;
 }
 
-.reward-wrapper>img {
+.reward-wrapper > img {
   display: block;
   width: 100%;
   height: 200px;
@@ -616,7 +625,7 @@ main p {
   z-index: 0;
 }
 
-.reward-wrapper>* {
+.reward-wrapper > * {
   position: relative;
   z-index: 1;
 }
@@ -627,7 +636,7 @@ main p {
   line-height: 1;
 }
 
-.reward-wrapper>img {
+.reward-wrapper > img {
   display: block;
   width: 100%;
   height: 180px;
@@ -638,12 +647,12 @@ main p {
   color: white;
 }
 
-.reward-wrapper>p {
+.reward-wrapper > p {
   font-size: 1.1rem;
   line-height: 1.6;
 }
 
-.reward-wrapper>p:nth-of-type(2) {
+.reward-wrapper > p:nth-of-type(2) {
   font-size: 1rem;
   line-height: 1.5;
   color: #ffe0e4;
@@ -742,7 +751,7 @@ main p {
     padding: 60px 50px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     height: 280px;
   }
 
@@ -773,7 +782,7 @@ main p {
     padding: 70px 80px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     max-width: 700px;
     align-self: center;
   }
@@ -869,7 +878,6 @@ main p {
 /* ======================================================== */
 
 @media (max-width: 767px) {
-
   /* --- Hero Section Mobile --- */
   .hero {
     flex-direction: column;
@@ -1003,7 +1011,7 @@ main p {
     padding: 25px 15px;
   }
 
-  .reward-wrapper>img {
+  .reward-wrapper > img {
     height: 140px;
   }
 

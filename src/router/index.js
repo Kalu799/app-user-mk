@@ -7,6 +7,7 @@ import GamePage from '../pages/GamePage.vue'
 import GameResultPage from '../pages/GameResultPage.vue'
 import LeaderboardPage from '../pages/LeaderboardPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
+import CreateGamePage from '@/pages/CreateGamePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +30,11 @@ const router = createRouter({
       path: '/homepage',
       name: 'homepage',
       component: HomePage,
+    },
+    {
+      path: '/create-game',
+      name: 'create-game',
+      component: CreateGamePage,
     },
     {
       path: '/leaderboard',
@@ -60,21 +66,21 @@ const router = createRouter({
       },
     },
     {
-  path: '/game-result',
-  name: 'game-result',
-  component: GameResultPage,
+      path: '/game-result',
+      name: 'game-result',
+      component: GameResultPage,
 
-  // Évite d’afficher une page vide si aucun résultat n’est disponible.
-  beforeEnter: () => {
-    const gameStore = useGameStore()
+      // Évite d’afficher une page vide si aucun résultat n’est disponible.
+      beforeEnter: () => {
+        const gameStore = useGameStore()
 
-    if (!gameStore.result) {
-      return { name: 'guesthome' }
-    }
+        if (!gameStore.result) {
+          return { name: 'guesthome' }
+        }
 
-    return true
-  },
-},
+        return true
+      },
+    },
   ],
 })
 

@@ -121,50 +121,34 @@ const switchMode = () => {
   <div class="auth-layout" :inert="isLoading">
     <header class="header">
       <RouterLink to="/">
-        <img src="/Property 1=king.png" alt="Movie King Logo" class="logo">
+        <img src="/Property 1=king.png" alt="Movie King Logo" class="logo" />
       </RouterLink>
     </header>
 
     <main class="main-content">
-       <h1
-        class="page-title"
-      >
+      <h1 class="page-title">
         {{ isLoginMode ? 'Connexion' : 'Créer mon compte' }}
       </h1>
-            <!-- Confirme la création du compte avant le formulaire de connexion. -->
+      <!-- Confirme la création du compte avant le formulaire de connexion. -->
       <div v-if="successMsg" class="msg success" role="status">
         <strong>✓ Ton compte est créé !</strong>
         <p>{{ successMsg }}</p>
       </div>
       <RegisterForm
-  v-if="!isLoginMode"
-  :is-loading="isLoading"
-  @dataFormRegister="handleRegister"
-/>
+        v-if="!isLoginMode"
+        :is-loading="isLoading"
+        @dataFormRegister="handleRegister"
+      />
 
-      <LoginForm
-  v-else
-  :is-loading="isLoading"
-  @dataFormLogin="handleLogin"
-/>
+      <LoginForm v-else :is-loading="isLoading" @dataFormLogin="handleLogin" />
 
-      <button
-  type="button"
-  class="switch-btn"
-  :disabled="isLoading"
-  @click="switchMode"
->
-        {{
-          isLoginMode
-            ? 'Je n’ai pas encore de compte'
-            : 'J’ai déjà un compte'
-        }}
+      <button type="button" class="switch-btn" :disabled="isLoading" @click="switchMode">
+        {{ isLoginMode ? 'Je n’ai pas encore de compte' : 'J’ai déjà un compte' }}
       </button>
 
       <p v-if="errorMsg" class="msg error">
         {{ errorMsg }}
       </p>
-
     </main>
   </div>
 </template>
@@ -190,7 +174,7 @@ const switchMode = () => {
 
 .header {
   width: 100%;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
 
   display: flex;
   align-items: center;
@@ -262,15 +246,15 @@ const switchMode = () => {
   box-shadow: 5px 5px 0 #000;
 
   font-family: 'Inter', sans-serif;
-  font-size: .95rem;
+  font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.4;
 
   cursor: pointer;
   transition:
-    background-color .2s,
-    transform .15s,
-    box-shadow .15s;
+    background-color 0.2s,
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .switch-btn:hover {
@@ -300,7 +284,7 @@ const switchMode = () => {
   border-left: 5px solid;
   border-radius: 2px;
 
-  font-size: .95rem;
+  font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.6;
   overflow-wrap: anywhere;

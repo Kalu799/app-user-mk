@@ -13,11 +13,7 @@ defineProps({
 })
 </script>
 <template>
-  <div
-    class="loader-grid"
-    :class="{ 'is-fullscreen': fullscreen }"
-    role="status"
-  >
+  <div class="loader-grid" :class="{ 'is-fullscreen': fullscreen }" role="status">
     <!-- Les éléments animés sont décoratifs ; le texte décrit l’attente. -->
     <img src="/smile.svg" alt="" class="mascotte" />
 
@@ -104,7 +100,6 @@ defineProps({
     1. LE SAUT (Avec courbes de transition intégrées)
     =================================================== */
 @keyframes pure-jump {
-
   0%,
   15% {
     transform: translateY(0);
@@ -128,7 +123,6 @@ defineProps({
    2. LA DÉFORMATION (Avec effet ressort/amorti)
    =================================================== */
 @keyframes pure-squash {
-
   0%,
   15% {
     transform: scale(1, 1);
@@ -189,7 +183,6 @@ defineProps({
    3. ANIMATION DE LA MASCOTTE (Balancement continu)
    =================================================== */
 @keyframes mascotte-wave {
-
   0%,
   100% {
     transform: rotate(0deg) scale(1, 1);

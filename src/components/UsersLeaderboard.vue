@@ -69,9 +69,7 @@ const filteredGeneralUsers = computed(() => {
       return a.position - b.position
     }
 
-    return scoreOrder.value === 'asc'
-      ? scoreDifference
-      : -scoreDifference
+    return scoreOrder.value === 'asc' ? scoreDifference : -scoreDifference
   })
 })
 
@@ -93,10 +91,7 @@ const displayedUsers = computed(() => {
 
   // Ajoute le joueur et ses deux voisins de chaque côté.
   const start = Math.max(0, currentUserIndex.value - 2)
-  const end = Math.min(
-    rankedUsers.value.length - 1,
-    currentUserIndex.value + 2,
-  )
+  const end = Math.min(rankedUsers.value.length - 1, currentUserIndex.value + 2)
 
   for (let index = start; index <= end; index++) {
     selectedIndexes.add(index)
@@ -115,11 +110,7 @@ const displayedRows = computed(() => {
   displayedUsers.value.forEach((user, index) => {
     const previousUser = displayedUsers.value[index - 1]
 
-    if (
-      props.mode === 'nearby' &&
-      previousUser &&
-      user.position > previousUser.position + 1
-    ) {
+    if (props.mode === 'nearby' && previousUser && user.position > previousUser.position + 1) {
       rows.push({
         type: 'gap',
         key: `gap-${previousUser.position}-${user.position}`,
@@ -137,10 +128,7 @@ const displayedRows = computed(() => {
 })
 
 const isCurrentUser = (user) => {
-  return (
-    props.currentUserId !== null &&
-    String(user.ID_user) === String(props.currentUserId)
-  )
+  return props.currentUserId !== null && String(user.ID_user) === String(props.currentUserId)
 }
 
 const loadLeaderboard = async () => {
@@ -152,11 +140,7 @@ const loadLeaderboard = async () => {
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(
-        data.statusMessage ||
-        data.message ||
-        'Impossible de charger le classement',
-      )
+      throw new Error(data.statusMessage || data.message || 'Impossible de charger le classement')
     }
 
     if (!Array.isArray(data.leaderboard)) {
@@ -178,27 +162,18 @@ onMounted(loadLeaderboard)
   <section class="users-leaderboard">
     <h2>{{ title }}</h2>
 
-       <!-- Affiche le chargement dans la zone du classement. -->
-    <TheLoading
-      v-if="isLoading"
-      label="Chargement du classement…"
-    />
+    <!-- Affiche le chargement dans la zone du classement. -->
+    <TheLoading v-if="isLoading" label="Chargement du classement…" />
 
     <div v-else-if="errorMsg" role="alert">
       <p>{{ errorMsg }}</p>
 
-      <button type="button" @click="loadLeaderboard">
-        Réessayer
-      </button>
+      <button type="button" @click="loadLeaderboard">Réessayer</button>
     </div>
 
-    <p v-else-if="rankedUsers.length === 0">
-      Aucun joueur dans le classement.
-    </p>
+    <p v-else-if="rankedUsers.length === 0">Aucun joueur dans le classement.</p>
 
-    <p v-else-if="mode === 'nearby' && currentUserIndex === -1">
-      Ta position est indisponible.
-    </p>
+    <p v-else-if="mode === 'nearby' && currentUserIndex === -1">Ta position est indisponible.</p>
 
     <p v-else-if="mode === 'general' && displayedUsers.length === 0">
       Aucun joueur ne correspond à « {{ searchPseudo }} ».
@@ -291,9 +266,9 @@ onMounted(loadLeaderboard)
   padding: 12px 15px;
 
   color: #e9dfca;
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: .6px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
 }
 
@@ -321,7 +296,7 @@ onMounted(loadLeaderboard)
 
   font-size: 1rem;
   line-height: 1.4;
-  transition: background-color .2s;
+  transition: background-color 0.2s;
 }
 
 /* POSITION */
@@ -359,13 +334,13 @@ onMounted(loadLeaderboard)
 
 /* SURVOL */
 
-.users-leaderboard tbody tr:hover>* {
+.users-leaderboard tbody tr:hover > * {
   background-color: #343430;
 }
 
 /* JOUEUR CONNECTÉ */
 
-.users-leaderboard tbody tr.current-user>* {
+.users-leaderboard tbody tr.current-user > * {
   background-color: #64a69d;
   border-top-color: #64a69d;
   border-bottom-color: #64a69d;
@@ -387,14 +362,14 @@ onMounted(loadLeaderboard)
   display: inline-block;
   margin-left: 5px;
 
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 800;
 }
 
 /* CHARGEMENT, CLASSEMENT VIDE ET ERREURS */
 
-.users-leaderboard>p,
-.users-leaderboard>div[role='alert'] {
+.users-leaderboard > p,
+.users-leaderboard > div[role='alert'] {
   margin: 20px 0 0;
   padding: 20px 15px;
 
@@ -402,15 +377,15 @@ onMounted(loadLeaderboard)
   border-left: 5px solid #64a69d;
 
   color: #f5efe3;
-  font-size: .95rem;
+  font-size: 0.95rem;
   line-height: 1.6;
 }
 
-.users-leaderboard>div[role='alert'] {
+.users-leaderboard > div[role='alert'] {
   border-left-color: #ff626b;
 }
 
-.users-leaderboard>div[role='alert'] p {
+.users-leaderboard > div[role='alert'] p {
   margin: 0 0 15px;
 }
 
@@ -428,7 +403,7 @@ onMounted(loadLeaderboard)
   box-shadow: 4px 4px 0 #000;
 
   font: inherit;
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: 700;
 
   cursor: pointer;
@@ -457,7 +432,7 @@ onMounted(loadLeaderboard)
 
   .users-leaderboard thead th {
     padding: 10px 8px;
-    font-size: .65rem;
+    font-size: 0.65rem;
   }
 
   .users-leaderboard thead th:first-child {
@@ -471,7 +446,7 @@ onMounted(loadLeaderboard)
   .users-leaderboard tbody td,
   .users-leaderboard tbody th {
     padding: 16px 8px;
-    font-size: .85rem;
+    font-size: 0.85rem;
   }
 
   .users-leaderboard tbody td:first-child {
@@ -480,7 +455,6 @@ onMounted(loadLeaderboard)
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .users-leaderboard tbody td,
   .users-leaderboard tbody th {
     transition: none;
@@ -488,7 +462,7 @@ onMounted(loadLeaderboard)
 }
 
 /* Séparation entre le podium et le groupe du joueur */
-.users-leaderboard tbody tr.leaderboard-gap>td {
+.users-leaderboard tbody tr.leaderboard-gap > td {
   padding: 6px 0;
   background: transparent;
   border: 0;
@@ -530,9 +504,9 @@ onMounted(loadLeaderboard)
   min-width: 0;
 }
 
-.users-leaderboard .leaderboard-filters label>span {
+.users-leaderboard .leaderboard-filters label > span {
   color: #e9dfca;
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -550,7 +524,7 @@ onMounted(loadLeaderboard)
   border-radius: 4px;
 
   font: inherit;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color-scheme: dark;
 }
 
@@ -603,7 +577,7 @@ onMounted(loadLeaderboard)
   min-width: 0;
 }
 
-.users-leaderboard .leaderboard-filters label>span {
+.users-leaderboard .leaderboard-filters label > span {
   color: #fff5df;
   font-size: 1rem;
   font-weight: 700;
@@ -656,9 +630,9 @@ onMounted(loadLeaderboard)
   padding: 12px 10px;
   color: #344b43;
 
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: .3px;
+  letter-spacing: 0.3px;
 }
 
 .users-leaderboard thead th:first-child {
@@ -690,12 +664,12 @@ onMounted(loadLeaderboard)
 }
 
 /* Garde les textes du joueur connecté bien contrastés */
-.users-leaderboard tbody tr.current-user>* {
+.users-leaderboard tbody tr.current-user > * {
   color: #111;
 }
 
 /* Points de séparation visibles sur le fond blanc */
-.users-leaderboard tbody tr.leaderboard-gap>td {
+.users-leaderboard tbody tr.leaderboard-gap > td {
   color: #344b43;
 }
 
@@ -715,7 +689,7 @@ onMounted(loadLeaderboard)
 
   .users-leaderboard thead th {
     padding-inline: 16px;
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 
   .users-leaderboard thead th:first-child {

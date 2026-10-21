@@ -65,7 +65,6 @@ const logout = async () => {
 
   await router.push('/guesthome')
 }
-
 </script>
 
 <template>
@@ -92,7 +91,7 @@ const logout = async () => {
       </div>
 
       <div class="profile-identity-text">
-        <p class="profile-eyebrow">Bienvenue </p>
+        <p class="profile-eyebrow">Bienvenue</p>
 
         <h2>{{ user.user_pseudo }}</h2>
 
@@ -135,7 +134,6 @@ const logout = async () => {
           <dt>Adresse e-mail</dt>
           <dd>{{ user.user_mail }}</dd>
         </div>
-
       </dl>
     </section>
 
@@ -147,8 +145,7 @@ const logout = async () => {
       </div>
 
       <p class="profile-description">
-        Ton parcours de cinéphile prend forme.
-        De nouvelles récompenses arriveront prochainement.
+        Ton parcours de cinéphile prend forme. De nouvelles récompenses arriveront prochainement.
       </p>
 
       <ul class="profile-features">
@@ -272,7 +269,7 @@ const logout = async () => {
 
 .profile-eyebrow {
   color: #182f2b;
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.5;
 }
@@ -295,7 +292,7 @@ const logout = async () => {
   color: #292929;
 
   border-radius: 3px;
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.4;
 }
@@ -324,10 +321,10 @@ const logout = async () => {
   font-weight: 700;
 }
 
-.profile-score div>p {
+.profile-score div > p {
   margin-top: 6px;
   color: #d5cec2;
-  font-size: .9rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
@@ -344,7 +341,7 @@ const logout = async () => {
   margin-top: 5px;
 
   font-family: 'Inter', sans-serif;
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -380,7 +377,7 @@ const logout = async () => {
   color: #292929;
   border-radius: 3px;
 
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -391,18 +388,18 @@ const logout = async () => {
   margin: 20px 0 0;
 }
 
-.profile-details>div {
+.profile-details > div {
   padding: 16px 0;
   border-top: 1px solid #50504a;
 }
 
-.profile-details>div:last-child {
+.profile-details > div:last-child {
   padding-bottom: 0;
 }
 
 .profile-details dt {
   color: #d5cec2;
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -420,7 +417,7 @@ const logout = async () => {
 .profile-page .profile-description {
   margin-top: 16px;
   color: #d5cec2;
-  font-size: .95rem;
+  font-size: 0.95rem;
   line-height: 1.7;
 }
 
@@ -463,7 +460,7 @@ const logout = async () => {
 .profile-features p {
   margin-top: 5px;
   color: #d5cec2;
-  font-size: .9rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
@@ -501,7 +498,7 @@ const logout = async () => {
     padding: 28px;
   }
 
-  .profile-details>div {
+  .profile-details > div {
     display: grid;
     grid-template-columns: 160px minmax(0, 1fr);
     align-items: baseline;

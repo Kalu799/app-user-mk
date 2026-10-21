@@ -51,8 +51,8 @@ const replayGame = async () => {
   isReplaying.value = true
 
   try {
-    // Demande une nouvelle partie avec la même catégorie.
-    await gameStore.loadGame(parameters.ID_genre)
+    // Relance avec le même mode et toutes les catégories mémorisées.
+    await gameStore.loadGame(parameters)
     // Évite de revenir au jeu si le joueur a quitté cette page.
     if (!isPageActive) {
       return
@@ -136,8 +136,13 @@ const logout = async () => {
         bonnes réponses
       </p>
       <!-- Indique aussi aux outils d’accessibilité si les corrections sont ouvertes. -->
-      <button type="button" class="corrections-toggle" :aria-expanded="showCorrections" aria-controls="game-corrections"
-        @click="toggleCorrections">
+      <button
+        type="button"
+        class="corrections-toggle"
+        :aria-expanded="showCorrections"
+        aria-controls="game-corrections"
+        @click="toggleCorrections"
+      >
         {{ showCorrections ? 'Masquer les corrections' : 'Voir les corrections' }}
       </button>
     </section>
@@ -146,8 +151,11 @@ const logout = async () => {
       <h2>Corrections</h2>
 
       <!-- Construit une carte pour chaque réponse, dans l’ordre de la partie. -->
-      <article v-for="(correction, index) in gameStore.result.corrections" :key="correction.question_id"
-        class="correction-card">
+      <article
+        v-for="(correction, index) in gameStore.result.corrections"
+        :key="correction.question_id"
+        class="correction-card"
+      >
         <h3>Question {{ index + 1 }}</h3>
 
         <blockquote>{{ correction.quote_text }}</blockquote>
@@ -155,10 +163,13 @@ const logout = async () => {
         <div class="correction-answers">
           <!-- La classe permettra de colorer la réponse en vert ou en rouge. -->
           <!-- Affiche le résultat et le film choisi, ou l’absence de réponse. -->
-          <p class="player-answer" :class="{
-            'is-correct': correction.is_correct,
-            'is-incorrect': !correction.is_correct,
-          }">
+          <p
+            class="player-answer"
+            :class="{
+              'is-correct': correction.is_correct,
+              'is-incorrect': !correction.is_correct,
+            }"
+          >
             {{ correction.is_correct ? 'Bonne réponse :' : 'Ta réponse :' }}
             {{ correction.selected_movie_title ?? 'Aucune réponse validée' }}
           </p>
@@ -175,9 +186,7 @@ const logout = async () => {
       <h2>Bravo !</h2>
 
       <!-- Affiche uniquement le score de cette partie. -->
-      <p>
-        {{ gameStore.result.summary.score }} points
-      </p>
+      <p>{{ gameStore.result.summary.score }} points</p>
     </section>
     <!-- Accueillera le classement autour du joueur connecté. -->
     <!-- Le titre du parcours connecté est fourni par UsersLeaderboard. -->
@@ -187,9 +196,7 @@ const logout = async () => {
       <div v-if="isGuest" class="leaderboard-preview">
         <!-- Ces lignes sont décoratives et ne représentent aucun vrai joueur. -->
         <div class="leaderboard-placeholder" aria-hidden="true">
-          <p v-for="line in 3" :key="line" class="leaderboard-row">
-            — · Joueur · — points
-          </p>
+          <p v-for="line in 3" :key="line" class="leaderboard-row">— · Joueur · — points</p>
         </div>
 
         <!-- Le lien reste net et accessible au-dessus du classement flouté. -->
@@ -208,7 +215,11 @@ const logout = async () => {
         </p>
 
         <!-- Le composant récupère les scores et sélectionne les voisins. -->
-        <UsersLeaderboard v-else-if="currentUserId !== null" :current-user-id="currentUserId" mode="nearby" />
+        <UsersLeaderboard
+          v-else-if="currentUserId !== null"
+          :current-user-id="currentUserId"
+          mode="nearby"
+        />
       </div>
     </section>
     <!-- Regroupe les actions proposées après la partie. -->
@@ -221,18 +232,21 @@ const logout = async () => {
       <button type="button" class="replay-button" :disabled="isReplaying" @click="replayGame">
         {{ isReplaying ? 'Chargement…' : 'Rejouer' }}
       </button>
-      <!-- Sera relié à la page de création de partie lorsqu’elle sera disponible. -->
-      <button type="button" class="configuration-button" aria-describedby="configuration-info" disabled>
+      <!-- Les joueurs connectés peuvent configurer une nouvelle partie. -->
+      <RouterLink v-if="!isGuest" :to="{ name: 'create-game' }" class="configuration-button">
         Changer de mode
-      </button>
+      </RouterLink>
 
-      <!-- Explique pourquoi le bouton n’est pas encore accessible. -->
-      <p id="configuration-info" class="configuration-info">
-        Configuration de partie bientôt disponible.
-      </p>
+      <!-- Les invités sont dirigés vers le formulaire de connexion. -->
+      <RouterLink
+        v-else
+        :to="{ name: 'auth', query: { mode: 'login' } }"
+        class="configuration-button"
+      >
+        Se connecter pour configurer une partie
+      </RouterLink>
     </section>
   </main>
-
 </template>
 <style scoped>
 .result-layout {
@@ -253,7 +267,7 @@ const logout = async () => {
 }
 
 /* Limite la largeur du contenu sur les grands écrans. */
-.result-page>section {
+.result-page > section {
   max-width: 760px;
   margin-inline: auto;
   margin-bottom: 24px;
@@ -285,7 +299,8 @@ const logout = async () => {
 /* Rend le bouton repérable lors d’une navigation au clavier. */
 /* Rend les deux boutons repérables au clavier. */
 .corrections-toggle:focus-visible,
-.replay-button:focus-visible {
+.replay-button:focus-visible,
+.configuration-button:focus-visible {
   outline: 3px solid #ff626b;
   outline-offset: 5px;
 }
@@ -406,18 +421,14 @@ const logout = async () => {
   color: #ff626b;
 }
 
-/* Place la configuration sous Rejouer avec un style secondaire. */
+/* Présente le lien de configuration sous Rejouer. */
 .configuration-button {
+  box-sizing: border-box;
   display: block;
+  width: fit-content;
+  max-width: 100%;
   margin: 20px auto 0;
   background-color: #e9dfca;
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Présente discrètement l’information de disponibilité. */
-.configuration-info {
-  font-size: 0.85rem;
-  color: #e9dfca;
+  text-decoration: none;
 }
 </style>

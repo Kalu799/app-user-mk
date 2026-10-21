@@ -6,10 +6,10 @@
       <router-link to="/leaderboard">Classement</router-link>
     </button>
 
-    <!-- Le bouton central aura un style plus visible. -->
-    <button type="button" class="nav-item nav-item-play">
+    <!-- Ouvre la configuration d’une nouvelle partie. -->
+    <RouterLink :to="{ name: 'create-game' }" class="nav-item nav-item-play">
       Créer une partie
-    </button>
+    </RouterLink>
 
     <!-- Ouvrira le profil de l’utilisateur connecté. -->
     <button type="button" class="nav-item">
@@ -67,6 +67,11 @@
 .nav-item-play {
   background-color: #ffb900;
   font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
 }
 
 /* Rend le bouton ciblé au clavier facilement repérable. */
