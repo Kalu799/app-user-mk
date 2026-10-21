@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/services/userService'
 import BottomNav from '@/components/BottomNav.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheLoading from '@/components/TheLoading.vue'
+import UserSummary from '@/components/UserSummary.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()
@@ -83,30 +84,7 @@ const logout = async () => {
     <h1 class="profile-title">Mon profil</h1>
 
     <!-- Identité -->
-    <section class="profile-identity" aria-label="Ton profil">
-      <div class="profile-avatar" aria-hidden="true">
-        <svg viewBox="0 0 64 64" fill="currentColor">
-          <circle cx="32" cy="22" r="12" />
-          <path d="M10 58a22 22 0 0 1 44 0Z" />
-        </svg>
-      </div>
-
-      <div class="profile-identity-text">
-        <p class="profile-eyebrow">Bienvenue </p>
-
-        <h2>{{ user.user_pseudo }}</h2>
-
-        <span class="profile-role">
-          {{
-            user.user_role === 'admin'
-              ? 'Administrateur'
-              : user.user_role === 'player'
-                ? 'Joueur'
-                : user.user_role
-          }}
-        </span>
-      </div>
-    </section>
+    <UserSummary v-if="user" :pseudo="user.user_pseudo" :score="user.user_score" />
 
     <!-- Score réel -->
     <section class="profile-score" aria-labelledby="score-title">
