@@ -13,7 +13,7 @@
 
     <!-- Ouvrira le profil de l’utilisateur connecté. -->
     <button type="button" class="nav-item">
-      Profil
+      <router-link to="/profile">Profil</router-link>
     </button>
   </nav>
 </template>
