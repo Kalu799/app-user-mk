@@ -10,7 +10,7 @@ const props = defineProps({
   mode: {
     type: String,
     default: 'general',
-    validator: (value) => ['general', 'nearby'].includes(value),
+    validator: (value) => ['general', 'preview', 'nearby'].includes(value),
   },
 })
 
@@ -20,8 +20,17 @@ const users = ref([])
 const isLoading = ref(true)
 const errorMsg = ref('')
 
-// Attribue les positions avant de sélectionner les voisins.
-// L'ordre est celui fourni par l'API.
+const title = computed(() => {
+  const titles = {
+    general: 'Classement général',
+    preview: 'Top 10',
+    nearby: 'Ta place dans le classement',
+  }
+
+  return titles[props.mode]
+})
+
+// Les positions suivent l’ordre renvoyé par l’API.
 const rankedUsers = computed(() => {
   return users.value.map((user, index) => ({
     ...user,
@@ -29,7 +38,6 @@ const rankedUsers = computed(() => {
   }))
 })
 
-// Cherche le joueur grâce à son identifiant, pas à son pseudo.
 const currentUserIndex = computed(() => {
   if (props.currentUserId === null) {
     return -1
@@ -45,20 +53,63 @@ const displayedUsers = computed(() => {
     return rankedUsers.value
   }
 
+  if (props.mode === 'preview') {
+    return rankedUsers.value.slice(0, 10)
+  }
+
   if (currentUserIndex.value === -1) {
     return []
   }
 
-  // Deux joueurs avant, le joueur connecté, deux joueurs après.
-  const start = Math.max(0, currentUserIndex.value - 2)
-  const end = currentUserIndex.value + 3
+  // Sélectionne le top 3.
+  const selectedIndexes = new Set([0, 1, 2])
 
-  return rankedUsers.value.slice(start, end)
+  // Ajoute le joueur et ses deux voisins de chaque côté.
+  const start = Math.max(0, currentUserIndex.value - 2)
+  const end = Math.min(
+    rankedUsers.value.length - 1,
+    currentUserIndex.value + 2,
+  )
+
+  for (let index = start; index <= end; index++) {
+    selectedIndexes.add(index)
+  }
+
+  // filter conserve l’ordre du classement et évite les doublons.
+  return rankedUsers.value.filter((user, index) => {
+    return selectedIndexes.has(index)
+  })
+})
+
+// Ajoute une ligne de séparation lorsqu’on saute des positions.
+const displayedRows = computed(() => {
+  const rows = []
+
+  displayedUsers.value.forEach((user, index) => {
+    const previousUser = displayedUsers.value[index - 1]
+
+    if (previousUser && user.position > previousUser.position + 1) {
+      rows.push({
+        type: 'gap',
+        key: `gap-${previousUser.position}-${user.position}`,
+      })
+    }
+
+    rows.push({
+      type: 'user',
+      key: `user-${user.ID_user}`,
+      user,
+    })
+  })
+
+  return rows
 })
 
 const isCurrentUser = (user) => {
-  return props.currentUserId !== null &&
+  return (
+    props.currentUserId !== null &&
     String(user.ID_user) === String(props.currentUserId)
+  )
 }
 
 const loadLeaderboard = async () => {
@@ -73,7 +124,7 @@ const loadLeaderboard = async () => {
       throw new Error(
         data.statusMessage ||
         data.message ||
-        'Impossible de charger le classement'
+        'Impossible de charger le classement',
       )
     }
 
@@ -94,9 +145,7 @@ onMounted(loadLeaderboard)
 
 <template>
   <section class="users-leaderboard">
-    <h2>
-      {{ mode === 'nearby' ? 'Autour de toi' : 'Classement général' }}
-    </h2>
+    <h2>{{ title }}</h2>
 
     <p v-if="isLoading" role="status">
       Chargement du classement…
@@ -104,6 +153,7 @@ onMounted(loadLeaderboard)
 
     <div v-else-if="errorMsg" role="alert">
       <p>{{ errorMsg }}</p>
+
       <button type="button" @click="loadLeaderboard">
         Réessayer
       </button>
@@ -127,16 +177,25 @@ onMounted(loadLeaderboard)
       </thead>
 
       <tbody>
-        <tr v-for="user in displayedUsers" :key="user.ID_user" :class="{ 'current-user': isCurrentUser(user) }">
-          <td>#{{ user.position }}</td>
+        <template v-for="row in displayedRows" :key="row.key">
+          <tr v-if="row.type === 'gap'" class="leaderboard-gap">
+            <td colspan="3">
+              <span aria-hidden="true">•••</span>
+              <span class="sr-only">Positions intermédiaires masquées</span>
+            </td>
+          </tr>
 
-          <th scope="row">
-            {{ user.user_pseudo }}
-            <span v-if="isCurrentUser(user)"> — Toi</span>
-          </th>
+          <tr v-else :class="{ 'current-user': isCurrentUser(row.user) }">
+            <td>#{{ row.user.position }}</td>
 
-          <td>{{ user.user_score }}</td>
-        </tr>
+            <th scope="row">
+              {{ row.user.user_pseudo }}
+              <span v-if="isCurrentUser(row.user)"> — Toi</span>
+            </th>
+
+            <td>{{ row.user.user_score }}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </section>
@@ -389,5 +448,33 @@ onMounted(loadLeaderboard)
   .users-leaderboard tbody th {
     transition: none;
   }
+}
+
+/* Séparation entre le podium et le groupe du joueur */
+.users-leaderboard tbody tr.leaderboard-gap>td {
+  padding: 6px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+
+  color: #e9dfca;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-align: center;
+}
+
+.users-leaderboard .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
