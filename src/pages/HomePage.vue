@@ -129,8 +129,12 @@ const logout = async () => {
 <!-- Chargement limité à la zone du profil. -->
 <TheLoading v-if="isLoading" label="Chargement du profil…" />      <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
 
-      <!-- Transmet le pseudo récupéré par la home au composant. -->
-      <UserSummary v-if="user" :pseudo="user.user_pseudo" />
+            <!-- Transmet le pseudo et le score total du compte à la bannière. -->
+      <UserSummary
+        v-if="user"
+        :pseudo="user.user_pseudo"
+        :score="user.user_score"
+      />
 
             <!-- Accès provisoire, à retirer lorsque la création de partie sera prête. -->
       <section v-if="user" class="quick-play" aria-label="Lancer une partie">
