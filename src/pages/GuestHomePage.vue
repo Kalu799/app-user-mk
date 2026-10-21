@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useGameStore } from '../stores/game'
 import { ref, onUnmounted } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
@@ -60,19 +60,7 @@ const launchGuestGame = async () => {
 
   <!-- Bloque les interactions derrière le chargement. -->
   <div class="guest-layout" :inert="gameStore.isStarting">
-    <header class="header">
-      <nav class="nav">
-        <RouterLink to="/"><img src="/logo.png" alt="Movie King Logo" class="logo" /></RouterLink>
-
-        <div class="nav-actions">
-          <RouterLink :to="{ name: 'auth', query: { mode: 'login' } }" class="btn-nav">
-            Connexion
-          </RouterLink>
-
-          <RouterLink to="/auth" class="btn-nav active"> Inscription </RouterLink>
-        </div>
-      </nav>
-    </header>
+    <TheHeader />
 
     <main>
       <div class="hero">
