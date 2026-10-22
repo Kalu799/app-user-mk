@@ -86,8 +86,8 @@ const displayedUsers = computed(() => {
     return []
   }
 
-  // Sélectionne le top 3.
-  const selectedIndexes = new Set([0, 1, 2])
+  // Sélectionne le top 3 et la dernière position.
+  const selectedIndexes = new Set([0, 1, 2, rankedUsers.value.length - 1])
 
   // Ajoute le joueur et ses deux voisins de chaque côté.
   const start = Math.max(0, currentUserIndex.value - 2)
@@ -180,6 +180,11 @@ onMounted(loadLeaderboard)
     </p>
 
     <table v-else>
+      <caption v-if="mode === 'nearby'" class="leaderboard-position">
+        Tu es
+        <strong>{{ currentUserIndex + 1 }}{{ currentUserIndex === 0 ? 'er' : 'e' }}</strong>
+        sur {{ rankedUsers.length }} {{ rankedUsers.length === 1 ? 'joueur' : 'joueurs' }}
+      </caption>
       <thead>
         <tr>
           <th scope="col">Position</th>
@@ -198,11 +203,28 @@ onMounted(loadLeaderboard)
           </tr>
 
           <tr v-else :class="{ 'current-user': isCurrentUser(row.user) }">
-            <td>#{{ row.user.position }}</td>
+            <td>
+              <span
+                class="rank-badge"
+                :class="{
+                  'rank-gold': row.user.position === 1,
+                  'rank-silver': row.user.position === 2,
+                  'rank-bronze': row.user.position === 3,
+                }"
+              >
+                #{{ row.user.position }}
+              </span>
+            </td>
 
             <th scope="row">
               {{ row.user.user_pseudo }}
               <span v-if="isCurrentUser(row.user)"> — Toi</span>
+              <small
+                v-if="mode === 'nearby' && row.user.position === rankedUsers.length"
+                class="last-place-label"
+              >
+                Fin du classement
+              </small>
             </th>
 
             <td>{{ row.user.user_score }}</td>
@@ -709,5 +731,38 @@ onMounted(loadLeaderboard)
 
 .users-leaderboard {
   padding-bottom: calc(80px + 24px + env(safe-area-inset-bottom, 0px));
+}
+/* Repères de position et couleurs du podium. */
+.users-leaderboard .leaderboard-position {
+  caption-side: top;
+  padding: 12px;
+  background-color: #292929;
+  color: #f5efe3;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.users-leaderboard .rank-badge {
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.users-leaderboard .rank-gold,
+.users-leaderboard .rank-silver,
+.users-leaderboard .rank-bronze {
+  padding: 4px 8px;
+  color: #111;
+}
+
+.users-leaderboard .rank-gold { background-color: #e4bc50; }
+.users-leaderboard .rank-silver { background-color: #c4cbd3; }
+.users-leaderboard .rank-bronze { background-color: #cd9c6b; }
+
+.users-leaderboard .last-place-label {
+  display: block;
+  margin-top: 4px;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 </style>
