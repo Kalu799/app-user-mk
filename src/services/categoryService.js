@@ -7,12 +7,12 @@ export const getCategories = async () => {
 
   // Transmet une éventuelle erreur à la page.
   if (!response.ok) {
-    throw new Error(data?.statusMessage || data?.message || 'Impossible de charger les catégories')
+    throw new Error(data?.statusMessage || data?.message || 'Impossible de charger les genres')
   }
 
   // Vérifie que la réponse contient bien une liste.
   if (!Array.isArray(data?.categories)) {
-    throw new Error('Réponse des catégories invalide')
+    throw new Error('Réponse des genres invalide')
   }
 
   return data.categories
