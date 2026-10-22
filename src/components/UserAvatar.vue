@@ -122,6 +122,7 @@ const avatarSize = computed(() =>
     <!-- Bouche -->
     <div
       class="avatar-layer avatar-mouth"
+      :class="{ 'avatar-mouth--sad': user?.user_avatar_emotion === 'sad' }"
       :style="spriteStyle(emotion.mouth, 2)"
     ></div>
 
@@ -183,5 +184,11 @@ const avatarSize = computed(() =>
   z-index: 4;
   transform: translateY(var(--hat-offset-y, -28%));
   pointer-events: none;
+}
+
+.avatar-mouth--sad {
+  inset: 0;
+  transform: scale(0.6) translateY(-5%);
+  transform-origin: center;
 }
 </style>
