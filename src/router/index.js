@@ -8,6 +8,7 @@ import GameResultPage from '../pages/GameResultPage.vue'
 import LeaderboardPage from '../pages/LeaderboardPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
 import CreateGamePage from '@/pages/CreateGamePage.vue'
+import AvatarTestPage from '@/pages/AvatarTestPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,6 +81,11 @@ const router = createRouter({
 
         return true
       },
+    },
+    {
+      path: '/avatar-test',
+      name: 'avatar-test',
+      component: AvatarTestPage,
     },
   ],
 })
