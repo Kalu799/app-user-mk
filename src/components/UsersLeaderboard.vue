@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import TheLoading from '@/components/TheLoading.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 
 const props = defineProps({
   currentUserId: {
@@ -217,14 +218,19 @@ onMounted(loadLeaderboard)
             </td>
 
             <th scope="row">
-              {{ row.user.user_pseudo }}
-              <span v-if="isCurrentUser(row.user)"> — Toi</span>
-              <small
-                v-if="mode === 'nearby' && row.user.position === rankedUsers.length"
-                class="last-place-label"
-              >
-                Fin du classement
-              </small>
+              <div class="leaderboard-user">
+                <UserAvatar :user="row.user" :size="40" />
+
+                <div class="leaderboard-user-info">
+                  <span class="leaderboard-user-pseudo">
+                    {{ row.user.user_pseudo }}
+                  </span>
+
+                  <span v-if="isCurrentUser(row.user)" class="leaderboard-user-current">
+                    — Toi
+                  </span>
+                </div>
+              </div>
             </th>
 
             <td>{{ row.user.user_score }}</td>
@@ -356,13 +362,13 @@ onMounted(loadLeaderboard)
 
 /* SURVOL */
 
-.users-leaderboard tbody tr:hover > * {
+.users-leaderboard tbody tr:hover>* {
   background-color: #343430;
 }
 
 /* JOUEUR CONNECTÉ */
 
-.users-leaderboard tbody tr.current-user > * {
+.users-leaderboard tbody tr.current-user>* {
   background-color: #64a69d;
   border-top-color: #64a69d;
   border-bottom-color: #64a69d;
@@ -390,8 +396,8 @@ onMounted(loadLeaderboard)
 
 /* CHARGEMENT, CLASSEMENT VIDE ET ERREURS */
 
-.users-leaderboard > p,
-.users-leaderboard > div[role='alert'] {
+.users-leaderboard>p,
+.users-leaderboard>div[role='alert'] {
   margin: 20px 0 0;
   padding: 20px 15px;
 
@@ -403,11 +409,11 @@ onMounted(loadLeaderboard)
   line-height: 1.6;
 }
 
-.users-leaderboard > div[role='alert'] {
+.users-leaderboard>div[role='alert'] {
   border-left-color: #ff626b;
 }
 
-.users-leaderboard > div[role='alert'] p {
+.users-leaderboard>div[role='alert'] p {
   margin: 0 0 15px;
 }
 
@@ -477,6 +483,7 @@ onMounted(loadLeaderboard)
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .users-leaderboard tbody td,
   .users-leaderboard tbody th {
     transition: none;
@@ -484,7 +491,7 @@ onMounted(loadLeaderboard)
 }
 
 /* Séparation entre le podium et le groupe du joueur */
-.users-leaderboard tbody tr.leaderboard-gap > td {
+.users-leaderboard tbody tr.leaderboard-gap>td {
   padding: 6px 0;
   background: transparent;
   border: 0;
@@ -526,7 +533,7 @@ onMounted(loadLeaderboard)
   min-width: 0;
 }
 
-.users-leaderboard .leaderboard-filters label > span {
+.users-leaderboard .leaderboard-filters label>span {
   color: #e9dfca;
   font-size: 0.8rem;
   font-weight: 700;
@@ -599,7 +606,7 @@ onMounted(loadLeaderboard)
   min-width: 0;
 }
 
-.users-leaderboard .leaderboard-filters label > span {
+.users-leaderboard .leaderboard-filters label>span {
   color: #fff5df;
   font-size: 1rem;
   font-weight: 700;
@@ -686,12 +693,12 @@ onMounted(loadLeaderboard)
 }
 
 /* Garde les textes du joueur connecté bien contrastés */
-.users-leaderboard tbody tr.current-user > * {
+.users-leaderboard tbody tr.current-user>* {
   color: #111;
 }
 
 /* Points de séparation visibles sur le fond blanc */
-.users-leaderboard tbody tr.leaderboard-gap > td {
+.users-leaderboard tbody tr.leaderboard-gap>td {
   color: #344b43;
 }
 
@@ -732,6 +739,37 @@ onMounted(loadLeaderboard)
 .users-leaderboard {
   padding-bottom: calc(80px + 24px + env(safe-area-inset-bottom, 0px));
 }
+
+.leaderboard-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.leaderboard-user-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.leaderboard-user-pseudo {
+  overflow-wrap: anywhere;
+}
+
+.leaderboard-user-current {
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+@media (max-width: 480px) {
+  .leaderboard-user {
+    gap: 8px;
+  }
+}
+
 /* Repères de position et couleurs du podium. */
 .users-leaderboard .leaderboard-position {
   caption-side: top;
