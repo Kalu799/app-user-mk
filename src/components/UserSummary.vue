@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { getLevelProgress } from '@/utils/levelProgress'
+import UserAvatar from '@/components/UserAvatar.vue'
 
 const props = defineProps({
   pseudo: {
@@ -18,6 +19,11 @@ const props = defineProps({
     type: [Number, String],
     required: true,
   },
+
+  user: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 // Recalcule le niveau et la progression lorsque le score change.
@@ -26,8 +32,9 @@ const levelProgress = computed(() => getLevelProgress(props.score))
 
 <template>
   <section class="user-summary" aria-label="Résumé de ton compte">
-    <!-- Réserve la place du futur avatar. -->
-    <div class="user-avatar" role="img" aria-label="Avatar à venir">Avatar</div>
+    <!-- Réserve la place du futur avatar. 
+    <div class="user-avatar" role="img" aria-label="Avatar à venir">Avatar</div> -->
+    <UserAvatar :user="user" :size="80" />
 
     <div class="user-info">
       <!-- Affiche le pseudo transmis par la home. -->
