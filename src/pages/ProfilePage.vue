@@ -2,12 +2,17 @@
 import { onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/game'
 import { RouterLink, useRouter } from 'vue-router'
-import { getCurrentUser } from '@/services/userService'
+import {
+  getCurrentUser,
+  getMyHats,
+  updateMyAvatar,
+} from '@/services/userService'
 
 import BottomNav from '@/components/BottomNav.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheLoading from '@/components/TheLoading.vue'
 import UserSummary from '@/components/UserSummary.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 
 const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()
@@ -15,6 +20,13 @@ const router = useRouter()
 const user = ref(null)
 const errorMsg = ref('')
 const isLoading = ref(true)
+const avatarColor = ref('blue')
+const avatarEmotion = ref('neutral')
+const isAvatarEditorOpen = ref(false)
+const avatarHat = ref(null)
+const availableHats = ref([])
+const isSavingAvatar = ref(false)
+const avatarSaveError = ref('')
 
 onMounted(async () => {
   const token = window.sessionStorage.getItem(TOKEN_KEY)
@@ -35,6 +47,11 @@ onMounted(async () => {
     }
 
     user.value = profile
+
+    avatarColor.value = profile.user_avatar_color || 'blue'
+    avatarEmotion.value = profile.user_avatar_emotion || 'neutral'
+    avatarHat.value = profile.user_avatar_hat_asset_key || null
+    availableHats.value = await getMyHats(token)
   } catch (error) {
     // Une ancienne requête ne doit pas affecter une nouvelle connexion.
     if (window.sessionStorage.getItem(TOKEN_KEY) !== token) {
@@ -66,6 +83,61 @@ const logout = async () => {
 
   await router.push('/guesthome')
 }
+
+const saveAvatar = async () => {
+  const token = window.sessionStorage.getItem(TOKEN_KEY)
+
+  if (!token || isSavingAvatar.value) return
+
+  isSavingAvatar.value = true
+  avatarSaveError.value = ''
+
+  try {
+    const updatedProfile = await updateMyAvatar(token, {
+      user_avatar_color: avatarColor.value,
+      user_avatar_emotion: avatarEmotion.value,
+      user_avatar_hat_id:
+        availableHats.value.find(
+          (hat) => hat.hat_asset_key === avatarHat.value,
+        )?.ID_hat ?? null,
+    })
+
+    // Ignore la réponse si la connexion a changé entre-temps.
+    if (window.sessionStorage.getItem(TOKEN_KEY) !== token) return
+
+    // Le backend renvoie le profil actualisé : on utilise cette réponse.
+    user.value = updatedProfile
+    avatarColor.value = updatedProfile.user_avatar_color || 'blue'
+    avatarEmotion.value = updatedProfile.user_avatar_emotion || 'neutral'
+    avatarHat.value = updatedProfile.user_avatar_hat_asset_key || null
+
+    isAvatarEditorOpen.value = false
+  } catch (error) {
+    if (window.sessionStorage.getItem(TOKEN_KEY) !== token) return
+
+    if (error.status === 401) {
+      window.sessionStorage.removeItem(TOKEN_KEY)
+      user.value = null
+      gameStore.$reset()
+      await router.replace('/auth')
+      return
+    }
+
+    avatarSaveError.value =
+      error.status === 403
+        ? 'Ce chapeau est verrouillé.'
+        : error.message || 'Impossible de sauvegarder ton avatar.'
+  } finally {
+    isSavingAvatar.value = false
+  }
+}
+
+const resetAvatarEditor = () => {
+  avatarColor.value = user.value?.user_avatar_color || 'blue'
+  avatarEmotion.value = user.value?.user_avatar_emotion || 'neutral'
+  avatarHat.value = user.value?.user_avatar_hat_asset_key || null
+  avatarSaveError.value = ''
+}
 </script>
 
 <template>
@@ -83,7 +155,8 @@ const logout = async () => {
     <h1 class="profile-title">Mon profil</h1>
 
     <!-- Identité -->
-    <UserSummary v-if="user" :pseudo="user.user_pseudo" :score="user.user_score" />
+    <UserSummary v-if="user" :user="user" :pseudo="user.user_pseudo" :score="user.user_score" :show-avatar-edit="true"
+      @edit-avatar="isAvatarEditorOpen = true" />
 
     <!-- Score réel -->
     <section class="profile-score" aria-labelledby="score-title">
@@ -152,6 +225,90 @@ const logout = async () => {
         </li>
       </ul>
     </section>
+
+    <!-- Modale de personnalisation de l'avatar -->
+    <div v-if="isAvatarEditorOpen" class="avatar-modal-overlay" @click.self="resetAvatarEditor(); isAvatarEditorOpen = false">
+      <section class="avatar-modal" role="dialog" aria-modal="true" aria-labelledby="avatar-modal-title">
+        <button type="button" class="avatar-modal-close" aria-label="Fermer" @click="resetAvatarEditor(); isAvatarEditorOpen = false">
+          ×
+        </button>
+
+        <h2 id="avatar-modal-title">Personnalise ton avatar</h2>
+
+        <p>Choisis l'apparence qui te correspond !</p>
+
+        <div class="avatar-modal-preview">
+          <UserAvatar :user="{
+            ...user,
+            user_avatar_color: avatarColor,
+            user_avatar_emotion: avatarEmotion,
+            user_avatar_hat_asset_key: avatarHat
+          }" :size="120" />
+        </div>
+
+        <div class="avatar-editor-field">
+          <label for="avatar-color">Couleur</label>
+          <select id="avatar-color" v-model="avatarColor">
+            <option value="blue">Bleu</option>
+            <option value="red">Rouge</option>
+            <option value="yellow">Jaune</option>
+          </select>
+        </div>
+
+        <div class="avatar-editor-field">
+          <label for="avatar-emotion">Expression</label>
+          <select id="avatar-emotion" v-model="avatarEmotion">
+            <option value="happy">Heureux</option>
+            <option value="neutral">Neutre</option>
+            <option value="sad">Triste</option>
+            <option value="angry">En colère</option>
+            <option value="surprised">Surpris</option>
+          </select>
+        </div>
+
+        <div class="avatar-editor-field">
+          <label>Chapeau</label>
+
+          <div class="avatar-hat-options">
+            <button type="button" class="avatar-hat-option" :class="{ selected: avatarHat === null }"
+              @click="avatarHat = null">
+              Aucun
+            </button>
+
+            <button v-for="hat in availableHats" :key="hat.ID_hat" type="button" class="avatar-hat-option" :class="{
+              selected: avatarHat === hat.hat_asset_key,
+              locked: !hat.unlocked
+            }" :disabled="!hat.unlocked" @click="avatarHat = hat.hat_asset_key">
+              <span>{{ hat.hat_name }}</span>
+
+              <small v-if="!hat.unlocked">
+                Niveau {{ hat.hat_required_level }} requis 🔒
+              </small>
+
+              <small v-else-if="hat.equipped">
+                Équipé
+              </small>
+            </button>
+          </div>
+        </div>
+
+        <p v-if="avatarSaveError" class="avatar-save-error" role="alert">
+          {{ avatarSaveError }}
+        </p>
+
+        <div class="avatar-modal-actions">
+          <button type="button" class="avatar-cancel-button" :disabled="isSavingAvatar"
+            @click="resetAvatarEditor(); isAvatarEditorOpen = false">
+            Annuler
+          </button>
+
+          <button type="button" class="avatar-save-button" :disabled="isSavingAvatar" @click="saveAvatar">
+            {{ isSavingAvatar ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <BottomNav />
@@ -486,5 +643,149 @@ const logout = async () => {
   .profile-details dd {
     margin: 0;
   }
+}
+
+.avatar-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgb(0 0 0 / 65%);
+}
+
+.avatar-modal {
+  position: relative;
+  width: min(100%, 480px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px 24px;
+  border-radius: 20px;
+  background: #fff;
+  color: #222;
+  text-align: center;
+  box-shadow: 0 16px 48px rgb(0 0 0 / 25%);
+}
+
+.avatar-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.avatar-modal-preview {
+  display: flex;
+  justify-content: center;
+  margin: 28px 0;
+}
+
+.avatar-modal-placeholder {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.avatar-editor-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.avatar-editor-field label {
+  font-weight: 700;
+}
+
+.avatar-editor-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+}
+
+
+.avatar-hat-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.avatar-hat-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 64px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+  cursor: pointer;
+}
+
+.avatar-hat-option.selected {
+  border-color: #ff626b;
+  background: #fff0f1;
+}
+
+.avatar-hat-option.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.avatar-hat-option small {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.avatar-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.avatar-modal-actions button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.avatar-cancel-button {
+  background: #eee;
+  color: #222;
+}
+
+.avatar-save-button {
+  background: #ff626b;
+  color: #fff;
+}
+
+.avatar-modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.avatar-save-error {
+  margin-top: 18px;
+  color: #c62828;
+  font-weight: 600;
 }
 </style>
