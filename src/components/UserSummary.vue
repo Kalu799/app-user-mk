@@ -24,7 +24,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+
+  showAvatarEdit: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+defineEmits(['edit-avatar'])
 
 // Recalcule le niveau et la progression lorsque le score change.
 const levelProgress = computed(() => getLevelProgress(props.score))
@@ -34,7 +41,14 @@ const levelProgress = computed(() => getLevelProgress(props.score))
   <section class="user-summary" aria-label="Résumé de ton compte">
     <!-- Réserve la place du futur avatar. 
     <div class="user-avatar" role="img" aria-label="Avatar à venir">Avatar</div> -->
-    <UserAvatar :user="user" :size="80" />
+    <div class="user-avatar-wrapper">
+      <UserAvatar :user="user" :size="80" />
+
+      <button v-if="showAvatarEdit" type="button" class="avatar-edit-button" aria-label="Modifier mon avatar"
+        title="Modifier mon avatar" @click="$emit('edit-avatar')">
+        ✎
+      </button>
+    </div>
 
     <div class="user-info">
       <!-- Affiche le pseudo transmis par la home. -->
@@ -44,12 +58,8 @@ const levelProgress = computed(() => getLevelProgress(props.score))
       <div class="user-level">
         <p class="level-label">Niveau {{ levelProgress.level }}</p>
 
-        <progress
-          class="xp-bar"
-          :value="levelProgress.xpInLevel"
-          :max="levelProgress.xpForNextLevel"
-          :aria-label="`Progression vers le niveau ${levelProgress.level + 1}`"
-        >
+        <progress class="xp-bar" :value="levelProgress.xpInLevel" :max="levelProgress.xpForNextLevel"
+          :aria-label="`Progression vers le niveau ${levelProgress.level + 1}`">
           {{ Math.round(levelProgress.progressPercent) }} %
         </progress>
 
@@ -137,6 +147,7 @@ const levelProgress = computed(() => getLevelProgress(props.score))
   font-size: 0.85rem;
   line-height: 1.4;
 }
+
 /* Met le pseudo en évidence avec un texte plus grand, épais et contrasté. */
 .user-pseudo {
   font-family: 'Bricolage Grotesque', sans-serif;
@@ -188,5 +199,39 @@ const levelProgress = computed(() => getLevelProgress(props.score))
 .xp-details {
   font-size: 0.8rem;
   line-height: 1.4;
+}
+
+.user-avatar-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.avatar-edit-button {
+  position: absolute;
+  left: -5px;
+  bottom: -5px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #ff0000;
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.avatar-edit-button:hover {
+  transform: scale(1.08);
+}
+
+.avatar-edit-button:focus-visible {
+  outline: 3px solid #222;
+  outline-offset: 3px;
 }
 </style>
