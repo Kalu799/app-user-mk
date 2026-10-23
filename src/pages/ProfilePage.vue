@@ -83,30 +83,7 @@ const logout = async () => {
     <h1 class="profile-title">Mon profil</h1>
 
     <!-- Identité -->
-    <section class="profile-identity" aria-label="Ton profil">
-      <div class="profile-avatar" aria-hidden="true">
-        <svg viewBox="0 0 64 64" fill="currentColor">
-          <circle cx="32" cy="22" r="12" />
-          <path d="M10 58a22 22 0 0 1 44 0Z" />
-        </svg>
-      </div>
-
-      <div class="profile-identity-text">
-        <p class="profile-eyebrow">Bienvenue</p>
-
-        <h2>{{ user.user_pseudo }}</h2>
-
-        <span class="profile-role">
-          {{
-            user.user_role === 'admin'
-              ? 'Administrateur'
-              : user.user_role === 'player'
-                ? 'Joueur'
-                : user.user_role
-          }}
-        </span>
-      </div>
-    </section>
+    <UserSummary v-if="user" :pseudo="user.user_pseudo" :score="user.user_score" />
 
     <!-- Score réel -->
     <section class="profile-score" aria-labelledby="score-title">
@@ -322,7 +299,7 @@ const logout = async () => {
   font-weight: 700;
 }
 
-.profile-score div > p {
+.profile-score div>p {
   margin-top: 6px;
   color: #d5cec2;
   font-size: 0.9rem;
@@ -389,12 +366,12 @@ const logout = async () => {
   margin: 20px 0 0;
 }
 
-.profile-details > div {
+.profile-details>div {
   padding: 16px 0;
   border-top: 1px solid #50504a;
 }
 
-.profile-details > div:last-child {
+.profile-details>div:last-child {
   padding-bottom: 0;
 }
 
@@ -499,7 +476,7 @@ const logout = async () => {
     padding: 28px;
   }
 
-  .profile-details > div {
+  .profile-details>div {
     display: grid;
     grid-template-columns: 160px minmax(0, 1fr);
     align-items: baseline;

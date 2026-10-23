@@ -60,7 +60,7 @@ export const useGameStore = defineStore('game', {
 
         // Une sélection vide ne doit pas devenir une partie toutes catégories.
         if (genreIds !== null && (!Array.isArray(genreIds) || genreIds.length === 0)) {
-          throw new Error('Choisis au moins une catégorie')
+          throw new Error('Choisis au moins un genre')
         }
 
         // Copie la sélection pour conserver les paramètres de cette demande.

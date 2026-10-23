@@ -72,7 +72,7 @@ const loadCategories = async () => {
     )
   } catch (error) {
     if (isPageActive) {
-      categoriesError.value = error.message || 'Impossible de charger les catégories'
+      categoriesError.value = error.message || 'Impossible de charger les genres'
     }
   } finally {
     if (isPageActive) {
@@ -180,17 +180,17 @@ onMounted(async () => {
       </section>
 
       <section aria-labelledby="categories-title">
-        <h2 id="categories-title">Choisissez les catégories</h2>
+        <h2 id="categories-title">Choisissez les genres</h2>
 
         <div class="category-panel">
-          <TheLoading v-if="isLoadingCategories" label="Chargement des catégories…" />
+          <TheLoading v-if="isLoadingCategories" label="Chargement des genres" />
 
           <div v-else-if="categoriesError">
             <p role="alert">{{ categoriesError }}</p>
             <button type="button" @click="loadCategories">Réessayer</button>
           </div>
 
-          <p v-else-if="categories.length === 0">Aucune catégorie disponible.</p>
+          <p v-else-if="categories.length === 0">Aucun genre disponible.</p>
 
           <template v-else>
             <h3>Sélection</h3>
@@ -201,10 +201,10 @@ onMounted(async () => {
                 v-if="allCategories"
                 type="button"
                 class="selected-chip"
-                aria-label="Retirer la sélection de toutes les catégories"
+                aria-label="Retirer la sélection de tous les genres"
                 @click="allCategories = false"
               >
-                Toutes les catégories <span aria-hidden="true">×</span>
+                Tous les genres <span aria-hidden="true">×</span>
               </button>
 
               <template v-else>
@@ -220,11 +220,11 @@ onMounted(async () => {
                   <span aria-hidden="true">×</span>
                 </button>
 
-                <p v-if="selectedCategories.length === 0">Choisis au moins une catégorie.</p>
+                <p v-if="selectedCategories.length === 0">Choisis au moins un genre.</p>
               </template>
             </div>
 
-            <h3>Catégories disponibles</h3>
+            <h3>Genres disponibles</h3>
 
             <div class="category-list">
               <button

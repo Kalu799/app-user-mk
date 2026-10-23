@@ -6,6 +6,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  showGuestActions: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 defineEmits(['logout'])
@@ -26,7 +30,7 @@ defineEmits(['logout'])
         <button type="button" class="btn-nav" @click="$emit('logout')">Déconnexion</button>
       </div>
 
-      <div v-else class="nav-actions">
+      <div v-else-if="showGuestActions" class="nav-actions">
         <RouterLink :to="{ name: 'auth', query: { mode: 'login' } }" class="btn-nav">
           Connexion
         </RouterLink>
