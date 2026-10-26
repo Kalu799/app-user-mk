@@ -162,22 +162,22 @@ const launchGuestGame = async () => {
     <footer class="footer">
       <div class="footer-content">
         <nav class="footer-links" aria-label="Réseaux sociaux">
-  <a href="#" aria-label="Instagram" title="Instagram" @click.prevent>
-    <img src="/icons/instagram.svg" alt="" />
-  </a>
+          <a href="#" aria-label="Instagram" title="Instagram" @click.prevent>
+            <img src="/icons/instagram.svg" alt="" />
+          </a>
 
-  <a href="#" aria-label="TikTok" title="TikTok" @click.prevent>
-    <img src="/icons/tiktok.svg" alt="" />
-  </a>
+          <a href="#" aria-label="TikTok" title="TikTok" @click.prevent>
+            <img src="/icons/tiktok.svg" alt="" />
+          </a>
 
-  <a href="#" aria-label="YouTube" title="YouTube" @click.prevent>
-    <img src="/icons/youtube.svg" alt="" />
-  </a>
+          <a href="#" aria-label="YouTube" title="YouTube" @click.prevent>
+            <img src="/icons/youtube.svg" alt="" />
+          </a>
 
-  <a href="#" aria-label="Discord" title="Discord" @click.prevent>
-    <img src="/icons/discord.svg" alt="" />
-  </a>
-</nav>
+          <a href="#" aria-label="Discord" title="Discord" @click.prevent>
+            <img src="/icons/discord.svg" alt="" />
+          </a>
+        </nav>
 
         <div class="footer-bottom">
           <img src="/logokingwhite.png" alt="Movie Kings" class="footer-logo" />

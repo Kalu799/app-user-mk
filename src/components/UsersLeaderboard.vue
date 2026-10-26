@@ -184,7 +184,13 @@ onMounted(loadLeaderboard)
       <caption v-if="mode === 'nearby'" class="leaderboard-position">
         Tu es
         <strong>{{ currentUserIndex + 1 }}{{ currentUserIndex === 0 ? 'er' : 'e' }}</strong>
-        sur {{ rankedUsers.length }} {{ rankedUsers.length === 1 ? 'joueur' : 'joueurs' }}
+        sur
+        {{
+          rankedUsers.length
+        }}
+        {{
+          rankedUsers.length === 1 ? 'joueur' : 'joueurs'
+        }}
       </caption>
       <thead>
         <tr>
@@ -362,13 +368,13 @@ onMounted(loadLeaderboard)
 
 /* SURVOL */
 
-.users-leaderboard tbody tr:hover>* {
+.users-leaderboard tbody tr:hover > * {
   background-color: #343430;
 }
 
 /* JOUEUR CONNECTÉ */
 
-.users-leaderboard tbody tr.current-user>* {
+.users-leaderboard tbody tr.current-user > * {
   background-color: #64a69d;
   border-top-color: #64a69d;
   border-bottom-color: #64a69d;
@@ -396,8 +402,8 @@ onMounted(loadLeaderboard)
 
 /* CHARGEMENT, CLASSEMENT VIDE ET ERREURS */
 
-.users-leaderboard>p,
-.users-leaderboard>div[role='alert'] {
+.users-leaderboard > p,
+.users-leaderboard > div[role='alert'] {
   margin: 20px 0 0;
   padding: 20px 15px;
 
@@ -409,11 +415,11 @@ onMounted(loadLeaderboard)
   line-height: 1.6;
 }
 
-.users-leaderboard>div[role='alert'] {
+.users-leaderboard > div[role='alert'] {
   border-left-color: #ff626b;
 }
 
-.users-leaderboard>div[role='alert'] p {
+.users-leaderboard > div[role='alert'] p {
   margin: 0 0 15px;
 }
 
@@ -483,7 +489,6 @@ onMounted(loadLeaderboard)
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .users-leaderboard tbody td,
   .users-leaderboard tbody th {
     transition: none;
@@ -491,7 +496,7 @@ onMounted(loadLeaderboard)
 }
 
 /* Séparation entre le podium et le groupe du joueur */
-.users-leaderboard tbody tr.leaderboard-gap>td {
+.users-leaderboard tbody tr.leaderboard-gap > td {
   padding: 6px 0;
   background: transparent;
   border: 0;
@@ -533,7 +538,7 @@ onMounted(loadLeaderboard)
   min-width: 0;
 }
 
-.users-leaderboard .leaderboard-filters label>span {
+.users-leaderboard .leaderboard-filters label > span {
   color: #e9dfca;
   font-size: 0.8rem;
   font-weight: 700;
@@ -606,7 +611,7 @@ onMounted(loadLeaderboard)
   min-width: 0;
 }
 
-.users-leaderboard .leaderboard-filters label>span {
+.users-leaderboard .leaderboard-filters label > span {
   color: #fff5df;
   font-size: 1rem;
   font-weight: 700;
@@ -693,12 +698,12 @@ onMounted(loadLeaderboard)
 }
 
 /* Garde les textes du joueur connecté bien contrastés */
-.users-leaderboard tbody tr.current-user>* {
+.users-leaderboard tbody tr.current-user > * {
   color: #111;
 }
 
 /* Points de séparation visibles sur le fond blanc */
-.users-leaderboard tbody tr.leaderboard-gap>td {
+.users-leaderboard tbody tr.leaderboard-gap > td {
   color: #344b43;
 }
 
@@ -792,9 +797,15 @@ onMounted(loadLeaderboard)
   color: #111;
 }
 
-.users-leaderboard .rank-gold { background-color: #e4bc50; }
-.users-leaderboard .rank-silver { background-color: #c4cbd3; }
-.users-leaderboard .rank-bronze { background-color: #cd9c6b; }
+.users-leaderboard .rank-gold {
+  background-color: #e4bc50;
+}
+.users-leaderboard .rank-silver {
+  background-color: #c4cbd3;
+}
+.users-leaderboard .rank-bronze {
+  background-color: #cd9c6b;
+}
 
 .users-leaderboard .last-place-label {
   display: block;

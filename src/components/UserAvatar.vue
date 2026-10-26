@@ -1,4 +1,3 @@
-
 <script setup>
 import { computed } from 'vue'
 
@@ -44,20 +43,13 @@ const hatOffsets = {
   santa_hat: '-49%',
 }
 
-const color = computed(
-  () => colors[props.user?.user_avatar_color] ?? colors.blue,
-)
+const color = computed(() => colors[props.user?.user_avatar_color] ?? colors.blue)
 
-const emotion = computed(
-  () => emotions[props.user?.user_avatar_emotion] ?? emotions.neutral,
-)
+const emotion = computed(() => emotions[props.user?.user_avatar_emotion] ?? emotions.neutral)
 
 // Accepte les deux noms de champ pendant la transition backend.
 const hatKey = computed(
-  () =>
-    props.user?.user_avatar_hat_asset_key ??
-    props.user?.hat_asset_key ??
-    null,
+  () => props.user?.user_avatar_hat_asset_key ?? props.user?.hat_asset_key ?? null,
 )
 
 const hatColumn = computed(() => {
@@ -91,9 +83,7 @@ function maskStyle(column, row) {
 }
 
 const avatarSize = computed(() =>
-  Number.isFinite(props.size) && props.size > 0
-    ? `${props.size}px`
-    : '80px',
+  Number.isFinite(props.size) && props.size > 0 ? `${props.size}px` : '80px',
 )
 </script>
 
@@ -114,10 +104,7 @@ const avatarSize = computed(() =>
     ></div>
 
     <!-- Yeux -->
-    <div
-      class="avatar-layer avatar-eyes"
-      :style="spriteStyle(emotion.eyes, 1)"
-    ></div>
+    <div class="avatar-layer avatar-eyes" :style="spriteStyle(emotion.eyes, 1)"></div>
 
     <!-- Bouche -->
     <div
@@ -133,7 +120,7 @@ const avatarSize = computed(() =>
       :style="{
         ...spriteStyle(hatColumn, 3),
         '--hat-offset-y': hatOffset,
-        }"
+      }"
     ></div>
   </div>
 </template>

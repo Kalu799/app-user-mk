@@ -34,9 +34,7 @@ export const getMyHats = async (token) => {
   const data = await response.json()
 
   if (!response.ok) {
-    const error = new Error(
-      data.statusMessage || data.message || `Erreur HTTP ${response.status}`,
-    )
+    const error = new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
 
     error.status = response.status
     throw error
@@ -58,9 +56,7 @@ export const updateMyAvatar = async (token, avatarData) => {
   const data = await response.json()
 
   if (!response.ok) {
-    const error = new Error(
-      data.statusMessage || data.message || `Erreur HTTP ${response.status}`,
-    )
+    const error = new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
 
     error.status = response.status
     throw error

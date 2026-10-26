@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref } from 'vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -36,9 +35,7 @@ function updatePreview() {
 <template>
   <main class="test-page">
     <h1>Test des avatars</h1>
-    <p class="notice">
-      Page de test temporaire — aucune donnée n'est enregistrée.
-    </p>
+    <p class="notice">Page de test temporaire — aucune donnée n'est enregistrée.</p>
 
     <section class="controls">
       <label>
@@ -81,8 +78,8 @@ function updatePreview() {
     <section class="preview">
       <UserAvatar :user="previewUser" :size="selectedSize" />
       <p>
-        {{ selectedEmotion }} · {{ selectedColor }} ·
-        {{ selectedHat ?? 'sans chapeau' }} · {{ selectedSize }} px
+        {{ selectedEmotion }} · {{ selectedColor }} · {{ selectedHat ?? 'sans chapeau' }} ·
+        {{ selectedSize }} px
       </p>
     </section>
 
@@ -169,7 +166,6 @@ function updatePreview() {
   min-width: 0;
   padding: 8px;
 }
-
 
 .preview {
   display: flex;

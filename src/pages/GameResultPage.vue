@@ -121,11 +121,7 @@ const logout = async () => {
   <TheLoading v-if="isReplaying" fullscreen label="Préparation de la partie…" />
 
   <div class="result-layout" :inert="isReplaying">
-    <TheHeader
-      :is-authenticated="!isGuest"
-      :show-guest-actions="!isGuest"
-      @logout="logout"
-    />
+    <TheHeader :is-authenticated="!isGuest" :show-guest-actions="!isGuest" @logout="logout" />
 
     <main v-if="gameStore.result" class="result-page">
       <!-- Résultat, points et accès aux corrections dans un même bloc. -->
@@ -178,12 +174,10 @@ const logout = async () => {
       <section v-if="isGuest" class="signup-invitation" aria-labelledby="signup-title">
         <h2 id="signup-title">Entre dans le classement</h2>
         <p>
-          Crée ton compte pour cumuler des points lors de tes prochaines parties
-          et choisir tes genres.
+          Crée ton compte pour cumuler des points lors de tes prochaines parties et choisir tes
+          genres.
         </p>
-        <RouterLink :to="{ name: 'auth' }" class="signup-button">
-          Créer mon compte
-        </RouterLink>
+        <RouterLink :to="{ name: 'auth' }" class="signup-button"> Créer mon compte </RouterLink>
         <p class="login-invitation">
           Déjà un compte ?
           <RouterLink :to="{ name: 'auth', query: { mode: 'login' } }" class="text-link">
@@ -254,9 +248,20 @@ const logout = async () => {
   text-align: center;
 }
 
-.result-summary h1 { margin: 0 0 16px; }
-.correct-count { margin: 0; font-size: 1.2rem; font-weight: 700; }
-.result-points { margin: 12px 0; color: #ffb900; font-size: 1.6rem; font-weight: 800; }
+.result-summary h1 {
+  margin: 0 0 16px;
+}
+.correct-count {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.result-points {
+  margin: 12px 0;
+  color: #ffb900;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
 
 .corrections-toggle,
 .replay-button-guest {
@@ -272,10 +277,26 @@ const logout = async () => {
   cursor: pointer;
 }
 
-.result-corrections { margin-top: 20px; text-align: left; }
-.correction-card { margin-top: 16px; padding: 16px; border: 2px solid #e9dfca; border-radius: 8px; }
-.correction-card blockquote { margin: 12px 0; line-height: 1.5; overflow-wrap: anywhere; }
-.correction-answers { display: flex; flex-wrap: wrap; gap: 10px; }
+.result-corrections {
+  margin-top: 20px;
+  text-align: left;
+}
+.correction-card {
+  margin-top: 16px;
+  padding: 16px;
+  border: 2px solid #e9dfca;
+  border-radius: 8px;
+}
+.correction-card blockquote {
+  margin: 12px 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.correction-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .correction-answers p {
   flex: 1 1 200px;
   min-width: 0;
@@ -286,8 +307,13 @@ const logout = async () => {
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-.player-answer.is-correct, .correct-answer { background-color: #64a69d; }
-.player-answer.is-incorrect { background-color: #ff626b; }
+.player-answer.is-correct,
+.correct-answer {
+  background-color: #64a69d;
+}
+.player-answer.is-incorrect {
+  background-color: #ff626b;
+}
 
 .signup-invitation {
   padding: 24px 20px;
@@ -298,9 +324,15 @@ const logout = async () => {
   box-shadow: 4px 4px 0 #000;
   text-align: center;
 }
-.signup-invitation h2 { margin: 0 0 12px; }
-.signup-invitation p { line-height: 1.5; }
-.signup-button, .replay-button:not(.replay-button-guest), .configuration-button {
+.signup-invitation h2 {
+  margin: 0 0 12px;
+}
+.signup-invitation p {
+  line-height: 1.5;
+}
+.signup-button,
+.replay-button:not(.replay-button-guest),
+.configuration-button {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -318,16 +350,42 @@ const logout = async () => {
   text-decoration: none;
   cursor: pointer;
 }
-.signup-button { width: 100%; margin-top: 8px; }
-.signup-invitation .login-invitation { margin: 16px 0 0; }
-.text-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 4px; }
-.result-actions { text-align: center; }
-.configuration-button { display: flex; width: fit-content; margin: 20px auto 0; background-color: #e9dfca; }
-.replay-button:disabled { opacity: 0.6; cursor: wait; }
-.result-error { color: #ff626b; }
+.signup-button {
+  width: 100%;
+  margin-top: 8px;
+}
+.signup-invitation .login-invitation {
+  margin: 16px 0 0;
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-underline-offset: 4px;
+}
+.result-actions {
+  text-align: center;
+}
+.configuration-button {
+  display: flex;
+  width: fit-content;
+  margin: 20px auto 0;
+  background-color: #e9dfca;
+}
+.replay-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.result-error {
+  color: #ff626b;
+}
 .corrections-toggle:focus-visible,
 .signup-button:focus-visible,
 .text-link:focus-visible,
 .replay-button:focus-visible,
-.configuration-button:focus-visible { outline: 3px solid #ff626b; outline-offset: 5px; }
+.configuration-button:focus-visible {
+  outline: 3px solid #ff626b;
+  outline-offset: 5px;
+}
 </style>

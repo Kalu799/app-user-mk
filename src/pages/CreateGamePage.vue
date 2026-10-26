@@ -123,7 +123,6 @@ const launchGame = async () => {
   }
 
   await router.push({ name: 'game' })
-
 }
 
 const logout = async () => {

@@ -77,7 +77,7 @@ const logout = async () => {
       <p v-if="errorMsg" role="alert">{{ errorMsg }}</p>
 
       <!-- Transmet le pseudo et le score total du compte à la bannière. -->
-      <UserSummary v-if="user" :user="user" :pseudo="user.user_pseudo" :score="user.user_score"/>
+      <UserSummary v-if="user" :user="user" :pseudo="user.user_pseudo" :score="user.user_score" />
 
       <!-- classement autour du user connecté -->
       <UsersLeaderboard v-if="user" :current-user-id="user.ID_user" mode="nearby" />
