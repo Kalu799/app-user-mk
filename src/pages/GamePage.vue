@@ -9,6 +9,17 @@ const router = useRouter()
 const gameStore = useGameStore()
 const currentTime = ref(performance.now())
 
+// Affiche le nom du mode utilisé par la partie.
+const gameModeLabel = computed(() => {
+  return gameStore.gameParameters?.mode === 'find_movie' ? 'Réplique' : null
+})
+
+// Une liste nulle correspond à la sélection globale.
+const allGenresSelected = computed(() => gameStore.gameParameters?.genreIds === null)
+
+// Les noms des genres sélectionnés sont fournis par l’API.
+const gameGenres = computed(() => gameStore.game?.genres ?? [])
+
 // Transforme l'index du tableau (0, 1, 2...) en numéro lisible (1, 2, 3...).
 const questionNumber = computed(() => gameStore.currentQuestionIndex + 1)
 
@@ -115,13 +126,25 @@ const goBack = () => {
           <span aria-hidden="true">←</span>
         </button>
 
-        <div v-if="gameStore.game" class="game-context">
-          <!-- La V1 possède uniquement le mode find_movie. -->
-          <span class="context-badge">Trouver le film</span>
-          <span class="context-badge category-badge">
-            {{ gameStore.game.genre.genre_name }}
-          </span>
-        </div>
+       <div v-if="gameStore.game" class="game-context">
+  <span v-if="gameModeLabel" class="context-badge">
+    {{ gameModeLabel }}
+  </span>
+
+  <span v-if="allGenresSelected" class="context-badge category-badge">
+    Tous les genres
+  </span>
+
+  <template v-else>
+    <span
+      v-for="genre in gameGenres"
+      :key="genre.ID_genre"
+      class="context-badge category-badge"
+    >
+      {{ genre.genre_name }}
+    </span>
+  </template>
+</div>
 
         <!-- Réutilise le logo qui est déjà présent dans le dossier public. -->
         <img src="/Property 1=king.png" alt="Movie King" class="game-logo" />
@@ -329,6 +352,8 @@ button:focus-visible {
   font-weight: 700;
   line-height: 1.25;
   text-align: center;
+  max-width: 100%;
+overflow-wrap: anywhere;
 }
 
 .category-badge {

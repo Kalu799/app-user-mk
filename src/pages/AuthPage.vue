@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LoginForm from '@/components/LoginForm.vue'
@@ -23,6 +23,25 @@ const isLoginMode = ref(route.query.mode === 'login')
 const isLoading = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
+const errorMessageElement = ref(null)
+
+// Attend que l’erreur soit affichée et le chargement terminé.
+watch(
+  [errorMsg, isLoading],
+  ([message, loading]) => {
+    if (!message || loading || !isPageActive) {
+      return
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    errorMessageElement.value?.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'center',
+    })
+  },
+  { flush: 'post' },
+)
 
 /**
  * Inscription
@@ -134,6 +153,10 @@ const switchMode = () => {
         <strong>✓ Ton compte est créé !</strong>
         <p>{{ successMsg }}</p>
       </div>
+      <!-- Affiche l’erreur avant les champs du formulaire. -->
+      <p v-if="errorMsg" ref="errorMessageElement" class="msg error" role="alert">
+        {{ errorMsg }}
+      </p>
       <RegisterForm
         v-if="!isLoginMode"
         :is-loading="isLoading"
@@ -145,10 +168,6 @@ const switchMode = () => {
       <button type="button" class="switch-btn" :disabled="isLoading" @click="switchMode">
         {{ isLoginMode ? 'Je n’ai pas encore de compte' : 'J’ai déjà un compte' }}
       </button>
-
-      <p v-if="errorMsg" class="msg error">
-        {{ errorMsg }}
-      </p>
     </main>
   </div>
 </template>
