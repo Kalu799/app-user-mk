@@ -149,14 +149,8 @@ const resetAvatarEditor = () => {
     <h1 class="profile-title">Mon profil</h1>
 
     <!-- Identité -->
-    <UserSummary
-      v-if="user"
-      :user="user"
-      :pseudo="user.user_pseudo"
-      :score="user.user_score"
-      :show-avatar-edit="true"
-      @edit-avatar="isAvatarEditorOpen = true"
-    />
+    <UserSummary v-if="user" :user="user" :pseudo="user.user_pseudo" :score="user.user_score" :show-avatar-edit="true"
+      @edit-avatar="isAvatarEditorOpen = true" />
 
     <!-- Score réel -->
     <section class="profile-score" aria-labelledby="score-title">
@@ -226,29 +220,15 @@ const resetAvatarEditor = () => {
     </section>
 
     <!-- Modale de personnalisation de l'avatar -->
-    <div
-      v-if="isAvatarEditorOpen"
-      class="avatar-modal-overlay"
-      @click.self="
-        resetAvatarEditor()
+    <div v-if="isAvatarEditorOpen" class="avatar-modal-overlay" @click.self="
+      resetAvatarEditor();
+    isAvatarEditorOpen = false
+      ">
+      <section class="avatar-modal" role="dialog" aria-modal="true" aria-labelledby="avatar-modal-title">
+        <button type="button" class="avatar-modal-close" aria-label="Fermer" @click="
+          resetAvatarEditor();
         isAvatarEditorOpen = false
-      "
-    >
-      <section
-        class="avatar-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="avatar-modal-title"
-      >
-        <button
-          type="button"
-          class="avatar-modal-close"
-          aria-label="Fermer"
-          @click="
-            resetAvatarEditor()
-            isAvatarEditorOpen = false
-          "
-        >
+          ">
           ×
         </button>
 
@@ -257,51 +237,30 @@ const resetAvatarEditor = () => {
         <p>Choisis l'apparence qui te correspond !</p>
 
         <div class="avatar-modal-preview">
-          <UserAvatar
-            :user="{
-              ...user,
-              user_avatar_color: avatarColor,
-              user_avatar_emotion: avatarEmotion,
-              user_avatar_hat_asset_key: avatarHat,
-            }"
-            :size="120"
-          />
+          <UserAvatar :user="{
+            ...user,
+            user_avatar_color: avatarColor,
+            user_avatar_emotion: avatarEmotion,
+            user_avatar_hat_asset_key: avatarHat,
+          }" :size="120" />
         </div>
 
         <div class="avatar-editor-field">
           <label>Couleur</label>
 
           <div class="avatar-color-options" role="group" aria-label="Choisir une couleur">
-            <button
-              type="button"
-              class="avatar-color-option"
-              :class="{ selected: avatarColor === 'blue' }"
-              :aria-pressed="avatarColor === 'blue'"
-              aria-label="Bleu"
-              @click="avatarColor = 'blue'"
-            >
+            <button type="button" class="avatar-color-option" :class="{ selected: avatarColor === 'blue' }"
+              :aria-pressed="avatarColor === 'blue'" aria-label="Bleu" @click="avatarColor = 'blue'">
               <span class="avatar-color-swatch avatar-color-swatch--blue"></span>
             </button>
 
-            <button
-              type="button"
-              class="avatar-color-option"
-              :class="{ selected: avatarColor === 'red' }"
-              :aria-pressed="avatarColor === 'red'"
-              aria-label="Rouge"
-              @click="avatarColor = 'red'"
-            >
+            <button type="button" class="avatar-color-option" :class="{ selected: avatarColor === 'red' }"
+              :aria-pressed="avatarColor === 'red'" aria-label="Rouge" @click="avatarColor = 'red'">
               <span class="avatar-color-swatch avatar-color-swatch--red"></span>
             </button>
 
-            <button
-              type="button"
-              class="avatar-color-option"
-              :class="{ selected: avatarColor === 'yellow' }"
-              :aria-pressed="avatarColor === 'yellow'"
-              aria-label="Jaune"
-              @click="avatarColor = 'yellow'"
-            >
+            <button type="button" class="avatar-color-option" :class="{ selected: avatarColor === 'yellow' }"
+              :aria-pressed="avatarColor === 'yellow'" aria-label="Jaune" @click="avatarColor = 'yellow'">
               <span class="avatar-color-swatch avatar-color-swatch--yellow"></span>
             </button>
           </div>
@@ -311,31 +270,21 @@ const resetAvatarEditor = () => {
           <label>Expression</label>
 
           <div class="avatar-emotion-options" role="group" aria-label="Choisir une expression">
-            <button
-              v-for="emotion in [
-                { value: 'happy', label: 'Heureux' },
-                { value: 'neutral', label: 'Neutre' },
-                { value: 'sad', label: 'Triste' },
-                { value: 'angry', label: 'En colère' },
-                { value: 'surprised', label: 'Surpris' },
-              ]"
-              :key="emotion.value"
-              type="button"
-              class="avatar-emotion-option"
-              :class="{ selected: avatarEmotion === emotion.value }"
-              :aria-pressed="avatarEmotion === emotion.value"
-              :aria-label="emotion.label"
-              @click="avatarEmotion = emotion.value"
-            >
-              <UserAvatar
-                :user="{
-                  ...user,
-                  user_avatar_color: avatarColor,
-                  user_avatar_emotion: emotion.value,
-                  user_avatar_hat_asset_key: null,
-                }"
-                :size="64"
-              />
+            <button v-for="emotion in [
+              { value: 'happy', label: 'Heureux' },
+              { value: 'neutral', label: 'Neutre' },
+              { value: 'sad', label: 'Triste' },
+              { value: 'angry', label: 'En colère' },
+              { value: 'surprised', label: 'Surpris' },
+            ]" :key="emotion.value" type="button" class="avatar-emotion-option"
+              :class="{ selected: avatarEmotion === emotion.value }" :aria-pressed="avatarEmotion === emotion.value"
+              :aria-label="emotion.label" @click="avatarEmotion = emotion.value">
+              <UserAvatar :user="{
+                ...user,
+                user_avatar_color: avatarColor,
+                user_avatar_emotion: emotion.value,
+                user_avatar_hat_asset_key: null,
+              }" :size="64" />
 
               <span>{{ emotion.label }}</span>
             </button>
@@ -346,14 +295,8 @@ const resetAvatarEditor = () => {
           <label>Chapeau</label>
           <div class="avatar-hat-options">
             <!-- Option pour retirer le chapeau -->
-            <button
-              type="button"
-              class="avatar-hat-option"
-              :class="{ selected: avatarHat === null }"
-              :aria-pressed="avatarHat === null"
-              aria-label="Aucun chapeau"
-              @click="avatarHat = null"
-            >
+            <button type="button" class="avatar-hat-option" :class="{ selected: avatarHat === null }"
+              :aria-pressed="avatarHat === null" aria-label="Aucun chapeau" @click="avatarHat = null">
               <div class="avatar-hat-preview avatar-hat-preview--empty">
                 <span class="avatar-no-hat-symbol" aria-hidden="true"></span>
               </div>
@@ -362,30 +305,19 @@ const resetAvatarEditor = () => {
             </button>
 
             <!-- Une vignette par chapeau disponible -->
-            <button
-              v-for="hat in availableHats"
-              :key="hat.ID_hat"
-              type="button"
-              class="avatar-hat-option"
-              :class="{
-                selected: avatarHat === hat.hat_asset_key,
-                locked: !hat.unlocked,
-              }"
-              :aria-pressed="avatarHat === hat.hat_asset_key"
+            <button v-for="hat in availableHats" :key="hat.ID_hat" type="button" class="avatar-hat-option" :class="{
+              selected: avatarHat === hat.hat_asset_key,
+              locked: !hat.unlocked,
+            }" :aria-pressed="avatarHat === hat.hat_asset_key"
               :aria-label="`${hat.hat_name}${!hat.unlocked ? `, niveau ${hat.hat_required_level} requis` : ''}`"
-              :disabled="!hat.unlocked"
-              @click="avatarHat = hat.hat_asset_key"
-            >
+              :disabled="!hat.unlocked" @click="avatarHat = hat.hat_asset_key">
               <div class="avatar-hat-preview">
-                <UserAvatar
-                  :user="{
-                    ...user,
-                    user_avatar_color: avatarColor,
-                    user_avatar_emotion: avatarEmotion,
-                    user_avatar_hat_asset_key: hat.hat_asset_key,
-                  }"
-                  :size="64"
-                />
+                <UserAvatar :user="{
+                  ...user,
+                  user_avatar_color: avatarColor,
+                  user_avatar_emotion: avatarEmotion,
+                  user_avatar_hat_asset_key: hat.hat_asset_key,
+                }" :size="64" />
               </div>
 
               <span>{{ hat.hat_name }}</span>
@@ -402,24 +334,14 @@ const resetAvatarEditor = () => {
         </p>
 
         <div class="avatar-modal-actions">
-          <button
-            type="button"
-            class="avatar-cancel-button"
-            :disabled="isSavingAvatar"
-            @click="
-              resetAvatarEditor()
-              isAvatarEditorOpen = false
-            "
-          >
+          <button type="button" class="avatar-cancel-button" :disabled="isSavingAvatar" @click="
+            resetAvatarEditor()
+          isAvatarEditorOpen = false
+            ">
             Annuler
           </button>
 
-          <button
-            type="button"
-            class="avatar-save-button"
-            :disabled="isSavingAvatar"
-            @click="saveAvatar"
-          >
+          <button type="button" class="avatar-save-button" :disabled="isSavingAvatar" @click="saveAvatar">
             {{ isSavingAvatar ? 'Enregistrement…' : 'Enregistrer' }}
           </button>
         </div>
@@ -572,7 +494,7 @@ const resetAvatarEditor = () => {
   font-weight: 700;
 }
 
-.profile-score div > p {
+.profile-score div>p {
   margin-top: 6px;
   color: #d5cec2;
   font-size: 0.9rem;
@@ -639,12 +561,12 @@ const resetAvatarEditor = () => {
   margin: 20px 0 0;
 }
 
-.profile-details > div {
+.profile-details>div {
   padding: 16px 0;
   border-top: 1px solid #50504a;
 }
 
-.profile-details > div:last-child {
+.profile-details>div:last-child {
   padding-bottom: 0;
 }
 
@@ -749,7 +671,7 @@ const resetAvatarEditor = () => {
     padding: 28px;
   }
 
-  .profile-details > div {
+  .profile-details>div {
     display: grid;
     grid-template-columns: 160px minmax(0, 1fr);
     align-items: baseline;
