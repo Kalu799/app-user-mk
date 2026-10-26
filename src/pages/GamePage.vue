@@ -126,25 +126,25 @@ const goBack = () => {
           <span aria-hidden="true">←</span>
         </button>
 
-       <div v-if="gameStore.game" class="game-context">
-  <span v-if="gameModeLabel" class="context-badge">
-    {{ gameModeLabel }}
-  </span>
+        <div v-if="gameStore.game" class="game-context">
+          <span v-if="gameModeLabel" class="context-badge">
+            {{ gameModeLabel }}
+          </span>
 
-  <span v-if="allGenresSelected" class="context-badge category-badge">
-    Tous les genres
-  </span>
+          <span v-if="allGenresSelected" class="context-badge category-badge">
+            Tous les genres
+          </span>
 
-  <template v-else>
-    <span
-      v-for="genre in gameGenres"
-      :key="genre.ID_genre"
-      class="context-badge category-badge"
-    >
-      {{ genre.genre_name }}
-    </span>
-  </template>
-</div>
+          <template v-else>
+            <span
+              v-for="genre in gameGenres"
+              :key="genre.ID_genre"
+              class="context-badge category-badge"
+            >
+              {{ genre.genre_name }}
+            </span>
+          </template>
+        </div>
 
         <!-- Réutilise le logo qui est déjà présent dans le dossier public. -->
         <img src="/Property 1=king.png" alt="Movie King" class="game-logo" />
@@ -353,7 +353,7 @@ button:focus-visible {
   line-height: 1.25;
   text-align: center;
   max-width: 100%;
-overflow-wrap: anywhere;
+  overflow-wrap: anywhere;
 }
 
 .category-badge {

@@ -28,7 +28,6 @@ onBeforeUnmount(() => {
 // 90 px sur mobile et 104 px sur tablette et desktop.
 const avatarSize = computed(() => (isMobile.value ? 90 : 104))
 
-
 const props = defineProps({
   pseudo: {
     type: String,
@@ -73,16 +72,30 @@ const levelProgress = computed(() => getLevelProgress(props.score))
         <UserAvatar :user="user" :size="avatarSize" />
       </div>
 
-      <button v-if="showAvatarEdit" type="button" class="avatar-edit-button" aria-label="Modifier mon avatar"
-        title="Modifier mon avatar" @click="$emit('edit-avatar')">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <button
+        v-if="showAvatarEdit"
+        type="button"
+        class="avatar-edit-button"
+        aria-label="Modifier mon avatar"
+        title="Modifier mon avatar"
+        @click="$emit('edit-avatar')"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <path d="m16 4 4 4" />
           <path d="M4 20l4.5-1 11-11a2.12 2.12 0 0 0-3-3l-11 11L4 20z" />
         </svg>
       </button>
     </div>
-
 
     <div class="user-info">
       <!-- Affiche le pseudo transmis par la home. -->
@@ -92,8 +105,12 @@ const levelProgress = computed(() => getLevelProgress(props.score))
       <div class="user-level">
         <p class="level-label">Niveau {{ levelProgress.level }}</p>
 
-        <progress class="xp-bar" :value="levelProgress.xpInLevel" :max="levelProgress.xpForNextLevel"
-          :aria-label="`Progression vers le niveau ${levelProgress.level + 1}`">
+        <progress
+          class="xp-bar"
+          :value="levelProgress.xpInLevel"
+          :max="levelProgress.xpForNextLevel"
+          :aria-label="`Progression vers le niveau ${levelProgress.level + 1}`"
+        >
           {{ Math.round(levelProgress.progressPercent) }} %
         </progress>
 
