@@ -1,15 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/game'
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { getCurrentUser, getMyHats, updateMyAvatar } from '@/services/userService'
-
 import BottomNav from '@/components/BottomNav.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheLoading from '@/components/TheLoading.vue'
 import UserSummary from '@/components/UserSummary.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-
 const TOKEN_KEY = 'movie-king-auth-token'
 const gameStore = useGameStore()
 const router = useRouter()
@@ -23,27 +21,21 @@ const avatarHat = ref(null)
 const availableHats = ref([])
 const isSavingAvatar = ref(false)
 const avatarSaveError = ref('')
-
 onMounted(async () => {
   const token = window.sessionStorage.getItem(TOKEN_KEY)
-
   if (!token) {
     gameStore.$reset()
     await router.replace('/auth')
     return
   }
-
   try {
     // Le service effectue la requête et vérifie la réponse.
     const profile = await getCurrentUser(token)
-
     // Ignore la réponse si la connexion a changé entre-temps.
     if (window.sessionStorage.getItem(TOKEN_KEY) !== token) {
       return
     }
-
     user.value = profile
-
     avatarColor.value = profile.user_avatar_color || 'blue'
     avatarEmotion.value = profile.user_avatar_emotion || 'neutral'
     avatarHat.value = profile.user_avatar_hat_asset_key || null
@@ -53,41 +45,31 @@ onMounted(async () => {
     if (window.sessionStorage.getItem(TOKEN_KEY) !== token) {
       return
     }
-
     if (error.status === 401) {
       window.sessionStorage.removeItem(TOKEN_KEY)
       user.value = null
       await router.replace('/auth')
       return
     }
-
     errorMsg.value = error.message || 'Impossible de charger le profil'
   } finally {
     isLoading.value = false
   }
 })
-
 const logout = async () => {
   errorMsg.value = ''
-
   // Retire la connexion et les informations affichées du compte.
   window.sessionStorage.removeItem(TOKEN_KEY)
   user.value = null
-
   // Efface la partie, les réponses et les résultats précédents.
   gameStore.$reset()
-
   await router.push('/guesthome')
 }
-
 const saveAvatar = async () => {
   const token = window.sessionStorage.getItem(TOKEN_KEY)
-
   if (!token || isSavingAvatar.value) return
-
   isSavingAvatar.value = true
   avatarSaveError.value = ''
-
   try {
     const updatedProfile = await updateMyAvatar(token, {
       user_avatar_color: avatarColor.value,
@@ -95,20 +77,16 @@ const saveAvatar = async () => {
       user_avatar_hat_id:
         availableHats.value.find((hat) => hat.hat_asset_key === avatarHat.value)?.ID_hat ?? null,
     })
-
     // Ignore la réponse si la connexion a changé entre-temps.
     if (window.sessionStorage.getItem(TOKEN_KEY) !== token) return
-
     // Le backend renvoie le profil actualisé : on utilise cette réponse.
     user.value = updatedProfile
     avatarColor.value = updatedProfile.user_avatar_color || 'blue'
     avatarEmotion.value = updatedProfile.user_avatar_emotion || 'neutral'
     avatarHat.value = updatedProfile.user_avatar_hat_asset_key || null
-
     isAvatarEditorOpen.value = false
   } catch (error) {
     if (window.sessionStorage.getItem(TOKEN_KEY) !== token) return
-
     if (error.status === 401) {
       window.sessionStorage.removeItem(TOKEN_KEY)
       user.value = null
@@ -116,7 +94,6 @@ const saveAvatar = async () => {
       await router.replace('/auth')
       return
     }
-
     avatarSaveError.value =
       error.status === 403
         ? 'Ce chapeau est verrouillé.'
@@ -125,73 +102,63 @@ const saveAvatar = async () => {
     isSavingAvatar.value = false
   }
 }
-
 const resetAvatarEditor = () => {
   avatarColor.value = user.value?.user_avatar_color || 'blue'
   avatarEmotion.value = user.value?.user_avatar_emotion || 'neutral'
   avatarHat.value = user.value?.user_avatar_hat_asset_key || null
   avatarSaveError.value = ''
 }
+const closeAvatarEditor = () => {
+  resetAvatarEditor()
+  isAvatarEditorOpen.value = false
+}
 </script>
-
 <template>
   <TheHeader :is-authenticated="!!user" @logout="logout" />
-
   <TheLoading v-if="isLoading" fullscreen label="Chargement du profil…" />
-
   <main v-else-if="errorMsg" class="profile-page">
     <p class="profile-error" role="alert">
       {{ errorMsg }}
     </p>
   </main>
-
   <main v-else-if="user" class="profile-page">
     <h1 class="profile-title">Mon profil</h1>
-
     <!-- Identité -->
     <UserSummary v-if="user" :user="user" :pseudo="user.user_pseudo" :score="user.user_score" :show-avatar-edit="true"
       @edit-avatar="isAvatarEditorOpen = true" />
-
     <!-- Score réel -->
     <section class="profile-score" aria-labelledby="score-title">
       <div>
         <h2 id="score-title">Ton score total</h2>
         <p>Chaque partie compte !</p>
       </div>
-
       <p class="profile-score-value">
         {{ Number(user.user_score).toLocaleString('fr-BE') }}
         <span>points</span>
       </p>
     </section>
-
     <!-- Informations du compte -->
     <section class="profile-card" aria-labelledby="account-title">
       <h2 id="account-title">Mon compte</h2>
-
       <dl class="profile-details">
         <div>
           <dt>Pseudo</dt>
           <dd>{{ user.user_pseudo }}</dd>
         </div>
-
         <div>
           <dt>Adresse e-mail</dt>
           <dd>{{ user.user_mail }}</dd>
         </div>
       </dl>
     </section>
-
     <!-- Fonctionnalités à venir -->
     <section class="profile-card" aria-labelledby="progress-title">
       <div class="profile-card-heading">
         <h2 id="progress-title">Ta progression</h2>
       </div>
-
       <p class="profile-description">
         Ton parcours de cinéphile prend forme. De nouvelles récompenses arriveront prochainement.
       </p>
-
       <ul class="profile-features">
         <li>
           <span class="profile-feature-symbol" aria-hidden="true">↗</span>
@@ -200,7 +167,6 @@ const resetAvatarEditor = () => {
             <p>Gravis les échelons au fil des parties.</p>
           </div>
         </li>
-
         <li>
           <span class="profile-feature-symbol" aria-hidden="true">★</span>
           <div>
@@ -208,7 +174,6 @@ const resetAvatarEditor = () => {
             <p>Collectionne les distinctions qui te ressemblent.</p>
           </div>
         </li>
-
         <li>
           <span class="profile-feature-symbol" aria-hidden="true">✦</span>
           <div>
@@ -218,24 +183,14 @@ const resetAvatarEditor = () => {
         </li>
       </ul>
     </section>
-
     <!-- Modale de personnalisation de l'avatar -->
-    <div v-if="isAvatarEditorOpen" class="avatar-modal-overlay" @click.self="
-      resetAvatarEditor();
-    isAvatarEditorOpen = false
-      ">
+    <div v-if="isAvatarEditorOpen" class="avatar-modal-overlay" @click.self="closeAvatarEditor">
       <section class="avatar-modal" role="dialog" aria-modal="true" aria-labelledby="avatar-modal-title">
-        <button type="button" class="avatar-modal-close" aria-label="Fermer" @click="
-          resetAvatarEditor();
-        isAvatarEditorOpen = false
-          ">
+        <button type="button" class="avatar-modal-close" aria-label="Fermer" @click="closeAvatarEditor">
           ×
         </button>
-
         <h2 id="avatar-modal-title">Personnalise ton avatar</h2>
-
         <p>Choisis l'apparence qui te correspond !</p>
-
         <div class="avatar-modal-preview">
           <UserAvatar :user="{
             ...user,
@@ -244,31 +199,25 @@ const resetAvatarEditor = () => {
             user_avatar_hat_asset_key: avatarHat,
           }" :size="120" />
         </div>
-
         <div class="avatar-editor-field">
           <label>Couleur</label>
-
           <div class="avatar-color-options" role="group" aria-label="Choisir une couleur">
             <button type="button" class="avatar-color-option" :class="{ selected: avatarColor === 'blue' }"
               :aria-pressed="avatarColor === 'blue'" aria-label="Bleu" @click="avatarColor = 'blue'">
               <span class="avatar-color-swatch avatar-color-swatch--blue"></span>
             </button>
-
             <button type="button" class="avatar-color-option" :class="{ selected: avatarColor === 'red' }"
               :aria-pressed="avatarColor === 'red'" aria-label="Rouge" @click="avatarColor = 'red'">
               <span class="avatar-color-swatch avatar-color-swatch--red"></span>
             </button>
-
             <button type="button" class="avatar-color-option" :class="{ selected: avatarColor === 'yellow' }"
               :aria-pressed="avatarColor === 'yellow'" aria-label="Jaune" @click="avatarColor = 'yellow'">
               <span class="avatar-color-swatch avatar-color-swatch--yellow"></span>
             </button>
           </div>
         </div>
-
         <div class="avatar-editor-field">
           <label>Expression</label>
-
           <div class="avatar-emotion-options" role="group" aria-label="Choisir une expression">
             <button v-for="emotion in [
               { value: 'happy', label: 'Heureux' },
@@ -285,12 +234,10 @@ const resetAvatarEditor = () => {
                 user_avatar_emotion: emotion.value,
                 user_avatar_hat_asset_key: null,
               }" :size="64" />
-
               <span>{{ emotion.label }}</span>
             </button>
           </div>
         </div>
-
         <div class="avatar-editor-field">
           <label>Chapeau</label>
           <div class="avatar-hat-options">
@@ -300,10 +247,8 @@ const resetAvatarEditor = () => {
               <div class="avatar-hat-preview avatar-hat-preview--empty">
                 <span class="avatar-no-hat-symbol" aria-hidden="true"></span>
               </div>
-
               <span>Aucun chapeau</span>
             </button>
-
             <!-- Une vignette par chapeau disponible -->
             <button v-for="hat in availableHats" :key="hat.ID_hat" type="button" class="avatar-hat-option" :class="{
               selected: avatarHat === hat.hat_asset_key,
@@ -319,28 +264,19 @@ const resetAvatarEditor = () => {
                   user_avatar_hat_asset_key: hat.hat_asset_key,
                 }" :size="64" />
               </div>
-
               <span>{{ hat.hat_name }}</span>
-
               <small v-if="!hat.unlocked"> Niveau {{ hat.hat_required_level }} requis 🔒 </small>
-
               <small v-else-if="hat.equipped"> Équipé </small>
             </button>
           </div>
         </div>
-
         <p v-if="avatarSaveError" class="avatar-save-error" role="alert">
           {{ avatarSaveError }}
         </p>
-
         <div class="avatar-modal-actions">
-          <button type="button" class="avatar-cancel-button" :disabled="isSavingAvatar" @click="
-            resetAvatarEditor()
-          isAvatarEditorOpen = false
-            ">
+          <button type="button" class="avatar-cancel-button" :disabled="isSavingAvatar" @click="closeAvatarEditor">
             Annuler
           </button>
-
           <button type="button" class="avatar-save-button" :disabled="isSavingAvatar" @click="saveAvatar">
             {{ isSavingAvatar ? 'Enregistrement…' : 'Enregistrer' }}
           </button>
@@ -348,10 +284,8 @@ const resetAvatarEditor = () => {
       </section>
     </div>
   </main>
-
   <BottomNav />
 </template>
-
 <style scoped>
 .profile-page,
 .profile-page * {
@@ -362,12 +296,10 @@ const resetAvatarEditor = () => {
   --profile-cream: #fff5df;
   --profile-dark: #292929;
   --profile-green: #64a69d;
-
   width: calc(100% - 32px);
   max-width: 760px;
   margin: 24px auto 0;
   padding-bottom: calc(80px + 32px + env(safe-area-inset-bottom, 0px));
-
   color: var(--profile-cream);
   font-family: 'Inter', sans-serif;
 }
@@ -395,12 +327,10 @@ const resetAvatarEditor = () => {
 }
 
 /* IDENTITÉ */
-
 .profile-identity {
   display: flex;
   align-items: center;
   gap: 16px;
-
   padding: 24px 16px;
   background: var(--profile-green);
   border: 3px solid #344b43;
@@ -412,13 +342,10 @@ const resetAvatarEditor = () => {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-
   width: 68px;
   height: 68px;
-
   background: var(--profile-cream);
   color: #344b43;
-
   border: 3px solid #344b43;
   border-radius: 50%;
   overflow: hidden;
@@ -460,10 +387,8 @@ const resetAvatarEditor = () => {
   display: inline-block;
   margin-top: 12px;
   padding: 5px 10px;
-
   background: var(--profile-cream);
   color: #292929;
-
   border-radius: 3px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -471,17 +396,14 @@ const resetAvatarEditor = () => {
 }
 
 /* SCORE */
-
 .profile-score {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-
   margin-top: 28px;
   padding: 22px 18px;
-
   background: var(--profile-dark);
   border: 2px solid #3c3c38;
   border-left: 5px solid #ffb900;
@@ -512,18 +434,15 @@ const resetAvatarEditor = () => {
 .profile-score-value span {
   display: block;
   margin-top: 5px;
-
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
 }
 
 /* BLOCS */
-
 .profile-card {
   margin-top: 24px;
   padding: 22px 18px;
-
   background: var(--profile-dark);
   border: 2px solid #3c3c38;
   border-radius: 6px;
@@ -549,14 +468,12 @@ const resetAvatarEditor = () => {
   background: #e9dfca;
   color: #292929;
   border-radius: 3px;
-
   font-size: 0.75rem;
   font-weight: 800;
   white-space: nowrap;
 }
 
 /* INFORMATIONS DU COMPTE */
-
 .profile-details {
   margin: 20px 0 0;
 }
@@ -586,7 +503,6 @@ const resetAvatarEditor = () => {
 }
 
 /* PROGRESSION À VENIR */
-
 .profile-page .profile-description {
   margin-top: 16px;
   color: #d5cec2;
@@ -612,15 +528,12 @@ const resetAvatarEditor = () => {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-
   width: 44px;
   height: 44px;
-
   background: #344b43;
   color: var(--profile-cream);
   border: 1px solid var(--profile-green);
   border-radius: 6px;
-
   font-size: 1.5rem;
 }
 
@@ -638,7 +551,6 @@ const resetAvatarEditor = () => {
 }
 
 /* ERREUR */
-
 .profile-error {
   padding: 20px;
   background: var(--profile-dark);
@@ -648,7 +560,6 @@ const resetAvatarEditor = () => {
 }
 
 /* TABLETTE ET DESKTOP */
-
 @media (min-width: 640px) {
   .profile-page {
     width: calc(100% - 48px);
