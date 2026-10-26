@@ -4,11 +4,9 @@ const API_URL = import.meta.env.VITE_API_BASE_URL
 // Utilise la même clé que les pages de connexion et d’accueil.
 const TOKEN_KEY = 'movie-king-auth-token'
 
-export const startGame = async ({ ID_genre = null }) => {
-  // Sans catégorie précise, demande une partie toutes catégories.
-  const parameters = ID_genre === null
-    ? { category: 'all' }
-    : { genre_ids: [ID_genre] }
+export const startGame = async ({ genreIds = null }) => {
+  // null signifie toutes les catégories ; un tableau contient les IDs choisis.
+  const parameters = genreIds === null ? { category: 'all' } : { genre_ids: genreIds }
 
   // Indique à l’API que nous envoyons du JSON.
   const headers = {
@@ -34,9 +32,7 @@ export const startGame = async ({ ID_genre = null }) => {
 
   // Transmet l’erreur au store, qui sait déjà l’afficher.
   if (!response.ok) {
-    throw new Error(
-      data.statusMessage || data.message || `Erreur HTTP ${response.status}`,
-    )
+    throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
   }
 
   // Renvoie la partie complète, y compris son game_token.
@@ -75,9 +71,7 @@ export const finishGame = async (gameId, { answers, gameToken }) => {
 
   // Transmet une éventuelle erreur au store.
   if (!response.ok) {
-    throw new Error(
-      data.statusMessage || data.message || `Erreur HTTP ${response.status}`,
-    )
+    throw new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
   }
 
   // Renvoie le résumé, les corrections et les points.

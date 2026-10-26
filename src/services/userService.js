@@ -13,9 +13,7 @@ export const getCurrentUser = async (token) => {
   const data = await response.json()
 
   if (!response.ok) {
-    const error = new Error(
-      data.statusMessage || data.message || `Erreur HTTP ${response.status}`,
-    )
+    const error = new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
 
     // Permet à la page de reconnaître une connexion expirée.
     error.status = response.status
@@ -23,5 +21,46 @@ export const getCurrentUser = async (token) => {
   }
 
   // Renvoie le profil, notamment son identifiant ID_user.
+  return data
+}
+
+export const getMyHats = async (token) => {
+  const response = await fetch(`${API_URL}/user/me/hats`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    const error = new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
+
+    error.status = response.status
+    throw error
+  }
+
+  return data.hats
+}
+
+export const updateMyAvatar = async (token, avatarData) => {
+  const response = await fetch(`${API_URL}/user/me/avatar`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(avatarData),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    const error = new Error(data.statusMessage || data.message || `Erreur HTTP ${response.status}`)
+
+    error.status = response.status
+    throw error
+  }
+
   return data
 }

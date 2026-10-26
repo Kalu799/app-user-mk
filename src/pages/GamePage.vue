@@ -9,6 +9,17 @@ const router = useRouter()
 const gameStore = useGameStore()
 const currentTime = ref(performance.now())
 
+// Affiche le nom du mode utilisé par la partie.
+const gameModeLabel = computed(() => {
+  return gameStore.gameParameters?.mode === 'find_movie' ? 'Réplique' : null
+})
+
+// Une liste nulle correspond à la sélection globale.
+const allGenresSelected = computed(() => gameStore.gameParameters?.genreIds === null)
+
+// Les noms des genres sélectionnés sont fournis par l’API.
+const gameGenres = computed(() => gameStore.game?.genres ?? [])
+
 // Transforme l'index du tableau (0, 1, 2...) en numéro lisible (1, 2, 3...).
 const questionNumber = computed(() => gameStore.currentQuestionIndex + 1)
 
@@ -84,9 +95,7 @@ onUnmounted(() => {
 const goBack = () => {
   // Demande confirmation lorsqu’une question est encore en cours.
   if (gameStore.currentQuestion) {
-    const shouldLeave = window.confirm(
-      'Quitter la partie ? Ta progression sera perdue.',
-    )
+    const shouldLeave = window.confirm('Quitter la partie ? Ta progression sera perdue.')
 
     if (!shouldLeave) {
       return
@@ -107,31 +116,34 @@ const goBack = () => {
 
 <template>
   <!-- Affiche l’attente pendant le calcul des résultats. -->
-  <TheLoading
-    v-if="gameStore.isFinishing"
-    fullscreen
-    label="Calcul des résultats…"
-  />
+  <TheLoading v-if="gameStore.isFinishing" fullscreen label="Calcul des résultats…" />
 
   <div class="game-layout" :inert="gameStore.isFinishing">
     <!-- L'en-tête reprend l'ordre du wireframe : retour, contexte, logo. -->
     <header class="game-header">
       <div class="game-header-inner">
-        <button
-          type="button"
-          class="back-button"
-          aria-label="Revenir à l'accueil"
-          @click="goBack"
-        >
+        <button type="button" class="back-button" aria-label="Revenir à l'accueil" @click="goBack">
           <span aria-hidden="true">←</span>
         </button>
 
         <div v-if="gameStore.game" class="game-context">
-          <!-- La V1 possède uniquement le mode find_movie. -->
-          <span class="context-badge">Trouver le film</span>
-          <span class="context-badge category-badge">
-            {{ gameStore.game.genre.genre_name }}
+          <span v-if="gameModeLabel" class="context-badge">
+            {{ gameModeLabel }}
           </span>
+
+          <span v-if="allGenresSelected" class="context-badge category-badge">
+            Tous les genres
+          </span>
+
+          <template v-else>
+            <span
+              v-for="genre in gameGenres"
+              :key="genre.ID_genre"
+              class="context-badge category-badge"
+            >
+              {{ genre.genre_name }}
+            </span>
+          </template>
         </div>
 
         <!-- Réutilise le logo qui est déjà présent dans le dossier public. -->
@@ -177,9 +189,7 @@ const goBack = () => {
         </section>
 
         <section class="question-panel" aria-labelledby="question-title">
-          <h2 id="question-title" class="question-title">
-            De quel film provient cette réplique ?
-          </h2>
+          <h2 id="question-title" class="question-title">De quel film provient cette réplique ?</h2>
 
           <blockquote class="quote-card">
             <p>« {{ gameStore.currentQuestion.quote.quote_text }} »</p>
@@ -222,26 +232,26 @@ const goBack = () => {
         </section>
       </div>
 
-<!-- Conserve les réponses et permet de redemander leur correction. -->
-<div v-if="gameStore.finishError">
-  <p class="game-message error-message" role="alert">
-    {{ gameStore.finishError }}
-  </p>
+      <!-- Conserve les réponses et permet de redemander leur correction. -->
+      <div v-if="gameStore.finishError">
+        <p class="game-message error-message" role="alert">
+          {{ gameStore.finishError }}
+        </p>
 
-  <button
-    type="button"
-    class="validate-button"
-    :disabled="gameStore.isFinishing"
-    @click="gameStore.completeGame()"
-  >
-    Réessayer le calcul du résultat
-  </button>
-</div>
+        <button
+          type="button"
+          class="validate-button"
+          :disabled="gameStore.isFinishing"
+          @click="gameStore.completeGame()"
+        >
+          Réessayer le calcul du résultat
+        </button>
+      </div>
 
-<!-- Confirme la réception du résultat avant le futur écran récapitulatif. -->
-<p v-else-if="gameStore.result" class="game-message" role="status">
-  Partie terminée : résultat reçu !
-</p>
+      <!-- Confirme la réception du résultat avant le futur écran récapitulatif. -->
+      <p v-else-if="gameStore.result" class="game-message" role="status">
+        Partie terminée : résultat reçu !
+      </p>
     </main>
   </div>
 </template>
@@ -342,6 +352,8 @@ button:focus-visible {
   font-weight: 700;
   line-height: 1.25;
   text-align: center;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .category-badge {
@@ -506,7 +518,10 @@ button:focus-visible {
   font-weight: 700;
   line-height: 1.4;
   overflow-wrap: anywhere;
-  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .answer-button:hover {

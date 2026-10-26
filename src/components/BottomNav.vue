@@ -1,20 +1,13 @@
 <template>
   <!-- Regroupe les trois accès de la navigation principale. -->
   <nav class="bottom-nav" aria-label="Navigation principale">
-    <!-- Ouvrira la page du classement lorsqu’elle sera disponible. -->
-    <button type="button" class="nav-item">
-      <router-link to="/leaderboard" class="nav-router">Classement</router-link>
-    </button>
+    <RouterLink to="/leaderboard" class="nav-item"> Classement </RouterLink>
 
-    <!-- Le bouton central aura un style plus visible. -->
-    <button type="button" class="nav-item nav-item-play">
+    <RouterLink :to="{ name: 'create-game' }" class="nav-item nav-item-play">
       Créer une partie
-    </button>
+    </RouterLink>
 
-    <!-- Ouvrira le profil de l’utilisateur connecté. -->
-    <button type="button" class="nav-item">
-      <router-link to="/profile" class="nav-router">Profil</router-link>
-    </button>
+    <RouterLink to="/profile" class="nav-item"> Profil </RouterLink>
   </nav>
 </template>
 <style scoped>
@@ -61,6 +54,11 @@
   font-weight: 700;
   line-height: 1.3;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
 }
 
 /* Met en évidence l’accès à la création de partie. */
@@ -73,10 +71,5 @@
 .nav-item:focus-visible {
   outline: 3px solid #ff626b;
   outline-offset: 4px;
-}
-
-.nav-router {
-  text-decoration: none;
-  color: #111;
 }
 </style>

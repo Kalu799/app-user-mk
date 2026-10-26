@@ -51,8 +51,8 @@ const replayGame = async () => {
   isReplaying.value = true
 
   try {
-    // Demande une nouvelle partie avec la même catégorie.
-    await gameStore.loadGame(parameters.ID_genre)
+    // Relance avec le même mode et toutes les catégories mémorisées.
+    await gameStore.loadGame(parameters)
     // Évite de revenir au jeu si le joueur a quitté cette page.
     if (!isPageActive) {
       return
@@ -117,123 +117,106 @@ const logout = async () => {
   await router.push('/guesthome')
 }
 </script>
-
 <template>
-  <!-- Recouvre la page pendant la préparation d’une nouvelle partie. -->
   <TheLoading v-if="isReplaying" fullscreen label="Préparation de la partie…" />
 
-  <TheHeader :is-authenticated="!isGuest" @logout="logout" />
+  <div class="result-layout" :inert="isReplaying">
+    <TheHeader :is-authenticated="!isGuest" :show-guest-actions="!isGuest" @logout="logout" />
 
-  <!-- Conserve les résultats affichés derrière le chargement. -->
-  <main v-if="gameStore.result" class="result-page" :inert="isReplaying">
-    <section class="result-summary">
-      <h1>Partie terminée</h1>
+    <main v-if="gameStore.result" class="result-page">
+      <!-- Résultat, points et accès aux corrections dans un même bloc. -->
+      <section class="result-summary" aria-labelledby="result-title">
+        <h1 id="result-title">Partie terminée !</h1>
+        <p class="correct-count">
+          {{ gameStore.result.summary.correct_answers }}
+          / {{ gameStore.result.summary.question_count }} bonnes réponses
+        </p>
+        <p class="result-points">{{ gameStore.result.summary.score }} points</p>
 
-      <!-- Affiche le nombre de bonnes réponses obtenu auprès de l’API. -->
-      <p class="correct-count">
-        {{ gameStore.result.summary.correct_answers }}
-        / {{ gameStore.result.summary.question_count }}
-        bonnes réponses
-      </p>
-      <!-- Indique aussi aux outils d’accessibilité si les corrections sont ouvertes. -->
-      <button type="button" class="corrections-toggle" :aria-expanded="showCorrections" aria-controls="game-corrections"
-        @click="toggleCorrections">
-        {{ showCorrections ? 'Masquer les corrections' : 'Voir les corrections' }}
-      </button>
-    </section>
-    <!-- L’ouverture de cette section pousse naturellement le contenu suivant. -->
-    <section v-show="showCorrections" id="game-corrections" class="result-corrections">
-      <h2>Corrections</h2>
+        <button
+          type="button"
+          class="corrections-toggle"
+          :aria-expanded="showCorrections"
+          aria-controls="game-corrections"
+          @click="toggleCorrections"
+        >
+          {{ showCorrections ? 'Masquer les corrections' : 'Voir les corrections' }}
+        </button>
 
-      <!-- Construit une carte pour chaque réponse, dans l’ordre de la partie. -->
-      <article v-for="(correction, index) in gameStore.result.corrections" :key="correction.question_id"
-        class="correction-card">
-        <h3>Question {{ index + 1 }}</h3>
+        <section v-show="showCorrections" id="game-corrections" class="result-corrections">
+          <h2>Corrections</h2>
+          <article
+            v-for="(correction, index) in gameStore.result.corrections"
+            :key="correction.question_id"
+            class="correction-card"
+          >
+            <h3>Question {{ index + 1 }}</h3>
+            <blockquote>{{ correction.quote_text }}</blockquote>
+            <div class="correction-answers">
+              <p
+                class="player-answer"
+                :class="{
+                  'is-correct': correction.is_correct,
+                  'is-incorrect': !correction.is_correct,
+                }"
+              >
+                {{ correction.is_correct ? 'Bonne réponse :' : 'Ta réponse :' }}
+                {{ correction.selected_movie_title ?? 'Aucune réponse validée' }}
+              </p>
+              <p v-if="!correction.is_correct" class="correct-answer">
+                Bonne réponse : {{ correction.correct_movie_title }}
+              </p>
+            </div>
+          </article>
+        </section>
+      </section>
 
-        <blockquote>{{ correction.quote_text }}</blockquote>
+      <section v-if="isGuest" class="signup-invitation" aria-labelledby="signup-title">
+        <h2 id="signup-title">Entre dans le classement</h2>
+        <p>
+          Crée ton compte pour cumuler des points lors de tes prochaines parties et choisir tes
+          genres.
+        </p>
+        <RouterLink :to="{ name: 'auth' }" class="signup-button"> Créer mon compte </RouterLink>
+        <p class="login-invitation">
+          Déjà un compte ?
+          <RouterLink :to="{ name: 'auth', query: { mode: 'login' } }" class="text-link">
+            Se connecter
+          </RouterLink>
+        </p>
+      </section>
 
-        <div class="correction-answers">
-          <!-- La classe permettra de colorer la réponse en vert ou en rouge. -->
-          <!-- Affiche le résultat et le film choisi, ou l’absence de réponse. -->
-          <p class="player-answer" :class="{
-            'is-correct': correction.is_correct,
-            'is-incorrect': !correction.is_correct,
-          }">
-            {{ correction.is_correct ? 'Bonne réponse :' : 'Ta réponse :' }}
-            {{ correction.selected_movie_title ?? 'Aucune réponse validée' }}
-          </p>
-
-          <!-- En cas d’erreur ou d’expiration, affiche également le bon film. -->
-          <p v-if="!correction.is_correct" class="correct-answer">
-            Bonne réponse : {{ correction.correct_movie_title }}
-          </p>
-        </div>
-      </article>
-    </section>
-    <!-- Ce bloc restera sous les corrections lorsqu’elles seront ouvertes. -->
-    <section class="result-score">
-      <h2>Bravo !</h2>
-
-      <!-- Affiche uniquement le score de cette partie. -->
-      <p>
-        {{ gameStore.result.summary.score }} points
-      </p>
-    </section>
-    <!-- Accueillera le classement autour du joueur connecté. -->
-    <!-- Le titre du parcours connecté est fourni par UsersLeaderboard. -->
-    <section class="result-leaderboard" aria-label="Classement">
-      <h2 v-if="isGuest">Classement général</h2>
-
-      <div v-if="isGuest" class="leaderboard-preview">
-        <!-- Ces lignes sont décoratives et ne représentent aucun vrai joueur. -->
-        <div class="leaderboard-placeholder" aria-hidden="true">
-          <p v-for="line in 3" :key="line" class="leaderboard-row">
-            — · Joueur · — points
-          </p>
-        </div>
-
-        <!-- Le lien reste net et accessible au-dessus du classement flouté. -->
-        <RouterLink :to="{ name: 'auth' }" class="leaderboard-invitation">
-          S’inscrire pour accéder au classement
-        </RouterLink>
-      </div>
-
-      <!-- Affiche le classement du joueur après récupération de son identifiant. -->
-      <div v-else>
-        <!-- Charge le profil sans masquer les résultats de la partie. -->
+      <section v-else class="result-leaderboard" aria-label="Classement">
         <TheLoading v-if="isProfileLoading" label="Chargement du profil…" />
-
         <p v-else-if="profileError" class="result-error" role="alert">
           {{ profileError }}
         </p>
+        <UsersLeaderboard
+          v-else-if="currentUserId !== null"
+          :current-user-id="currentUserId"
+          mode="nearby"
+        />
+      </section>
 
-        <!-- Le composant récupère les scores et sélectionne les voisins. -->
-        <UsersLeaderboard v-else-if="currentUserId !== null" :current-user-id="currentUserId" mode="nearby" />
-      </div>
-    </section>
-    <!-- Regroupe les actions proposées après la partie. -->
-    <section class="result-actions" aria-label="Actions après la partie">
-      <p v-if="replayError" class="result-error" role="alert">
-        {{ replayError }}
-      </p>
-
-      <!-- Désactive le bouton pendant la préparation de la nouvelle partie. -->
-      <button type="button" class="replay-button" :disabled="isReplaying" @click="replayGame">
-        {{ isReplaying ? 'Chargement…' : 'Rejouer' }}
-      </button>
-      <!-- Sera relié à la page de création de partie lorsqu’elle sera disponible. -->
-      <button type="button" class="configuration-button" aria-describedby="configuration-info" disabled>
-        Changer de mode
-      </button>
-
-      <!-- Explique pourquoi le bouton n’est pas encore accessible. -->
-      <p id="configuration-info" class="configuration-info">
-        Configuration de partie bientôt disponible.
-      </p>
-    </section>
-  </main>
-
+      <section class="result-actions" aria-label="Actions après la partie">
+        <p v-if="replayError" class="result-error" role="alert">{{ replayError }}</p>
+        <button
+          type="button"
+          class="replay-button"
+          :class="{ 'replay-button-guest': isGuest }"
+          :disabled="isReplaying"
+          @click="replayGame"
+        >
+          {{ isReplaying ? 'Chargement…' : isGuest ? 'Rejouer en invité' : 'Rejouer' }}
+        </button>
+        <RouterLink v-if="!isGuest" :to="{ name: 'create-game' }" class="configuration-button">
+          Changer de mode
+        </RouterLink>
+      </section>
+    </main>
+  </div>
 </template>
+
 <style scoped>
 .result-layout {
   min-height: 100dvh;
@@ -242,78 +225,80 @@ const logout = async () => {
   background-color: #1c1c1c;
 }
 
-/* Reprend les couleurs principales de l’application. */
 .result-page {
   box-sizing: border-box;
   flex: 1;
   padding: 24px 16px 40px;
-  background-color: #1c1c1c;
   color: #f5efe3;
   font-family: 'Inter', sans-serif;
 }
 
-/* Limite la largeur du contenu sur les grands écrans. */
-.result-page>section {
+.result-page > section {
+  box-sizing: border-box;
   max-width: 760px;
-  margin-inline: auto;
-  margin-bottom: 24px;
+  margin: 0 auto 24px;
 }
 
-/* Centre le résumé et le score de la partie. */
-.result-summary,
-.result-score {
-  text-align: center;
-}
-
-/* Reprend le bouton jaune utilisé pour les actions importantes. */
-/* Partage le style jaune entre les deux boutons. */
-.corrections-toggle,
-.replay-button,
-.configuration-button {
-  min-height: 48px;
-  padding: 12px 18px;
-  background-color: #ffb900;
-  color: #111;
-  border: 3px solid #111;
-  border-radius: 5px;
-  box-shadow: 4px 4px 0 #000;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-/* Rend le bouton repérable lors d’une navigation au clavier. */
-/* Rend les deux boutons repérables au clavier. */
-.corrections-toggle:focus-visible,
-.replay-button:focus-visible {
-  outline: 3px solid #ff626b;
-  outline-offset: 5px;
-}
-
-/* Sépare visuellement les dix questions. */
-.correction-card {
-  margin-top: 16px;
-  padding: 16px;
+.result-summary {
+  padding: 24px 16px;
   background-color: #2b2b2b;
   border: 2px solid #e9dfca;
   border-radius: 8px;
+  box-shadow: 4px 4px 0 #000;
+  text-align: center;
 }
 
-/* Retire le retrait automatique des citations. */
+.result-summary h1 {
+  margin: 0 0 16px;
+}
+.correct-count {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.result-points {
+  margin: 12px 0;
+  color: #ffb900;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.corrections-toggle,
+.replay-button-guest {
+  min-height: 48px;
+  padding: 10px 12px;
+  background: transparent;
+  color: #f5efe3;
+  border: 0;
+  border-radius: 5px;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.result-corrections {
+  margin-top: 20px;
+  text-align: left;
+}
+.correction-card {
+  margin-top: 16px;
+  padding: 16px;
+  border: 2px solid #e9dfca;
+  border-radius: 8px;
+}
 .correction-card blockquote {
   margin: 12px 0;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
-
-/* Place la réponse du joueur et la correction côte à côte. */
 .correction-answers {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
-
-/* Partage la largeur disponible et laisse les longs titres revenir à la ligne. */
 .correction-answers p {
-  flex: 1;
+  flex: 1 1 200px;
   min-width: 0;
   margin: 0;
   padding: 12px;
@@ -322,102 +307,85 @@ const logout = async () => {
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-
-/* Colore en vert une réponse correcte et le bon film indiqué. */
 .player-answer.is-correct,
 .correct-answer {
   background-color: #64a69d;
 }
-
-/* Colore en rouge une erreur ou une absence de réponse. */
 .player-answer.is-incorrect {
   background-color: #ff626b;
 }
 
-/* Sert de repère pour placer l’invitation au-dessus des lignes. */
-.leaderboard-preview {
-  position: relative;
+.signup-invitation {
+  padding: 24px 20px;
+  background-color: #f5efe3;
+  color: #1c1c1c;
+  border: 3px solid #111;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 #000;
+  text-align: center;
 }
-
-/* Floute uniquement les lignes décoratives. */
-.leaderboard-placeholder {
-  filter: blur(6px);
-  user-select: none;
-  pointer-events: none;
+.signup-invitation h2 {
+  margin: 0 0 12px;
 }
-
-/* Donne aux placeholders l’apparence de lignes de classement. */
-.leaderboard-row {
-  margin: 8px 0;
-  padding: 16px;
-  background-color: #e9dfca;
-  color: #111;
-  border-radius: 6px;
+.signup-invitation p {
+  line-height: 1.5;
 }
-
-/* Centre un lien bien lisible au-dessus de l’aperçu. */
-.leaderboard-invitation {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
+.signup-button,
+.replay-button:not(.replay-button-guest),
+.configuration-button {
   box-sizing: border-box;
-  width: min(85%, 320px);
-  padding: 12px;
-
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  max-width: 100%;
+  padding: 12px 18px;
   background-color: #ffb900;
   color: #111;
   border: 3px solid #111;
   border-radius: 5px;
   box-shadow: 4px 4px 0 #000;
-
-  text-align: center;
-  text-decoration: none;
+  font: inherit;
   font-weight: 700;
-  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
 }
-
-/* Rend le lien repérable au clavier. */
-.leaderboard-invitation:focus-visible {
-  outline: 3px solid #ff626b;
-  outline-offset: 5px;
+.signup-button {
+  width: 100%;
+  margin-top: 8px;
 }
-
-/* Met en évidence la future ligne du joueur connecté. */
-.leaderboard-row.is-current-user {
-  background-color: #ffb900;
-  font-weight: 800;
+.signup-invitation .login-invitation {
+  margin: 16px 0 0;
 }
-
-/* Centre les actions de fin de partie. */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-underline-offset: 4px;
+}
 .result-actions {
   text-align: center;
 }
-
-/* Signale l’attente et empêche les clics répétés. */
+.configuration-button {
+  display: flex;
+  width: fit-content;
+  margin: 20px auto 0;
+  background-color: #e9dfca;
+}
 .replay-button:disabled {
   opacity: 0.6;
   cursor: wait;
 }
-
-/* Met en évidence une erreur de lancement. */
 .result-error {
   color: #ff626b;
 }
-
-/* Place la configuration sous Rejouer avec un style secondaire. */
-.configuration-button {
-  display: block;
-  margin: 20px auto 0;
-  background-color: #e9dfca;
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Présente discrètement l’information de disponibilité. */
-.configuration-info {
-  font-size: 0.85rem;
-  color: #e9dfca;
+.corrections-toggle:focus-visible,
+.signup-button:focus-visible,
+.text-link:focus-visible,
+.replay-button:focus-visible,
+.configuration-button:focus-visible {
+  outline: 3px solid #ff626b;
+  outline-offset: 5px;
 }
 </style>
