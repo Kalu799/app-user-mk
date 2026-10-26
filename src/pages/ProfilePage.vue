@@ -192,7 +192,6 @@ const resetAvatarEditor = () => {
     <section class="profile-card" aria-labelledby="progress-title">
       <div class="profile-card-heading">
         <h2 id="progress-title">Ta progression</h2>
-        <span class="profile-coming-soon">À venir</span>
       </div>
 
       <p class="profile-description">

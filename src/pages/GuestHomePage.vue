@@ -158,14 +158,26 @@ const launchGuestGame = async () => {
       </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
       <div class="footer-content">
         <nav class="footer-links" aria-label="Réseaux sociaux">
-          <a href="#" @click.prevent>Instagram</a>
-          <a href="#" @click.prevent>TikTok</a>
-          <a href="#" @click.prevent>YouTube</a>
-          <a href="#" @click.prevent>Discord</a>
-        </nav>
+  <a href="#" aria-label="Instagram" title="Instagram" @click.prevent>
+    <img src="/icons/instagram.svg" alt="" />
+  </a>
+
+  <a href="#" aria-label="TikTok" title="TikTok" @click.prevent>
+    <img src="/icons/tiktok.svg" alt="" />
+  </a>
+
+  <a href="#" aria-label="YouTube" title="YouTube" @click.prevent>
+    <img src="/icons/youtube.svg" alt="" />
+  </a>
+
+  <a href="#" aria-label="Discord" title="Discord" @click.prevent>
+    <img src="/icons/discord.svg" alt="" />
+  </a>
+</nav>
 
         <div class="footer-bottom">
           <img src="/logokingwhite.png" alt="Movie Kings" class="footer-logo" />
@@ -801,24 +813,39 @@ main p {
 
 .footer-links {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .footer-links a {
-  display: block;
-  padding: 20px 0;
-
-  color: #e9dfca;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #fff;
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 700;
-
-  border-bottom: 1px dashed #444;
-  transition: color 0.2s;
+  border: none;
+  border-radius: 50%;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .footer-links a:hover {
-  color: #ff626b;
+  background-color: rgb(255 255 255 / 12%);
+  transform: translateY(-2px);
+}
+
+.footer-links img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .footer-bottom {
